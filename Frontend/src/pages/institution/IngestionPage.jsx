@@ -15,10 +15,12 @@ import {
   Sliders,
   ExternalLink,
   Trash2,
+  Lock,
 } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const CATEGORIES = [
   {
@@ -88,6 +90,11 @@ const CATEGORIES = [
 ];
 
 export default function IngestionPage() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const isAdmin = !currentUser || currentUser.role === 'institution_admin' || currentUser.role === 'admin';
+  const role = currentUser?.role || 'institution_admin';
+
   const [selectedCategory, setSelectedCategory] = useState('academic');
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -208,6 +215,10 @@ export default function IngestionPage() {
 
   const handleCommitUpload = async () => {
     if (!uploadedFile) return;
+    if (!isAdmin) {
+      alert(`Commit to production database is restricted to Dean & Provost (Administrator). As ${role === 'faculty_mentor' ? 'Faculty Mentor' : 'Placement Officer (TPO)'}, your portal utilizes pre-ingested telemetry. You may preview schemas and download templates below.`);
+      return;
+    }
     setIsCommitting(true);
     try {
       const res = await api.commitImport(selectedCategory, uploadedFile);
@@ -235,6 +246,50 @@ export default function IngestionPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: '1400px', margin: '0 auto' }}>
+      {/* Governance Notice for Non-Admins */}
+      {!isAdmin && (
+        <div
+          style={{
+            padding: '1rem 1.25rem',
+            borderRadius: '10px',
+            backgroundColor: '#EFF6FF',
+            border: '1px solid #BFDBFE',
+            color: '#1E3A8A',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.84rem',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <ShieldCheck size={22} color="#2563EB" />
+            <div>
+              <strong>Master Ingestion Governed by Dean & Provost (Administrator)</strong>
+              <div style={{ fontSize: '0.78rem', color: '#2563EB', marginTop: '2px' }}>
+                As {role === 'faculty_mentor' ? 'Faculty Mentor' : 'Placement Officer (TPO)'}, your portal consumes pre-ingested performance data for mentorship and placement shortlists. You can preview schemas and download CSV templates below.
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate(role === 'faculty_mentor' ? '/institution/students' : '/institution/segments')}
+            style={{
+              padding: '6px 14px',
+              backgroundColor: '#2563EB',
+              color: '#FFFFFF',
+              borderRadius: '6px',
+              border: 'none',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Go to {role === 'faculty_mentor' ? 'Mentorship Roster' : '2x2 Placement Matrix'}
+          </button>
+        </div>
+      )}
+
       {/* Header Banner */}
       <div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '999px', backgroundColor: '#EBF3FE', color: '#1A73E8', fontSize: '0.76rem', fontWeight: 600, marginBottom: '8px' }}>

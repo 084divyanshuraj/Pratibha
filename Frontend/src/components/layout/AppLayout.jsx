@@ -47,7 +47,7 @@ const STUDENT_NAV_ITEMS = [
 ];
 
 export default function AppLayout({ children }) {
-  const { currentUser, logout } = useAuth();
+  const { currentUser, logout, loginWithDemo } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,6 +66,17 @@ export default function AppLayout({ children }) {
   const handleLogout = () => {
     logout();
     navigate('/');
+  };
+
+  const handlePersonaChange = async (selectedKey) => {
+    await loginWithDemo(selectedKey);
+    if (selectedKey === 'student') {
+      navigate('/student/portal');
+    } else {
+      if (isStudent || location.pathname.startsWith('/student')) {
+        navigate('/institution/overview');
+      }
+    }
   };
 
   const getNavItems = () => {
@@ -161,50 +172,80 @@ export default function AppLayout({ children }) {
           </div>
         </div>
 
-        {/* Role Switcher & Persona Menu */}
+        {/* Interactive Persona Switcher */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          {isStudent ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 12px',
-                  borderRadius: '999px',
-                  backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                  border: '1px solid rgba(56, 189, 248, 0.3)',
-                  fontSize: '0.74rem',
-                  color: '#38BDF8',
-                  fontWeight: 600,
-                }}
-              >
-                <GraduationCap size={13} />
-                <span>Student Portal</span>
-              </span>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  padding: '4px 12px',
-                  borderRadius: '999px',
-                  backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                  border: '1px solid rgba(56, 189, 248, 0.25)',
-                  fontSize: '0.74rem',
-                  color: '#38BDF8',
-                  fontWeight: 600,
-                }}
-              >
-                <span>{currentUser?.name || 'Administrator'}</span>
-                <span style={{ color: '#475569' }}>•</span>
-                <span style={{ color: '#CBD5E1', fontWeight: 500 }}>{currentUser?.roleLabel || 'Institution Staff'}</span>
-              </span>
-            </div>
-          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ fontSize: '0.74rem', color: '#94A3B8', fontWeight: 600 }}>Persona:</span>
+            <select
+              value={
+                isStudent
+                  ? 'student'
+                  : currentUser?.role === 'faculty_mentor'
+                  ? 'faculty'
+                  : currentUser?.role === 'placement_officer'
+                  ? 'placement'
+                  : 'admin'
+              }
+              onChange={(e) => handlePersonaChange(e.target.value)}
+              style={{
+                backgroundColor: '#1E293B',
+                color: '#38BDF8',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                borderRadius: '6px',
+                padding: '4px 10px',
+                fontSize: '0.76rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+              title="Switch demo persona to test role-specific workflows"
+            >
+              <option value="admin">🏛️ Dr. Sunita Rao · Admin (Dean & Provost)</option>
+              <option value="faculty">👨‍🏫 Prof. Rajesh Kumar · Faculty Mentor (CSE)</option>
+              <option value="placement">💼 Vikram Malhotra · Placement Officer (TPO)</option>
+              <option value="student">🎓 Aarav Sharma · Student Portal</option>
+            </select>
+          </div>
+
+          {/* Current Persona Badge */}
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '4px 10px',
+              borderRadius: '999px',
+              backgroundColor: isStudent
+                ? 'rgba(56, 189, 248, 0.15)'
+                : currentUser?.role === 'faculty_mentor'
+                ? 'rgba(34, 197, 94, 0.15)'
+                : currentUser?.role === 'placement_officer'
+                ? 'rgba(59, 130, 246, 0.15)'
+                : 'rgba(245, 158, 11, 0.15)',
+              border: `1px solid ${
+                isStudent
+                  ? 'rgba(56, 189, 248, 0.3)'
+                  : currentUser?.role === 'faculty_mentor'
+                  ? 'rgba(34, 197, 94, 0.3)'
+                  : currentUser?.role === 'placement_officer'
+                  ? 'rgba(59, 130, 246, 0.3)'
+                  : 'rgba(245, 158, 11, 0.3)'
+              }`,
+              fontSize: '0.72rem',
+              color: isStudent
+                ? '#38BDF8'
+                : currentUser?.role === 'faculty_mentor'
+                ? '#4ADE80'
+                : currentUser?.role === 'placement_officer'
+                ? '#60A5FA'
+                : '#FBBF24',
+              fontWeight: 600,
+            }}
+          >
+            <span>{currentUser?.name}</span>
+            <span style={{ color: '#475569' }}>•</span>
+            <span style={{ color: '#E2E8F0', fontWeight: 500 }}>{currentUser?.roleLabel}</span>
+          </span>
 
           {/* Quick Profile Navigation Button */}
           <button

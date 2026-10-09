@@ -12,12 +12,22 @@ import {
   ArrowRight,
   ShieldCheck,
   Info,
+  GraduationCap,
+  Briefcase,
+  Shield,
 } from 'lucide-react';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function SandboxPage() {
+  const { currentUser } = useAuth();
+  const role = currentUser?.role || 'institution_admin';
+
   const [strategy, setStrategy] = useState('targeted');
-  const [selectedIntervention, setSelectedIntervention] = useState('remedial_classes');
+  const [selectedIntervention, setSelectedIntervention] = useState(() => {
+    if (role === 'placement_officer') return 'career_bootcamp';
+    return 'remedial_classes';
+  });
   const [capacitySeats, setCapacitySeats] = useState(15);
   const [budgetLimit, setBudgetLimit] = useState(3000);
 
@@ -25,6 +35,14 @@ export default function SandboxPage() {
   const [simulationResult, setSimulationResult] = useState(null);
   const [approvedState, setApprovedState] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+
+  useEffect(() => {
+    if (role === 'placement_officer') {
+      setSelectedIntervention('career_bootcamp');
+    } else if (role === 'faculty_mentor') {
+      setSelectedIntervention('remedial_classes');
+    }
+  }, [role]);
 
   const handleRunSimulation = async () => {
     setSimulating(true);
@@ -62,6 +80,47 @@ export default function SandboxPage() {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      {/* Persona Focus Alert */}
+      <div
+        style={{
+          backgroundColor: role === 'faculty_mentor' ? '#F0FDF4' : role === 'placement_officer' ? '#EFF6FF' : '#F8FAFC',
+          border: `1px solid ${role === 'faculty_mentor' ? '#BBF7D0' : role === 'placement_officer' ? '#BFDBFE' : '#E2E8F0'}`,
+          borderRadius: '12px',
+          padding: '1rem 1.25rem',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+        }}
+      >
+        <div
+          style={{
+            width: '36px',
+            height: '36px',
+            borderRadius: '8px',
+            backgroundColor: role === 'faculty_mentor' ? '#16A34A' : role === 'placement_officer' ? '#2563EB' : '#0F172A',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+          }}
+        >
+          {role === 'faculty_mentor' ? <GraduationCap size={18} /> : role === 'placement_officer' ? <Briefcase size={18} /> : <Shield size={18} />}
+        </div>
+        <div>
+          <div style={{ fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase', color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155' }}>
+            {role === 'faculty_mentor' ? 'Faculty Mentorship Sandbox Mode' : role === 'placement_officer' ? 'Corporate Placement Cell Bootcamp Mode' : 'Institutional Optimizer Mode'}
+          </div>
+          <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '2px' }}>
+            {role === 'faculty_mentor'
+              ? 'Model remedial subject coaching, attendance recovery clinics, and peer-to-peer mentoring quotas for CSE mentees.'
+              : role === 'placement_officer'
+              ? 'Model mock interview bootcamps, resume workshops, and technical coding sprints for corporate drive shortlists.'
+              : 'Optimize cross-department capacity limits and budget allocation with zero outcome fabrication.'}
+          </div>
+        </div>
+      </div>
+
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
@@ -70,10 +129,14 @@ export default function SandboxPage() {
             <span>KPMG Sandbox Simulator (Phase 8 Production Engine)</span>
           </div>
           <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
-            Intervention Sandbox & Resource Optimizer
+            {role === 'faculty_mentor' ? 'Remedial Tutoring & Mentorship Sandbox' : role === 'placement_officer' ? 'Interview Sprints & Placement Optimizer' : 'Intervention Sandbox & Resource Optimizer'}
           </h1>
           <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
-            Model and allocate support programs under real faculty capacity constraints with zero outcome fabrication.
+            {role === 'faculty_mentor'
+              ? 'Plan remedial coaching and peer mentoring cohorts within actual department faculty teaching capacity.'
+              : role === 'placement_officer'
+              ? 'Simulate corporate bootcamp seat limits and aptitude training drives for upcoming visiting recruiters.'
+              : 'Model and allocate support programs under real faculty capacity constraints with zero outcome fabrication.'}
           </p>
         </div>
 

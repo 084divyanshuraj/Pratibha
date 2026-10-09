@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
   Search,
@@ -15,8 +16,14 @@ import {
   Database,
 } from 'lucide-react';
 import { api } from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 export default function AuditPage() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const isAdmin = !currentUser || currentUser.role === 'institution_admin' || currentUser.role === 'admin';
+  const role = currentUser?.role || 'institution_admin';
+
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
@@ -87,6 +94,50 @@ export default function AuditPage() {
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* Governance Notice for Non-Admins */}
+      {!isAdmin && (
+        <div
+          style={{
+            padding: '1rem 1.25rem',
+            borderRadius: '10px',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            color: '#334155',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            fontSize: '0.84rem',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <Lock size={20} color="#64748B" />
+            <div>
+              <strong>Security Audit Log Governed by Dean & Provost</strong>
+              <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '2px' }}>
+                Immutable security and system events are administered by the Central Data Office. You are currently viewing in {role === 'faculty_mentor' ? 'Faculty Mentor' : 'Placement Officer'} read-only audit mode.
+              </div>
+            </div>
+          </div>
+          <button
+            onClick={() => navigate('/institution/overview')}
+            style={{
+              padding: '6px 14px',
+              backgroundColor: '#0F172A',
+              color: '#FFFFFF',
+              borderRadius: '6px',
+              border: 'none',
+              fontSize: '0.78rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            Back to Overview
+          </button>
+        </div>
+      )}
+
       {/* 1. HEADER */}
       <div
         style={{

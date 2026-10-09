@@ -100,7 +100,11 @@ export default function StudentDirectoryPage() {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
-              Student 360° Directory
+              {role === 'faculty_mentor'
+                ? 'CSE Mentorship & Student Directory'
+                : role === 'placement_officer'
+                ? 'Corporate Placement & Candidate Roster'
+                : 'Student 360° Directory'}
             </h1>
             <span
               style={{
@@ -112,11 +116,15 @@ export default function StudentDirectoryPage() {
                 color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
               }}
             >
-              {role === 'faculty_mentor' ? 'Faculty Scope' : role === 'placement_officer' ? 'TPO Scope' : 'Institution Scope'}
+              {role === 'faculty_mentor' ? 'Faculty Mentor Scope' : role === 'placement_officer' ? 'TPO Recruiter Scope' : 'Dean & Provost Scope'}
             </span>
           </div>
           <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.85rem' }}>
-            Verified institutional cohort tracking with decoupled academic and placement risk indicators.
+            {role === 'faculty_mentor'
+              ? 'Monitor mentee academic standing, track statutory attendance (<75%), and identify students needing remedial tutoring.'
+              : role === 'placement_officer'
+              ? 'Filter candidates by corporate eligibility (Tier-1, Divergent), inspect mock interview scores, and export shortlists for visiting recruiters.'
+              : 'Verified institutional cohort tracking with decoupled academic and placement risk indicators.'}
           </p>
         </div>
 
@@ -130,7 +138,7 @@ export default function StudentDirectoryPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: '#0F172A',
+              backgroundColor: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#0F172A',
               color: '#FFFFFF',
               border: 'none',
               padding: '7px 14px',
@@ -140,10 +148,10 @@ export default function StudentDirectoryPage() {
               cursor: 'pointer',
               boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             }}
-            title="Export filtered student roster as CSV"
+            title={role === 'placement_officer' ? 'Export eligible student roster for visiting recruiters' : 'Export filtered student roster as CSV'}
           >
             <Download size={14} />
-            <span>Export Roster (CSV)</span>
+            <span>{role === 'placement_officer' ? 'Export Recruiter Roster (CSV)' : role === 'faculty_mentor' ? 'Export Mentee Report (CSV)' : 'Export Roster (CSV)'}</span>
           </button>
         </div>
       </div>
