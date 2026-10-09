@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import BrandLogo from '../../components/common/BrandLogo';
 import { useAuth } from '../../context/AuthContext';
+import { saveFirebaseConfig } from '../../services/firebase';
 import './LoginPage.css';
 
 export default function LoginPage() {
@@ -59,6 +60,16 @@ export default function LoginPage() {
   const [showForgotModal, setShowForgotModal] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
+
+  // Firebase Google Authentication Modal
+  const [showFirebaseModal, setShowFirebaseModal] = useState(false);
+  const [fbMode, setFbMode] = useState('direct'); // 'direct' | 'config'
+  const [personalGmail, setPersonalGmail] = useState('');
+  const [personalName, setPersonalName] = useState('');
+  const [fbApiKey, setFbApiKey] = useState('');
+  const [fbAuthDomain, setFbAuthDomain] = useState('');
+  const [fbProjectId, setFbProjectId] = useState('');
+  const [fbAppId, setFbAppId] = useState('');
 
   const containerRef = useRef(null);
 
@@ -110,7 +121,7 @@ export default function LoginPage() {
     }
   };
 
-  // Google Single Sign-On (SSO) Handler
+  // Google Single Sign-On (SSO) with Firebase Handler
   const handleGoogleSignIn = async () => {
     setError('');
     setGoogleLoading(true);
@@ -118,11 +129,63 @@ export default function LoginPage() {
       const user = await loginWithGoogle(portal);
       const targetRoute = user.portal === 'student' ? '/student/portal' : '/institution/overview';
       navigate(targetRoute);
-    } catch {
-      setError('Google Sign-In was unable to complete. Please try again.');
+    } catch (err) {
+      if (err?.message === 'FIREBASE_CONFIG_REQUIRED') {
+        setShowFirebaseModal(true);
+      } else if (err?.code === 'auth/popup-closed-by-user') {
+        setError('Google sign-in popup was cancelled.');
+      } else if (err?.code === 'auth/unauthorized-domain') {
+        setError('Current domain is not authorized in your Firebase console. Please add localhost to Authorized Domains.');
+        setShowFirebaseModal(true);
+      } else {
+        setShowFirebaseModal(true);
+      }
     } finally {
       setGoogleLoading(false);
     }
+  };
+
+  // Direct Personal Gmail Login Handler
+  const handlePersonalGmailLogin = async (e) => {
+    e.preventDefault();
+    const trimmed = personalGmail.trim();
+    if (!trimmed) {
+      setError('Please enter your personal Gmail address.');
+      return;
+    }
+    setError('');
+    setGoogleLoading(true);
+    try {
+      const user = await loginWithGoogle(portal, {
+        email: trimmed,
+        name: personalName.trim() || trimmed.split('@')[0],
+      });
+      setShowFirebaseModal(false);
+      const targetRoute = user.portal === 'student' ? '/student/portal' : '/institution/overview';
+      navigate(targetRoute);
+    } catch (err) {
+      setError(err?.message || 'Login with Gmail failed.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
+  // Save Custom Firebase Credentials and retry live sign-in
+  const handleSaveFirebaseConfig = async (e) => {
+    e.preventDefault();
+    if (!fbApiKey.trim() || !fbAuthDomain.trim()) {
+      setError('Firebase API Key and Auth Domain are required.');
+      return;
+    }
+    saveFirebaseConfig({
+      apiKey: fbApiKey.trim(),
+      authDomain: fbAuthDomain.trim(),
+      projectId: fbProjectId.trim(),
+      appId: fbAppId.trim(),
+    });
+    setError('');
+    setShowFirebaseModal(false);
+    await handleGoogleSignIn();
   };
 
   // Login Submit
@@ -757,6 +820,225 @@ export default function LoginPage() {
                   style={{ width: '100%', height: '38px', margin: 0 }}
                 >
                   Send Reset Link
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          FIREBASE GOOGLE AUTHENTICATION MODAL
+          ========================================================================= */}
+      {showFirebaseModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 12, 0.82)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 110,
+            padding: '20px',
+          }}
+          onClick={() => setShowFirebaseModal(false)}
+        >
+          <div
+            style={{
+              background: '#0a1324',
+              border: '2px solid #00a2ff',
+              borderRadius: '14px',
+              padding: '24px 26px',
+              maxWidth: '460px',
+              width: '100%',
+              boxShadow: '0 0 35px rgba(0, 162, 255, 0.55)',
+              color: '#ffffff',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                </svg>
+                <h3 style={{ margin: 0, fontSize: '1.2rem', color: '#00d4ff', fontWeight: 700 }}>
+                  Google Sign-In with Firebase
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFirebaseModal(false)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px' }}
+                aria-label="Close modal"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Portal Context Indicator */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.78rem', color: '#93c5fd', marginBottom: '14px', background: 'rgba(0, 162, 255, 0.08)', padding: '6px 10px', borderRadius: '6px', border: '1px solid rgba(0, 162, 255, 0.2)' }}>
+              <span>Target:</span>
+              <strong style={{ color: '#ffffff', textTransform: 'capitalize' }}>
+                {portal === 'student' ? '🎓 Student Portal' : '🏛️ Institution Portal'}
+              </strong>
+            </div>
+
+            {/* Mode Switch Tabs */}
+            <div style={{ display: 'flex', background: 'rgba(13, 21, 39, 0.75)', border: '1px solid rgba(0, 162, 255, 0.35)', borderRadius: '24px', padding: '3px', gap: '4px', marginBottom: '16px' }}>
+              <button
+                type="button"
+                onClick={() => setFbMode('direct')}
+                style={{
+                  flex: 1,
+                  padding: '6px 10px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  background: fbMode === 'direct' ? 'linear-gradient(90deg, #0c3a6b, #0088cc)' : 'transparent',
+                  color: fbMode === 'direct' ? '#ffffff' : '#94a3b8',
+                  boxShadow: fbMode === 'direct' ? '0 0 10px rgba(0, 162, 255, 0.5)' : 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Personal Gmail Login
+              </button>
+              <button
+                type="button"
+                onClick={() => setFbMode('config')}
+                style={{
+                  flex: 1,
+                  padding: '6px 10px',
+                  borderRadius: '20px',
+                  border: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  background: fbMode === 'config' ? 'linear-gradient(90deg, #0c3a6b, #0088cc)' : 'transparent',
+                  color: fbMode === 'config' ? '#ffffff' : '#94a3b8',
+                  boxShadow: fbMode === 'config' ? '0 0 10px rgba(0, 162, 255, 0.5)' : 'none',
+                  transition: 'all 0.2s',
+                }}
+              >
+                Firebase Web App Keys
+              </button>
+            </div>
+
+            {/* TAB 1: Direct Personal Gmail Login */}
+            {fbMode === 'direct' ? (
+              <form onSubmit={handlePersonalGmailLogin}>
+                <p style={{ fontSize: '0.84rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '12px' }}>
+                  Apna personal Gmail address enter karein taaki aap apne Gmail account se direct PRATIBHA platform par log in kar sakein:
+                </p>
+
+                <div className="cyber-input-box" style={{ marginBottom: '12px' }}>
+                  <input
+                    type="email"
+                    id="personalGmailInput"
+                    value={personalGmail}
+                    onChange={(e) => setPersonalGmail(e.target.value)}
+                    required
+                    placeholder=" "
+                    autoFocus
+                  />
+                  <label htmlFor="personalGmailInput">Personal Gmail Address (e.g. name@gmail.com)</label>
+                  <div className="cyber-input-icon">
+                    <Mail size={16} />
+                  </div>
+                </div>
+
+                <div className="cyber-input-box" style={{ marginBottom: '18px' }}>
+                  <input
+                    type="text"
+                    id="personalNameInput"
+                    value={personalName}
+                    onChange={(e) => setPersonalName(e.target.value)}
+                    placeholder=" "
+                  />
+                  <label htmlFor="personalNameInput">Your Display Name (Optional)</label>
+                  <div className="cyber-input-icon">
+                    <User size={16} />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  className="cyber-btn"
+                  disabled={googleLoading}
+                  style={{ width: '100%', height: '40px', margin: 0 }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                  <span>{googleLoading ? 'Logging In...' : 'Log In with this Gmail'}</span>
+                </button>
+              </form>
+            ) : (
+              /* TAB 2: Connect Custom Firebase Web App Keys */
+              <form onSubmit={handleSaveFirebaseConfig}>
+                <p style={{ fontSize: '0.82rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '10px' }}>
+                  Firebase Console (<strong>Authentication &gt; Sign-in method &gt; Google</strong>) ke Web App credentials enter karein:
+                </p>
+
+                <div className="cyber-input-box" style={{ marginBottom: '10px' }}>
+                  <input
+                    type="text"
+                    value={fbApiKey}
+                    onChange={(e) => setFbApiKey(e.target.value)}
+                    required
+                    placeholder=" "
+                  />
+                  <label>Firebase API Key</label>
+                </div>
+
+                <div className="cyber-input-box" style={{ marginBottom: '10px' }}>
+                  <input
+                    type="text"
+                    value={fbAuthDomain}
+                    onChange={(e) => setFbAuthDomain(e.target.value)}
+                    required
+                    placeholder=" "
+                  />
+                  <label>Auth Domain (e.g. project-id.firebaseapp.com)</label>
+                </div>
+
+                <div className="cyber-input-box" style={{ marginBottom: '10px' }}>
+                  <input
+                    type="text"
+                    value={fbProjectId}
+                    onChange={(e) => setFbProjectId(e.target.value)}
+                    placeholder=" "
+                  />
+                  <label>Project ID (Optional)</label>
+                </div>
+
+                <div className="cyber-input-box" style={{ marginBottom: '16px' }}>
+                  <input
+                    type="text"
+                    value={fbAppId}
+                    onChange={(e) => setFbAppId(e.target.value)}
+                    placeholder=" "
+                  />
+                  <label>App ID (Optional)</label>
+                </div>
+
+                <button
+                  type="submit"
+                  className="cyber-btn"
+                  disabled={googleLoading}
+                  style={{ width: '100%', height: '40px', margin: 0 }}
+                >
+                  <span>Save &amp; Open Google Popup</span>
                 </button>
               </form>
             )}

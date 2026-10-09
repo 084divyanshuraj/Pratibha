@@ -171,21 +171,23 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const loginWithGoogle = async (selectedPortal = 'student', googleAccount = null) => {
-    const isStudent = selectedPortal === 'student';
-    const email = googleAccount?.email || (isStudent ? 'aarav.sharma@campus.edu' : 'sunita.rao@campus.edu');
-    const name = googleAccount?.name || (isStudent ? 'Aarav Sharma' : 'Dr. Sunita Rao');
-    const avatar = googleAccount?.picture || (isStudent ? 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80' : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80');
+  const loginWithGoogle = async (selectedPortal = 'student', customAccount = null) => {
+    let googleUser = customAccount;
 
+    if (!googleUser) {
+      googleUser = await signInWithGoogleFirebase();
+    }
+
+    const isStudent = selectedPortal === 'student';
     const profile = {
-      id: googleAccount?.sub || `GOOGLE_${Date.now()}`,
-      name,
-      email,
+      id: googleUser.id || `GOOGLE_${Date.now()}`,
+      name: googleUser.name || (isStudent ? 'Aarav Sharma' : 'Dr. Sunita Rao'),
+      email: googleUser.email || (isStudent ? 'aarav.sharma@campus.edu' : 'sunita.rao@campus.edu'),
       role: isStudent ? 'student' : 'institution_admin',
       portal: selectedPortal,
       roleLabel: isStudent ? 'Student (Google SSO)' : 'Administrator (Google SSO)',
-      avatar,
-      authProvider: 'google',
+      avatar: googleUser.avatar || 'https://lh3.googleusercontent.com/a/default-user=s96-c',
+      authProvider: 'firebase_google',
       department: isStudent ? 'Computer Science & Engineering' : 'Campus Administration',
     };
 
