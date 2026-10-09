@@ -8,6 +8,7 @@ import { PlacementAssessment } from '../models/PlacementAssessment.js';
 import { SkillAssessment } from '../models/SkillAssessment.js';
 import { FeedbackRecord } from '../models/FeedbackRecord.js';
 import { Import } from '../models/Import.js';
+import { recalculateStudentScore } from '../scores/score.service.js';
 import { AppError } from '../middleware/errorHandler.js';
 import { toCleanDTO } from '../serializers/index.js';
 
@@ -574,6 +575,7 @@ export async function processImport({
   // 3. Dry-run branch: do not mutate database
   if (dryRun) {
     return {
+      importId: `PREV_${Date.now()}`,
       datasetType,
       dryRun: true,
       fileName,
@@ -584,6 +586,9 @@ export async function processImport({
         rejected: rejectedCount,
         warnings: 0,
       },
+      acceptedCount,
+      rejectedCount,
+      totalRows: received,
       rowErrors,
       sampleValidRecords: acceptedRecords.slice(0, 3),
     };
@@ -598,6 +603,16 @@ export async function processImport({
       sourceImportId: importId,
     }));
     await TargetModel.insertMany(documentsToInsert, { ordered: false });
+
+    // Recalculate Student Success Scores for affected students
+    try {
+      const affectedStudentIds = [...new Set(acceptedRecords.map((r) => r.studentId).filter(Boolean))];
+      for (const sId of affectedStudentIds) {
+        recalculateStudentScore(sId).catch(() => {});
+      }
+    } catch {
+      // Non-blocking background recalculation
+    }
   }
 
   const importDoc = new Import({
@@ -631,6 +646,9 @@ export async function processImport({
       rejected: rejectedCount,
       warnings: 0,
     },
+    acceptedCount,
+    rejectedCount,
+    totalRows: received,
     rowErrors,
     completedAt: importDoc.completedAt,
   };

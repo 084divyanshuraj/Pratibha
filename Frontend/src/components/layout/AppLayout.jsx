@@ -27,7 +27,7 @@ const NAV_ITEMS = [
   { path: '/institution/risk-radar', label: 'Decoupled Risk Radar', icon: Target, badge: 'ML' },
   { path: '/institution/segments', label: 'Student Archetypes', icon: Layers, badge: '5' },
   { path: '/institution/sandbox', label: 'Intervention Sandbox', icon: FlaskConical, badge: 'Simulator' },
-  { path: '/institution/ingestion', label: 'Batch Data Studio', icon: UploadCloud, badge: '7 Pillars' },
+  { path: '/institution/ingestion', label: 'Batch Data Studio', icon: UploadCloud, badge: '8 Pillars' },
   { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
   { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
   { path: '/student/portal', label: 'Student Self-Portal', icon: GraduationCap, badge: 'Demo' },
