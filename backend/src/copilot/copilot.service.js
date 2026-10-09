@@ -148,11 +148,21 @@ How can I assist your campus administration today?`,
       let targetName = null;
       if (namedMatch) {
         targetName = namedMatch[1].trim().replace(/\s+(ka|ki|ke|details|detail|info|status|\?)$/i, '').trim();
-      } else if (words.length > 0 && (cleanQuery.toLowerCase().includes('student') || cleanQuery.toLowerCase().includes('cgpa') || cleanQuery.toLowerCase().includes('profile'))) {
+      } else if (
+        words.length > 0 &&
+        !normalized.includes('segment') &&
+        !normalized.includes('cohort') &&
+        !normalized.includes('risk') &&
+        !normalized.includes('how many') &&
+        !normalized.includes('overview') &&
+        !normalized.includes('catalog') &&
+        !normalized.includes('intervention') &&
+        (cleanQuery.toLowerCase().includes('student') || cleanQuery.toLowerCase().includes('cgpa') || cleanQuery.toLowerCase().includes('profile'))
+      ) {
         targetName = words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
       }
 
-      if (idMatch || targetName) {
+      if (idMatch || (targetName && targetName.length > 2)) {
         const missingIdentifier = idMatch ? idMatch[1].toUpperCase() : targetName;
         return {
           status: 'not_found',

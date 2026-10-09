@@ -17,11 +17,29 @@ export default function RiskRadarPage() {
   const [riskData, setRiskData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadRiskData = () => {
+    setLoading(true);
     api.getRiskSummary()
       .then((data) => setRiskData(data))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadRiskData();
+    const handleUpdate = () => loadRiskData();
+    window.addEventListener('pratibha_data_updated', handleUpdate);
+    return () => window.removeEventListener('pratibha_data_updated', handleUpdate);
   }, []);
+
+  const totalPop = riskData?.totalStudents || riskData?.departmentBreakdown?.reduce((acc, d) => acc + (d.total || 0), 0) || 1420;
+  const divCount = riskData?.decoupledDivergence?.count ?? Math.round(totalPop * 0.104);
+  const divPct = riskData?.decoupledDivergence?.percentage ?? +((divCount / totalPop) * 100).toFixed(1);
+  const doubleRiskCount = riskData?.doubleRiskCount ?? Math.round(totalPop * 0.058);
+  const doubleRiskPct = +((doubleRiskCount / totalPop) * 100).toFixed(1);
+  const achieversCount = riskData?.achieversCount ?? Math.round(totalPop * 0.507);
+  const achieversPct = +((achieversCount / totalPop) * 100).toFixed(1);
+  const backlogsOnlyCount = Math.max(0, totalPop - divCount - doubleRiskCount - achieversCount);
+  const backlogsOnlyPct = +((backlogsOnlyCount / totalPop) * 100).toFixed(1);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -46,7 +64,7 @@ export default function RiskRadarPage() {
             Academic vs Placement Risk Matrix
           </h3>
           <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
-            Total Population: 1,420 Enrolled Students
+            Total Population: <strong>{totalPop.toLocaleString()}</strong> Enrolled Students
           </span>
         </div>
 
@@ -74,7 +92,7 @@ export default function RiskRadarPage() {
                 </span>
               </div>
               <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#92400E', marginTop: '10px' }}>
-                148 Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>(10.4%)</span>
+                {divCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({divPct}%)</span>
               </div>
               <div style={{ fontSize: '0.82rem', color: '#78350F', marginTop: '6px', lineHeight: '1.45' }}>
                 <strong>CGPA ≥ 7.5 but High Placement Risk.</strong> Students with strong academic records experiencing aptitude, communication, or mock interview hurdles.
@@ -126,7 +144,7 @@ export default function RiskRadarPage() {
                 </span>
               </div>
               <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#991B1B', marginTop: '10px' }}>
-                82 Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>(5.8%)</span>
+                {doubleRiskCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({doubleRiskPct}%)</span>
               </div>
               <div style={{ fontSize: '0.82rem', color: '#7F1D1D', marginTop: '6px', lineHeight: '1.45' }}>
                 <strong>High Academic Risk + High Placement Risk.</strong> Requires paired remedial subject coaching and student wellness counseling.
@@ -174,7 +192,7 @@ export default function RiskRadarPage() {
               </span>
             </div>
             <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#14532D', marginTop: '10px' }}>
-              720 Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>(50.7%)</span>
+              {achieversCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({achieversPct}%)</span>
             </div>
             <div style={{ fontSize: '0.82rem', color: '#166534', marginTop: '6px', lineHeight: '1.45' }}>
               <strong>Low Academic Risk + Low Placement Risk.</strong> Candidates for leadership honours, peer mentoring, and corporate fellowship tracks.
@@ -196,7 +214,7 @@ export default function RiskRadarPage() {
               </span>
             </div>
             <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#1E293B', marginTop: '10px' }}>
-              98 Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>(6.9%)</span>
+              {backlogsOnlyCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({backlogsOnlyPct}%)</span>
             </div>
             <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '6px', lineHeight: '1.45' }}>
               <strong>High Academic Risk with Good Aptitude.</strong> Students performing well in coding competitions but struggling with formal theory exams.

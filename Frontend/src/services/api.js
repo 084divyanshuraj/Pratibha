@@ -5,6 +5,8 @@
  * with realistic fixtures matching all 18 domain models & ML predictions.
  */
 
+import * as XLSX from 'xlsx';
+
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
 
 // In-memory backend connectivity tracker
@@ -536,6 +538,85 @@ const MOCK_OVERVIEW_KPIS = {
   overallCompletenessAverage: 83.1,
 };
 
+export function getActiveStudents() {
+  try {
+    const raw = localStorage.getItem('pratibha_custom_students');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    }
+  } catch {}
+  return MOCK_STUDENTS;
+}
+
+export function saveActiveStudents(students) {
+  try {
+    localStorage.setItem('pratibha_custom_students', JSON.stringify(students));
+  } catch {}
+}
+
+export function computeLocalOverviewKpis() {
+  const students = getActiveStudents();
+  const total = students.length;
+  if (total === 0) {
+    return {
+      totalStudents: 0,
+      departmentCount: 0,
+      averageSuccessScore: 0,
+      scoreDistribution: { critical: 0, moderate: 0, good: 0, excellent: 0 },
+      academicRisk: { low: 0, medium: 0, high: 0 },
+      placementRisk: { low: 0, medium: 0, high: 0 },
+      decoupledDivergence: { count: 0, percentage: 0, explanation: 'No active student records observed.' },
+      categoryCoverage: { academic: 0, attendance: 0, lms: 0, placement: 0, skills: 0, engagement: 0, feedback: 0 },
+      overallCompletenessAverage: 0,
+    };
+  }
+
+  const depts = new Set(students.map((s) => s.department).filter(Boolean));
+  const scores = students.map((s) => s.successScore != null ? Number(s.successScore) : 72);
+  const avgScore = +(scores.reduce((a, b) => a + b, 0) / total).toFixed(1);
+
+  const distribution = { critical: 0, moderate: 0, good: 0, excellent: 0 };
+  scores.forEach((sc) => {
+    if (sc < 60) distribution.critical += 1;
+    else if (sc < 75) distribution.moderate += 1;
+    else if (sc < 85) distribution.good += 1;
+    else distribution.excellent += 1;
+  });
+
+  const academicRisk = { low: 0, medium: 0, high: 0 };
+  const placementRisk = { low: 0, medium: 0, high: 0 };
+  let divergenceCount = 0;
+
+  students.forEach((s) => {
+    const aRisk = (s.academicRisk || 'low').toLowerCase();
+    const pRisk = (s.placementRisk || 'low').toLowerCase();
+    if (aRisk in academicRisk) academicRisk[aRisk] += 1;
+    if (pRisk in placementRisk) placementRisk[pRisk] += 1;
+    if ((Number(s.cgpa) || 0) >= 7.5 && pRisk === 'high') {
+      divergenceCount += 1;
+    }
+  });
+
+  const divPct = +((divergenceCount / total) * 100).toFixed(1);
+
+  return {
+    totalStudents: total,
+    departmentCount: depts.size || 1,
+    averageSuccessScore: avgScore,
+    scoreDistribution: distribution,
+    academicRisk,
+    placementRisk,
+    decoupledDivergence: {
+      count: divergenceCount,
+      percentage: divPct,
+      explanation: `${divergenceCount} students exhibit strong academic standing (CGPA >= 7.5) but high placement risk due to soft-skills/interview gaps.`,
+    },
+    categoryCoverage: MOCK_OVERVIEW_KPIS.categoryCoverage,
+    overallCompletenessAverage: MOCK_OVERVIEW_KPIS.overallCompletenessAverage,
+  };
+}
+
 const MOCK_SEGMENTS = [
   {
     key: 'critical_attendance_shortfall',
@@ -702,9 +783,27 @@ export const api = {
     try {
       const query = new URLSearchParams(filters).toString();
       const res = await fetchClient(`/analytics/overview${query ? `?${query}` : ''}`);
-      return res;
+      return {
+        totalStudents: res.totalStudents ?? res.students?.total ?? 1420,
+        departmentCount: res.departmentCount ?? (res.students?.total ? 5 : 0),
+        averageSuccessScore: res.averageSuccessScore ?? res.successScore?.average ?? 74.9,
+        scoreDistribution: res.scoreDistribution ?? res.successScore?.distribution ?? MOCK_OVERVIEW_KPIS.scoreDistribution,
+        academicRisk: res.academicRisk ?? MOCK_OVERVIEW_KPIS.academicRisk,
+        placementRisk: res.placementRisk ?? MOCK_OVERVIEW_KPIS.placementRisk,
+        decoupledDivergence: res.decoupledDivergence ?? MOCK_OVERVIEW_KPIS.decoupledDivergence,
+        categoryCoverage: res.categoryCoverage ?? {
+          academic: res.dataCoverage?.categories?.academic?.percentage ?? 100,
+          attendance: res.dataCoverage?.categories?.attendance?.percentage ?? 98.4,
+          lms: res.dataCoverage?.categories?.lms?.percentage ?? 84.2,
+          placement: res.dataCoverage?.categories?.placement?.percentage ?? 76.5,
+          skills: res.dataCoverage?.categories?.skills?.percentage ?? 81.0,
+          engagement: res.dataCoverage?.categories?.engagement?.percentage ?? 62.4,
+          feedback: res.dataCoverage?.categories?.feedback?.percentage ?? 78.9,
+        },
+        overallCompletenessAverage: res.overallCompletenessAverage ?? res.dataCoverage?.overallCompletenessAverage ?? 83.1,
+      };
     } catch {
-      return MOCK_OVERVIEW_KPIS;
+      return computeLocalOverviewKpis();
     }
   },
 
@@ -749,17 +848,17 @@ export const api = {
       const res = await fetchClient(`/students${query ? `?${query}` : ''}`);
       return res;
     } catch {
-      let filtered = [...MOCK_STUDENTS];
+      let filtered = [...getActiveStudents()];
       if (params.search) {
         const s = params.search.toLowerCase();
-        filtered = filtered.filter((st) => st.fullName.toLowerCase().includes(s) || st.studentId.toLowerCase().includes(s));
+        filtered = filtered.filter((st) => (st.fullName || `${st.firstName} ${st.lastName}`).toLowerCase().includes(s) || st.studentId.toLowerCase().includes(s));
       }
       if (params.department) {
         filtered = filtered.filter((st) => st.department === params.department);
       }
       return {
         students: filtered,
-        pagination: { total: filtered.length, page: 1, limit: 20, totalPages: 1 },
+        pagination: { total: filtered.length, page: 1, limit: 20, totalPages: Math.ceil(filtered.length / 20) || 1 },
       };
     }
   },
@@ -993,23 +1092,48 @@ export const api = {
         sampleValidRecords: res.sampleValidRecords || [],
       };
     } catch {
-      return {
-        importId: `IMP_${Date.now()}`,
-        datasetType,
-        fileName: file.name,
-        totalRows: 48,
-        acceptedCount: 46,
-        rejectedCount: 2,
-        warningsCount: 1,
-        errors: [
-          { row: 14, studentId: 'STU_9999', message: 'Student ID not registered in institutional directory.' },
-          { row: 29, studentId: 'STU_0042', message: 'Value out of declared range (8.5 > scale 10.0).' },
-        ],
-      };
+      // Dynamic client-side fallback using XLSX library
+      try {
+        const buffer = await file.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const firstSheet = workbook.SheetNames[0];
+        const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: '' });
+
+        return {
+          importId: `PREV_${Date.now()}`,
+          datasetType,
+          fileName: file.name,
+          totalRows: rows.length,
+          acceptedCount: rows.length,
+          rejectedCount: 0,
+          warningsCount: 0,
+          errors: [],
+          sampleValidRecords: rows.slice(0, 4),
+        };
+      } catch {
+        return {
+          importId: `PREV_${Date.now()}`,
+          datasetType,
+          fileName: file.name,
+          totalRows: 48,
+          acceptedCount: 46,
+          rejectedCount: 2,
+          warningsCount: 1,
+          errors: [
+            { row: 14, studentId: 'STU_9999', message: 'Student ID not registered in institutional directory.' },
+            { row: 29, studentId: 'STU_0042', message: 'Value out of declared range (8.5 > scale 10.0).' },
+          ],
+          sampleValidRecords: [],
+        };
+      }
     }
   },
 
   async commitImport(datasetType, file) {
+    let committedRows = 0;
+    let importId = `IMP_${Date.now()}`;
+    let backendSuccess = false;
+
     try {
       let adminToken = sessionStorage.getItem('pratibha_token');
       if (!adminToken) {
@@ -1032,25 +1156,82 @@ export const api = {
         timeoutMs: 15000,
       });
 
-      return {
-        importId: res.importId || `IMP_${Date.now()}`,
-        datasetType: res.datasetType || datasetType,
-        status: res.status || 'completed',
-        committedRows: res.acceptedCount ?? res.counts?.accepted ?? 0,
-        message: 'Successfully persisted dataset rows into MongoDB database.',
-      };
+      committedRows = res.acceptedCount ?? res.counts?.accepted ?? 0;
+      importId = res.importId || importId;
+      backendSuccess = true;
     } catch {
-      return {
-        importId: `IMP_${Date.now()}`,
-        datasetType,
-        status: 'completed',
-        committedRows: 46,
-        message: 'Successfully persisted dataset rows into MongoDB.',
-      };
+      // Offline fallback branch
     }
+
+    // Dynamic client-side record parsing for reactive offline updates
+    try {
+      const buffer = await file.arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const firstSheet = workbook.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: '' });
+
+      if (rows.length > 0) {
+        if (!committedRows) committedRows = rows.length;
+
+        if (datasetType === 'students') {
+          const current = [...getActiveStudents()];
+          const currentMap = new Map();
+          current.forEach((st) => currentMap.set(st.studentId, st));
+
+          rows.forEach((r, idx) => {
+            const sId = r.studentId ? String(r.studentId).toUpperCase() : `STU_${String(current.length + idx + 1).padStart(4, '0')}`;
+            const fn = r.firstName || r.name?.split(' ')[0] || 'Student';
+            const ln = r.lastName || r.name?.split(' ').slice(1).join(' ') || `${idx + 1}`;
+            const cg = r.cgpa != null ? Number(r.cgpa) : +(6.5 + Math.random() * 3).toFixed(1);
+            const att = r.attendancePercentage != null ? Number(r.attendancePercentage) : Math.round(65 + Math.random() * 30);
+            const score = +(cg * 8 + (att / 100) * 20).toFixed(1);
+
+            currentMap.set(sId, {
+              id: sId.toLowerCase(),
+              studentId: sId,
+              firstName: fn,
+              lastName: ln,
+              fullName: `${fn} ${ln}`,
+              department: r.department || 'Computer Science',
+              program: r.program || 'B.Tech',
+              semester: r.semester ? Number(r.semester) : 6,
+              cgpa: cg,
+              attendanceRate: att,
+              successScore: score,
+              academicRisk: cg < 6.5 ? 'high' : cg < 7.5 ? 'medium' : 'low',
+              placementRisk: cg >= 7.5 && Math.random() > 0.6 ? 'high' : (cg < 6.5 ? 'high' : 'low'),
+              email: r.email || `${fn.toLowerCase()}.${ln.toLowerCase()}@campus.edu`,
+              avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
+            });
+          });
+
+          saveActiveStudents(Array.from(currentMap.values()));
+        }
+      }
+    } catch {}
+
+    // Dispatch custom event to notify Overview, Directory, and other reactive listeners
+    try {
+      window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { datasetType, committedRows } }));
+    } catch {}
+
+    return {
+      importId,
+      datasetType,
+      status: 'completed',
+      committedRows: committedRows || 46,
+      message: backendSuccess
+        ? 'Successfully persisted dataset rows into MongoDB database.'
+        : 'Dataset parsed and synced to reactive campus store.',
+    };
   },
 
   async clearStudentData() {
+    try {
+      localStorage.removeItem('pratibha_custom_students');
+      window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'clear' } }));
+    } catch {}
+
     try {
       let adminToken = sessionStorage.getItem('pratibha_token');
       if (!adminToken) {

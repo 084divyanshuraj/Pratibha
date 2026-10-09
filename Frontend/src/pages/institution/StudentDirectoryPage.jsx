@@ -39,6 +39,9 @@ export default function StudentDirectoryPage() {
 
   useEffect(() => {
     fetchStudents();
+    const handleUpdate = () => fetchStudents();
+    window.addEventListener('pratibha_data_updated', handleUpdate);
+    return () => window.removeEventListener('pratibha_data_updated', handleUpdate);
   }, [search, department, riskFilter]);
 
   return (
