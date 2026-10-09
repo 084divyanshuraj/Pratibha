@@ -391,7 +391,6 @@ export default function LoginPage() {
           <h2 className="anim-slide">
             WELCOME<br />BACK!
           </h2>
-          <p className="anim-slide">PRATIBHA Student Success Intelligence</p>
         </div>
 
         {/* =======================================================
@@ -399,7 +398,6 @@ export default function LoginPage() {
             ======================================================= */}
         <div className="cyber-info-box register">
           <h2 className="anim-slide">WELCOME!</h2>
-          <p className="anim-slide">Join PRATIBHA Student Platform</p>
         </div>
 
         {/* =======================================================
