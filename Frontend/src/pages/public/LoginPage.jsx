@@ -21,9 +21,36 @@ import { useAuth } from '../../context/AuthContext';
 import { saveFirebaseConfig } from '../../services/firebase';
 import './LoginPage.css';
 
+const INSTITUTION_ROLES = [
+  {
+    key: 'institution_admin',
+    label: 'Admin (Provost)',
+    tag: 'Dean & Provost Office',
+    icon: '🏛️',
+    defaultEmail: 'admin@example.edu',
+    desc: 'Full institutional telemetry, multi-department analytics, batch data ETL pipeline.',
+  },
+  {
+    key: 'faculty_mentor',
+    label: 'Faculty Mentor',
+    tag: 'CSE Department',
+    icon: '👨‍🏫',
+    defaultEmail: 'faculty@example.edu',
+    desc: 'CSE mentees radar, statutory attendance (<75%), remedial tutoring interventions.',
+  },
+  {
+    key: 'placement_officer',
+    label: 'Placement Officer',
+    tag: 'Corporate & Career Cell',
+    icon: '💼',
+    defaultEmail: 'placement@example.edu',
+    desc: '2x2 placement readiness matrix, Tier-1 corporate drives, mock interview sprints.',
+  },
+];
+
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithCredentials, loginWithDemo, registerWithCredentials, loginWithGoogle } = useAuth();
+  const { loginWithCredentials, registerWithCredentials, loginWithGoogle } = useAuth();
 
   // Mode: active = register mode, inactive = login mode
   const [isRegisterActive, setIsRegisterActive] = useState(false);
@@ -32,11 +59,14 @@ export default function LoginPage() {
   // Portal selector: 'institution' | 'student'
   const [portal, setPortal] = useState('institution');
 
+  // Selected Institution Post / Role: 'institution_admin' | 'faculty_mentor' | 'placement_officer'
+  const [institutionRole, setInstitutionRole] = useState('institution_admin');
+
   // Google SSO state
   const [googleLoading, setGoogleLoading] = useState(false);
 
   // Form Fields - Login
-  const [loginIdentifier, setLoginIdentifier] = useState('admin@pratibha.edu');
+  const [loginIdentifier, setLoginIdentifier] = useState('admin@example.edu');
   const [loginPassword, setLoginPassword] = useState('DemoUser123!');
   const [rememberMe, setRememberMe] = useState(true);
 
@@ -100,9 +130,21 @@ export default function LoginPage() {
         setLoginIdentifier('student@example.edu');
         setLoginPassword('DemoUser123!');
       } else {
-        setLoginIdentifier('admin@pratibha.edu');
+        const selected = INSTITUTION_ROLES.find((r) => r.key === institutionRole) || INSTITUTION_ROLES[0];
+        setLoginIdentifier(selected.defaultEmail);
         setLoginPassword('DemoUser123!');
       }
+    }
+  };
+
+  // Switch institutional post / role persona
+  const handleInstitutionRoleSelect = (roleKey) => {
+    setInstitutionRole(roleKey);
+    setError('');
+    const selected = INSTITUTION_ROLES.find((r) => r.key === roleKey);
+    if (selected && !isRegisterActive) {
+      setLoginIdentifier(selected.defaultEmail);
+      setLoginPassword('DemoUser123!');
     }
   };
 
@@ -111,6 +153,9 @@ export default function LoginPage() {
     setError('');
     setLoading(true);
     try {
+      if (profileKey === 'admin') setInstitutionRole('institution_admin');
+      if (profileKey === 'faculty') setInstitutionRole('faculty_mentor');
+      if (profileKey === 'placement') setInstitutionRole('placement_officer');
       const user = await loginWithDemo(profileKey);
       setPortal(user.portal || 'institution');
       navigate(user.portal === 'student' ? '/student/portal' : '/institution/overview');
@@ -121,31 +166,38 @@ export default function LoginPage() {
     }
   };
 
-  // Google Single Sign-On (SSO) with Firebase Handler
+  // Google Single Sign-On (SSO) with Firebase Handler (Only for Student Portal)
   const handleGoogleSignIn = async () => {
     setError('');
     setGoogleLoading(true);
     try {
-      const user = await loginWithGoogle(portal);
-      const targetRoute = user.portal === 'student' ? '/student/portal' : '/institution/overview';
-      navigate(targetRoute);
+      const user = await loginWithGoogle('student');
+      navigate('/student/portal');
     } catch (err) {
+      console.error('Google Sign-In Error:', err);
       if (err?.message === 'FIREBASE_CONFIG_REQUIRED') {
         setShowFirebaseModal(true);
       } else if (err?.code === 'auth/popup-closed-by-user') {
-        setError('Google sign-in popup was cancelled.');
+        setError('Google sign-in popup was closed before completing authentication.');
+      } else if (err?.code === 'auth/cancelled-popup-request') {
+        // Ignored or replaced
+      } else if (err?.code === 'auth/configuration-not-found') {
+        setError('Firebase Authentication setup baki hai: Firebase Console me "Build > Authentication" par jakar "Get started" click karein aur "Google" provider ko Enable karein.');
+      } else if (err?.code === 'auth/operation-not-allowed') {
+        setError('Google Provider enable nahi hai: Firebase Console > Authentication > Sign-in method me jaakar "Google" ko Enable karein.');
       } else if (err?.code === 'auth/unauthorized-domain') {
-        setError('Current domain is not authorized in your Firebase console. Please add localhost to Authorized Domains.');
-        setShowFirebaseModal(true);
+        setError('Domain not authorized: Firebase Console > Authentication > Settings > Authorized domains me "localhost" add karein.');
+      } else if (err?.code === 'auth/popup-blocked') {
+        setError('Popup block ho gaya: Browser me localhost ke liye popups allow karein.');
       } else {
-        setShowFirebaseModal(true);
+        setError(err?.message || 'Google sign-in failed. Please try again.');
       }
     } finally {
       setGoogleLoading(false);
     }
   };
 
-  // Direct Personal Gmail Login Handler
+  // Direct Personal Gmail Login Handler (Student Portal)
   const handlePersonalGmailLogin = async (e) => {
     e.preventDefault();
     const trimmed = personalGmail.trim();
@@ -156,13 +208,12 @@ export default function LoginPage() {
     setError('');
     setGoogleLoading(true);
     try {
-      const user = await loginWithGoogle(portal, {
+      const user = await loginWithGoogle('student', {
         email: trimmed,
         name: personalName.trim() || trimmed.split('@')[0],
       });
       setShowFirebaseModal(false);
-      const targetRoute = user.portal === 'student' ? '/student/portal' : '/institution/overview';
-      navigate(targetRoute);
+      navigate('/student/portal');
     } catch (err) {
       setError(err?.message || 'Login with Gmail failed.');
     } finally {
@@ -205,7 +256,12 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const loggedInUser = await loginWithCredentials(trimmed, loginPassword, portal);
+      const loggedInUser = await loginWithCredentials(
+        trimmed,
+        loginPassword,
+        portal,
+        portal === 'institution' ? institutionRole : 'student'
+      );
       const targetRoute = loggedInUser.portal === 'student' ? '/student/portal' : '/institution/overview';
       navigate(targetRoute);
     } catch (err) {
@@ -251,7 +307,13 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const newUser = await registerWithCredentials(trimmedUsername, trimmedEmail, regPassword, portal);
+      const newUser = await registerWithCredentials(
+        trimmedUsername,
+        trimmedEmail,
+        regPassword,
+        portal,
+        portal === 'institution' ? institutionRole : 'student'
+      );
       setSuccessMsg('Registration successful! Redirecting to dashboard...');
       setTimeout(() => {
         const targetRoute = newUser.portal === 'student' ? '/student/portal' : '/institution/overview';
@@ -338,6 +400,41 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleLoginSubmit} id="loginForm">
+            {/* Institution Post / Persona Selector */}
+            {portal === 'institution' && (
+              <div className="cyber-role-selector-wrap anim-slide">
+                <div className="cyber-role-selector-label">
+                  <span>Institutional Post / Persona:</span>
+                  <span className="cyber-role-current-tag">
+                    {INSTITUTION_ROLES.find((r) => r.key === institutionRole)?.tag}
+                  </span>
+                </div>
+                <div className="cyber-role-selector-grid" role="radiogroup" aria-label="Select institutional role">
+                  {INSTITUTION_ROLES.map((r) => {
+                    const isSelected = institutionRole === r.key;
+                    return (
+                      <button
+                        key={r.key}
+                        type="button"
+                        role="radio"
+                        aria-checked={isSelected}
+                        className={`cyber-role-card ${isSelected ? 'active' : ''}`}
+                        onClick={() => handleInstitutionRoleSelect(r.key)}
+                        title={r.desc}
+                      >
+                        <span className="cyber-role-card-icon" aria-hidden="true">{r.icon}</span>
+                        <span className="cyber-role-card-text">{r.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="cyber-role-desc-banner">
+                  <Info size={12} style={{ flexShrink: 0, color: '#38bdf8' }} />
+                  <span>{INSTITUTION_ROLES.find((r) => r.key === institutionRole)?.desc}</span>
+                </div>
+              </div>
+            )}
+
             {/* Username / Email with floating label & icon */}
             <div className="cyber-input-box anim-slide">
               <input
@@ -411,27 +508,29 @@ export default function LoginPage() {
               <span>{loading ? 'Entering...' : 'Login'}</span>
             </button>
 
-            {/* Divider */}
-            <div className="cyber-divider anim-slide">
-              <span>or continue with</span>
-            </div>
-
-            {/* Google Authentication Button */}
-            <button
-              type="button"
-              className="cyber-google-btn anim-slide"
-              onClick={handleGoogleSignIn}
-              disabled={loading || googleLoading}
-              id="btnGoogleLogin"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-              </svg>
-              <span>{googleLoading ? 'Connecting to Google...' : 'Sign in with Google'}</span>
-            </button>
+            {/* Google Authentication Button (Only for Student Portal) */}
+            {portal === 'student' && (
+              <>
+                <div className="cyber-divider anim-slide">
+                  <span>or continue with</span>
+                </div>
+                <button
+                  type="button"
+                  className="cyber-google-btn anim-slide"
+                  onClick={handleGoogleSignIn}
+                  disabled={loading || googleLoading}
+                  id="btnGoogleLogin"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                  <span>{googleLoading ? 'Connecting to Google...' : 'Sign in with Google'}</span>
+                </button>
+              </>
+            )}
 
             {/* Switch to Sign Up */}
             <div className="cyber-switch-link anim-slide">
@@ -446,47 +545,6 @@ export default function LoginPage() {
               </button>
             </div>
           </form>
-
-          {/* Quick 1-Click Demo Personas (Only for Institution Portal) */}
-          {portal === 'institution' && (
-            <div className="cyber-personas-panel anim-slide">
-              <div className="cyber-personas-title">Quick 1-Click Demo Personas:</div>
-              <div className="cyber-personas-grid">
-                <button
-                  type="button"
-                  className="cyber-persona-chip"
-                  onClick={() => handle1ClickDemo('admin')}
-                >
-                  <span aria-hidden="true">🏛️</span>
-                  <span>Admin (Provost)</span>
-                </button>
-                <button
-                  type="button"
-                  className="cyber-persona-chip"
-                  onClick={() => handle1ClickDemo('faculty')}
-                >
-                  <span aria-hidden="true">👨‍🏫</span>
-                  <span>Faculty Mentor</span>
-                </button>
-                <button
-                  type="button"
-                  className="cyber-persona-chip"
-                  onClick={() => handle1ClickDemo('placement')}
-                >
-                  <span aria-hidden="true">💼</span>
-                  <span>Placement Officer</span>
-                </button>
-                <button
-                  type="button"
-                  className="cyber-persona-chip"
-                  onClick={() => handle1ClickDemo('student')}
-                >
-                  <span aria-hidden="true">🎓</span>
-                  <span>Student (Aarav)</span>
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* =======================================================
@@ -550,6 +608,40 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleRegisterSubmit} id="registerForm">
+            {/* Institution Post / Persona Selector for Registration */}
+            {portal === 'institution' && (
+              <div className="cyber-role-selector-wrap anim-slide">
+                <div className="cyber-role-selector-label">
+                  <span>Assign Institutional Post:</span>
+                  <span className="cyber-role-current-tag">
+                    {INSTITUTION_ROLES.find((r) => r.key === institutionRole)?.tag}
+                  </span>
+                </div>
+                <div className="cyber-role-selector-grid" role="radiogroup" aria-label="Select institutional role for registration">
+                  {INSTITUTION_ROLES.map((r) => {
+                    const isSelected = institutionRole === r.key;
+                    return (
+                      <button
+                        key={r.key}
+                        type="button"
+                        role="radio"
+                        aria-checked={isSelected}
+                        className={`cyber-role-card ${isSelected ? 'active' : ''}`}
+                        onClick={() => setInstitutionRole(r.key)}
+                        title={r.desc}
+                      >
+                        <span className="cyber-role-card-icon" aria-hidden="true">{r.icon}</span>
+                        <span className="cyber-role-card-text">{r.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+                <div className="cyber-role-desc-banner">
+                  <Info size={12} style={{ flexShrink: 0, color: '#38bdf8' }} />
+                  <span>{INSTITUTION_ROLES.find((r) => r.key === institutionRole)?.desc}</span>
+                </div>
+              </div>
+            )}
             {/* Username */}
             <div className="cyber-input-box anim-slide">
               <input
@@ -635,27 +727,29 @@ export default function LoginPage() {
               <span>{loading ? 'Registering...' : 'Register'}</span>
             </button>
 
-            {/* Divider */}
-            <div className="cyber-divider anim-slide">
-              <span>or continue with</span>
-            </div>
-
-            {/* Google Authentication Button */}
-            <button
-              type="button"
-              className="cyber-google-btn anim-slide"
-              onClick={handleGoogleSignIn}
-              disabled={loading || googleLoading}
-              id="btnGoogleRegister"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
-              </svg>
-              <span>{googleLoading ? 'Connecting to Google...' : 'Sign up with Google'}</span>
-            </button>
+            {/* Google Authentication Button (Only for Student Portal) */}
+            {portal === 'student' && (
+              <>
+                <div className="cyber-divider anim-slide">
+                  <span>or continue with</span>
+                </div>
+                <button
+                  type="button"
+                  className="cyber-google-btn anim-slide"
+                  onClick={handleGoogleSignIn}
+                  disabled={loading || googleLoading}
+                  id="btnGoogleRegister"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z" />
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z" />
+                  </svg>
+                  <span>{googleLoading ? 'Connecting to Google...' : 'Sign up with Google'}</span>
+                </button>
+              </>
+            )}
 
             {/* Switch to Sign In */}
             <div className="cyber-switch-link anim-slide">

@@ -1,9 +1,24 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 /**
- * Retrieves Firebase configuration from Vite environment variables
- * or locally configured storage.
+ * Official Firebase Configuration for Pratibha Platform
+ * Project: pratibha-c71c0
+ */
+export const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAmvLIbmhQraSg3KHsKZafX_WyBO3CcptY",
+  authDomain: "pratibha-c71c0.firebaseapp.com",
+  projectId: "pratibha-c71c0",
+  storageBucket: "pratibha-c71c0.firebasestorage.app",
+  messagingSenderId: "419422595748",
+  appId: "1:419422595748:web:df8e1672be43bc71951431",
+  measurementId: "G-47Q5D5TYGQ"
+};
+
+/**
+ * Retrieves Firebase configuration from Vite environment variables,
+ * localStorage override, or default project credentials.
  */
 export function getFirebaseConfig() {
   const envConfig = {
@@ -13,6 +28,7 @@ export function getFirebaseConfig() {
     storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
     messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
     appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   };
 
   if (envConfig.apiKey && envConfig.authDomain) {
@@ -31,7 +47,7 @@ export function getFirebaseConfig() {
     // Local storage not available
   }
 
-  return null;
+  return DEFAULT_FIREBASE_CONFIG;
 }
 
 export function saveFirebaseConfig(config) {
@@ -43,30 +59,43 @@ export function saveFirebaseConfig(config) {
   }
 }
 
-/**
- * Initializes and returns the Firebase Auth instance.
- */
-export function getFirebaseAuthInstance() {
-  const config = getFirebaseConfig();
-  if (!config) return null;
+// Initialize Firebase App
+export const app = getApps().length > 0 ? getApp() : initializeApp(getFirebaseConfig());
 
-  const app = getApps().length > 0 ? getApp() : initializeApp(config);
-  return getAuth(app);
+// Initialize Analytics safely (works only in browser environments)
+export let analytics = null;
+if (typeof window !== 'undefined') {
+  isSupported().then((supported) => {
+    if (supported) {
+      try {
+        analytics = getAnalytics(app);
+      } catch {
+        // Analytics optional
+      }
+    }
+  }).catch(() => {});
+}
+
+// Initialize Auth
+export const auth = getAuth(app);
+
+export function getFirebaseAuthInstance() {
+  return auth;
 }
 
 /**
  * Executes Google Sign-In with popup via Firebase Auth SDK.
  */
 export async function signInWithGoogleFirebase() {
-  const auth = getFirebaseAuthInstance();
-  if (!auth) {
+  const authInstance = getFirebaseAuthInstance();
+  if (!authInstance) {
     throw new Error('FIREBASE_CONFIG_REQUIRED');
   }
 
   const provider = new GoogleAuthProvider();
   provider.setCustomParameters({ prompt: 'select_account' });
 
-  const result = await signInWithPopup(auth, provider);
+  const result = await signInWithPopup(authInstance, provider);
   const user = result.user;
 
   return {
@@ -79,10 +108,10 @@ export async function signInWithGoogleFirebase() {
 }
 
 export async function signOutFirebase() {
-  const auth = getFirebaseAuthInstance();
-  if (auth) {
+  const authInstance = getFirebaseAuthInstance();
+  if (authInstance) {
     try {
-      await signOut(auth);
+      await signOut(authInstance);
     } catch {
       // ignore
     }

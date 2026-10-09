@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 import { api } from '../services/api';
+import { signInWithGoogleFirebase } from '../services/firebase';
 
 const AuthContext = createContext(null);
 
@@ -99,18 +100,56 @@ export function AuthProvider({ children }) {
     return profile;
   };
 
-  const loginWithCredentials = async (email, password, selectedPortal = 'institution') => {
+  const loginWithCredentials = async (email, password, selectedPortal = 'institution', specificRole = null) => {
+    const lowerEmail = email.trim().toLowerCase();
+
+    // Determine role based on specificRole or email pattern
+    let resolvedRole = specificRole;
+    if (!resolvedRole) {
+      if (selectedPortal === 'student' || lowerEmail.includes('student')) {
+        resolvedRole = 'student';
+      } else if (lowerEmail.includes('faculty') || lowerEmail.includes('mentor') || lowerEmail.includes('rajesh')) {
+        resolvedRole = 'faculty_mentor';
+      } else if (lowerEmail.includes('placement') || lowerEmail.includes('tpo') || lowerEmail.includes('vikram')) {
+        resolvedRole = 'placement_officer';
+      } else {
+        resolvedRole = 'institution_admin';
+      }
+    }
+
+    let roleLabel = 'Institution Administrator';
+    let department = 'All Departments';
+    if (resolvedRole === 'faculty_mentor') {
+      roleLabel = 'Faculty Mentor & HOD';
+      department = 'Computer Science & Engineering';
+    } else if (resolvedRole === 'placement_officer') {
+      roleLabel = 'Placement Officer (TPO)';
+      department = 'Corporate Relations & Training';
+    } else if (resolvedRole === 'student') {
+      roleLabel = 'Student (3rd Year B.Tech CSE)';
+      department = 'Computer Science & Engineering';
+    }
+
     try {
       const res = await api.login(email, password);
+      if (res?.accessToken) {
+        sessionStorage.setItem('pratibha_token', res.accessToken);
+      }
       const user = res?.user || {};
+      let backendRole = user.role;
+      if (backendRole === 'admin') backendRole = 'institution_admin';
+      if (backendRole === 'faculty') backendRole = 'faculty_mentor';
+
+      const finalRole = specificRole || backendRole || resolvedRole;
+
       const profile = {
         id: user.id || `USR_${Date.now()}`,
-        name: user.displayName || email.split('@')[0],
-        role: user.role || (selectedPortal === 'student' ? 'student' : 'institution_admin'),
+        name: user.displayName || (finalRole === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : finalRole === 'placement_officer' ? 'Vikram Malhotra' : finalRole === 'student' ? 'Aarav Sharma' : 'Dr. Sunita Rao'),
+        role: finalRole,
         portal: selectedPortal,
-        roleLabel: user.role === 'admin' ? 'Institution Administrator' : selectedPortal === 'student' ? 'Student' : 'Campus Faculty',
+        roleLabel: user.roleLabel || roleLabel,
         email: email.trim(),
-        department: 'General Engineering',
+        department: user.department || department,
       };
       setCurrentUser(profile);
       setActivePortal(selectedPortal);
@@ -118,18 +157,18 @@ export function AuthProvider({ children }) {
     } catch {
       // In mock fallback mode, resolve matching persona or construct profile
       let matched = Object.values(DEMO_PROFILES).find(
-        (p) => p.email.toLowerCase() === email.trim().toLowerCase()
+        (p) => p.email.toLowerCase() === lowerEmail || (p.role === resolvedRole && p.portal === selectedPortal)
       );
 
       if (!matched) {
         matched = {
           id: `DEMO-USR-${Math.floor(100 + Math.random() * 900)}`,
-          name: email.split('@')[0],
-          role: selectedPortal === 'student' ? 'student' : 'institution_admin',
+          name: resolvedRole === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : resolvedRole === 'placement_officer' ? 'Vikram Malhotra' : resolvedRole === 'student' ? 'Aarav Sharma' : 'Dr. Sunita Rao',
+          role: resolvedRole,
           portal: selectedPortal,
-          roleLabel: selectedPortal === 'student' ? 'Demo Student' : 'Demo Institution User',
+          roleLabel: roleLabel,
           email: email.trim(),
-          department: 'General Engineering',
+          department: department,
         };
       }
 
@@ -139,18 +178,45 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const registerWithCredentials = async (username, email, password, selectedPortal = 'student') => {
+  const registerWithCredentials = async (username, email, password, selectedPortal = 'student', specificRole = null) => {
+    const assignedRole = selectedPortal === 'student'
+      ? 'student'
+      : (specificRole || 'institution_admin');
+
+    let roleLabel = 'Institution Administrator';
+    let department = 'Campus Administration';
+
+    if (assignedRole === 'faculty_mentor') {
+      roleLabel = 'Faculty Mentor & HOD';
+      department = 'Computer Science & Engineering';
+    } else if (assignedRole === 'placement_officer') {
+      roleLabel = 'Placement Officer (TPO)';
+      department = 'Corporate Relations & Career Cell';
+    } else if (assignedRole === 'student') {
+      roleLabel = 'Registered Student';
+      department = 'Computer Science & Engineering';
+    }
+
     try {
-      const res = await api.register({ username, email, password, portal: selectedPortal });
+      const res = await api.register({ username, email, password, portal: selectedPortal, role: assignedRole });
+      if (res?.accessToken) {
+        sessionStorage.setItem('pratibha_token', res.accessToken);
+      }
       const user = res?.user || {};
+      let backendRole = user.role;
+      if (backendRole === 'admin') backendRole = 'institution_admin';
+      if (backendRole === 'faculty') backendRole = 'faculty_mentor';
+
+      const finalRole = specificRole || backendRole || assignedRole;
+
       const profile = {
         id: user.id || `USR_${Date.now()}`,
         name: user.displayName || username || email.split('@')[0],
-        role: user.role || (selectedPortal === 'student' ? 'student' : 'faculty_mentor'),
+        role: finalRole,
         portal: selectedPortal,
-        roleLabel: selectedPortal === 'student' ? 'Student' : 'Faculty Mentor',
+        roleLabel: user.roleLabel || roleLabel,
         email: email.trim(),
-        department: 'General Engineering',
+        department: user.department || department,
       };
       setCurrentUser(profile);
       setActivePortal(selectedPortal);
@@ -159,11 +225,11 @@ export function AuthProvider({ children }) {
       const profile = {
         id: `DEMO-REG-${Math.floor(100 + Math.random() * 900)}`,
         name: username || email.split('@')[0],
-        role: selectedPortal === 'student' ? 'student' : 'faculty_mentor',
+        role: assignedRole,
         portal: selectedPortal,
-        roleLabel: selectedPortal === 'student' ? 'Registered Student' : 'Registered Faculty',
+        roleLabel: roleLabel,
         email: email.trim(),
-        department: 'General Engineering',
+        department: department,
       };
       setCurrentUser(profile);
       setActivePortal(selectedPortal);
