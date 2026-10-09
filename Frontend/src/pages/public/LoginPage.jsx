@@ -260,7 +260,8 @@ export default function LoginPage() {
         trimmed,
         loginPassword,
         portal,
-        portal === 'institution' ? institutionRole : 'student'
+        portal === 'institution' ? institutionRole : 'student',
+        rememberMe
       );
       const targetRoute = loggedInUser.portal === 'student' ? '/student/portal' : '/institution/overview';
       navigate(targetRoute);

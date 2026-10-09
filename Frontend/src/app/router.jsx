@@ -22,6 +22,9 @@ import AuditPage from '../pages/institution/AuditPage';
 // Student Self-Service Portal
 import StudentPortalPage from '../pages/student/StudentPortalPage';
 
+// Shared User Profile & Account Settings
+import ProfilePage from '../pages/shared/ProfilePage';
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -94,6 +97,14 @@ export default function AppRoutes() {
           </AppLayout>
         }
       />
+      <Route
+        path="/institution/profile"
+        element={
+          <AppLayout>
+            <ProfilePage />
+          </AppLayout>
+        }
+      />
 
       {/* Backward Compatibility Redirects */}
       <Route path="/institution/dashboard" element={<Navigate to="/institution/overview" replace />} />
@@ -108,8 +119,26 @@ export default function AppRoutes() {
           </AppLayout>
         }
       />
+      <Route
+        path="/student/profile"
+        element={
+          <AppLayout>
+            <ProfilePage />
+          </AppLayout>
+        }
+      />
       <Route path="/student/dashboard" element={<Navigate to="/student/portal" replace />} />
       <Route path="/student" element={<Navigate to="/student/portal" replace />} />
+
+      {/* 4. Common Profile Route */}
+      <Route
+        path="/profile"
+        element={
+          <AppLayout>
+            <ProfilePage />
+          </AppLayout>
+        }
+      />
 
       {/* 4. Catch-All 404 Route */}
       <Route path="*" element={<NotFoundPage />} />

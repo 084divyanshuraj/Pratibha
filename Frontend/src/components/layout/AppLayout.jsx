@@ -19,6 +19,7 @@ import {
   Mic,
   BookOpen,
   Award,
+  User,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -33,6 +34,7 @@ const INSTITUTION_NAV_ITEMS = [
   { path: '/institution/ingestion', label: 'Batch Data Studio', icon: UploadCloud, badge: '8 Pillars' },
   { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
   { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
+  { path: '/institution/profile', label: 'My Profile & Details', icon: User, badge: null },
 ];
 
 const STUDENT_NAV_ITEMS = [
@@ -41,6 +43,7 @@ const STUDENT_NAV_ITEMS = [
   { path: '/student/portal?tab=placement', label: 'Placement Readiness', icon: Award, badge: 'Tier-1', tab: 'placement' },
   { path: '/student/portal?tab=interventions', label: 'My Interventions', icon: Sparkles, badge: 'Active', tab: 'interventions' },
   { path: '/student/portal?tab=feedback', label: 'Student Voice & Feedback', icon: MessageSquareHeart, badge: null, tab: 'feedback' },
+  { path: '/student/profile', label: 'My Profile & Details', icon: User, badge: null },
 ];
 
 export default function AppLayout({ children }) {
@@ -76,6 +79,7 @@ export default function AppLayout({ children }) {
         { path: '/institution/segments', label: 'Cohort Archetypes', icon: Layers, badge: null },
         { path: '/institution/sandbox', label: 'Remedial Sandbox', icon: FlaskConical, badge: 'Tutoring' },
         { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: 'New' },
+        { path: '/institution/profile', label: 'My Faculty Profile', icon: User, badge: null },
       ];
     }
 
@@ -87,6 +91,7 @@ export default function AppLayout({ children }) {
         { path: '/institution/risk-radar', label: 'Placement Risk Radar', icon: Target, badge: 'Mock Prep' },
         { path: '/institution/sandbox', label: 'Interview Sprints', icon: FlaskConical, badge: 'Bootcamp' },
         { path: '/institution/feedback', label: 'Corporate Feedback', icon: MessageSquareHeart, badge: null },
+        { path: '/institution/profile', label: 'My TPO Profile', icon: User, badge: null },
       ];
     }
 
@@ -201,6 +206,37 @@ export default function AppLayout({ children }) {
             </div>
           )}
 
+          {/* Quick Profile Navigation Button */}
+          <button
+            onClick={() => navigate(isStudent ? '/student/profile' : '/institution/profile')}
+            style={{
+              background: 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.16)',
+              color: '#F8FAFC',
+              borderRadius: '6px',
+              padding: '4px 11px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              fontSize: '0.78rem',
+              fontWeight: 500,
+              transition: 'all 0.2s ease',
+            }}
+            title="View & Edit My Profile"
+          >
+            {currentUser?.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt="Avatar"
+                style={{ width: '16px', height: '16px', borderRadius: '50%', objectFit: 'cover' }}
+              />
+            ) : (
+              <User size={13} color="#38BDF8" />
+            )}
+            <span>My Profile</span>
+          </button>
+
           <button
             onClick={handleLogout}
             style={{
@@ -294,15 +330,27 @@ export default function AppLayout({ children }) {
 
           {/* SIDEBAR FOOTER: USER CARD */}
           <div
+            onClick={() => navigate(isStudent ? '/student/profile' : '/institution/profile')}
             style={{
-              padding: '12px',
+              padding: '10px 12px',
               borderRadius: '10px',
               backgroundColor: '#F8FAFC',
               border: '1px solid #E2E8F0',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
+              cursor: 'pointer',
+              transition: 'all 150ms ease',
             }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = '#EFF6FF';
+              e.currentTarget.style.borderColor = '#BFDBFE';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = '#F8FAFC';
+              e.currentTarget.style.borderColor = '#E2E8F0';
+            }}
+            title="Click to view and edit profile"
           >
             {currentUser?.avatar ? (
               <img
@@ -314,7 +362,7 @@ export default function AppLayout({ children }) {
                   borderRadius: '50%',
                   objectFit: 'cover',
                   flexShrink: 0,
-                  border: isStudent ? '2px solid #0284C7' : 'none',
+                  border: isStudent ? '2px solid #0284C7' : '2px solid #1A73E8',
                 }}
               />
             ) : (
@@ -336,12 +384,15 @@ export default function AppLayout({ children }) {
                 {currentUser?.name ? currentUser.name.charAt(0) : 'U'}
               </div>
             )}
-            <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0F172A', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Administrator')}
+            <div style={{ overflow: 'hidden', flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0F172A', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                  {currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Administrator')}
+                </span>
+                <ChevronRight size={13} color="#94A3B8" />
               </div>
               <div style={{ fontSize: '0.72rem', color: '#64748B', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {isStudent ? (currentUser?.email || 'B.Tech CSE · Sem 6') : (currentUser?.department || 'Institution Provost')}
+                {isStudent ? (currentUser?.email || 'B.Tech CSE · Sem 6') : (currentUser?.designation || currentUser?.department || 'Institution Staff')}
               </div>
             </div>
           </div>

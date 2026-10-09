@@ -12,6 +12,14 @@ const userSchema = new mongoose.Schema(
       match: [/^\S+@\S+\.\S+$/, 'Please provide a valid email address.'],
       index: true,
     },
+    username: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      sparse: true,
+      unique: true,
+      index: true,
+    },
     passwordHash: {
       type: String,
       required: [true, 'Password hash is required.'],
@@ -36,6 +44,59 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: null,
       index: true,
+    },
+    avatar: {
+      type: String,
+      default: null,
+    },
+    phone: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    bio: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    department: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    designation: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    officeLocation: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    linkedIn: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    github: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    skills: {
+      type: [String],
+      default: [],
+    },
+    specialization: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    education: {
+      type: String,
+      trim: true,
+      default: null,
     },
     isActive: {
       type: Boolean,

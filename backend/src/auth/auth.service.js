@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import { config } from '../config/env.js';
 import { User } from '../models/User.js';
+import { Student } from '../models/Student.js';
 import { toUserDTO } from '../serializers/index.js';
 import { AppError } from '../middleware/errorHandler.js';
 
@@ -12,6 +13,7 @@ export function generateToken(user) {
   const payload = {
     sub: user._id?.toString() || user.id,
     email: user.email,
+    username: user.username || null,
     role: user.role,
     studentId: user.studentId || null,
   };
@@ -37,20 +39,31 @@ export function verifyToken(token) {
 
 /**
  * Authenticate credentials and return token + safe user profile.
+ * Supports identifier as: Email, Username, or Student Roll ID.
  */
-export async function login(email, password) {
-  if (!email || !password) {
-    throw new AppError('Email and password are required.', 400, 'VALIDATION_ERROR', [
-      ...(!email ? [{ field: 'email', message: 'Email is required.' }] : []),
+export async function login(identifier, password) {
+  if (!identifier || !password) {
+    throw new AppError('Username/email and password are required.', 400, 'VALIDATION_ERROR', [
+      ...(!identifier ? [{ field: 'identifier', message: 'Username or Email is required.' }] : []),
       ...(!password ? [{ field: 'password', message: 'Password is required.' }] : []),
     ]);
   }
 
-  const normalizedEmail = email.trim().toLowerCase();
-  const user = await User.findOne({ email: normalizedEmail });
+  const cleanIdentifier = identifier.trim().toLowerCase();
+  const rawIdentifier = identifier.trim();
+
+  // Find user by email, username, or studentId
+  const user = await User.findOne({
+    $or: [
+      { email: cleanIdentifier },
+      { username: cleanIdentifier },
+      { studentId: rawIdentifier.toUpperCase() },
+      { studentId: rawIdentifier },
+    ],
+  });
 
   if (!user) {
-    throw new AppError('Invalid email or password.', 401, 'INVALID_CREDENTIALS');
+    throw new AppError('Invalid username/email or password.', 401, 'INVALID_CREDENTIALS');
   }
 
   if (user.isActive === false) {
@@ -59,7 +72,7 @@ export async function login(email, password) {
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
-    throw new AppError('Invalid email or password.', 401, 'INVALID_CREDENTIALS');
+    throw new AppError('Invalid username/email or password.', 401, 'INVALID_CREDENTIALS');
   }
 
   const accessToken = generateToken(user);
@@ -69,6 +82,128 @@ export async function login(email, password) {
     tokenType: 'Bearer',
     expiresIn: config.jwtExpiresIn,
     user: toUserDTO(user),
+  };
+}
+
+/**
+ * Register a new user dynamically in MongoDB with secure bcrypt password hash and issue JWT.
+ */
+export async function register({
+  username,
+  email,
+  password,
+  displayName,
+  name,
+  role = 'student',
+  portal = 'student',
+  studentId = null,
+  department = null,
+}) {
+  const cleanEmail = email ? email.trim().toLowerCase() : null;
+  const cleanUsername = username ? username.trim().toLowerCase() : null;
+  const finalDisplayName = (displayName || name || cleanUsername || cleanEmail?.split('@')[0] || 'User').trim();
+
+  if (!cleanEmail) {
+    throw new AppError('Email address is required.', 400, 'VALIDATION_ERROR', [
+      { field: 'email', message: 'Email address is required.' },
+    ]);
+  }
+
+  const emailRegex = /^\S+@\S+\.\S+$/;
+  if (!emailRegex.test(cleanEmail)) {
+    throw new AppError('Please provide a valid email address.', 400, 'VALIDATION_ERROR', [
+      { field: 'email', message: 'Please provide a valid email address format.' },
+    ]);
+  }
+
+  if (!password || password.length < 6) {
+    throw new AppError('Password must be at least 6 characters long.', 400, 'VALIDATION_ERROR', [
+      { field: 'password', message: 'Password must be at least 6 characters long.' },
+    ]);
+  }
+
+  // Check if email already exists
+  const existingEmail = await User.findOne({ email: cleanEmail });
+  if (existingEmail) {
+    throw new AppError('An account with this email address already exists.', 409, 'EMAIL_EXISTS');
+  }
+
+  // Check if username already exists
+  if (cleanUsername) {
+    const existingUsername = await User.findOne({ username: cleanUsername });
+    if (existingUsername) {
+      throw new AppError('This username is already taken. Please choose another.', 409, 'USERNAME_TAKEN');
+    }
+  }
+
+  // Resolve role
+  let mappedRole = 'student';
+  if (portal === 'student' || role === 'student') {
+    mappedRole = 'student';
+  } else if (role === 'faculty_mentor' || role === 'faculty') {
+    mappedRole = 'faculty';
+  } else if (role === 'placement_officer' || role === 'placement') {
+    mappedRole = 'placement_officer';
+  } else if (role === 'institution_admin' || role === 'admin') {
+    mappedRole = 'admin';
+  }
+
+  // Hash password
+  const salt = await bcrypt.genSalt(10);
+  const passwordHash = await bcrypt.hash(password, salt);
+
+  // Generate studentId if student
+  let finalStudentId = studentId ? studentId.trim().toUpperCase() : null;
+  if (mappedRole === 'student' && !finalStudentId) {
+    const count = await User.countDocuments({ role: 'student' });
+    finalStudentId = `STU_${String(count + 10).padStart(4, '0')}`;
+  }
+
+  const newUser = new User({
+    email: cleanEmail,
+    username: cleanUsername || undefined,
+    passwordHash,
+    displayName: finalDisplayName,
+    role: mappedRole,
+    studentId: finalStudentId,
+    department: department || (mappedRole === 'student' ? 'Computer Science & Engineering' : 'Academic Affairs'),
+    isActive: true,
+  });
+
+  await newUser.save();
+
+  // If student role, create or sync corresponding Student profile document
+  if (mappedRole === 'student' && finalStudentId) {
+    try {
+      const existingStudent = await Student.findOne({ studentId: finalStudentId });
+      if (!existingStudent) {
+        const parts = finalDisplayName.split(' ');
+        const firstName = parts[0] || 'Student';
+        const lastName = parts.slice(1).join(' ') || 'Scholar';
+        await Student.create({
+          studentId: finalStudentId,
+          firstName,
+          lastName,
+          email: cleanEmail,
+          department: department || 'CSE',
+          program: 'B.Tech',
+          semester: 1,
+          status: 'active',
+          enrollmentYear: new Date().getFullYear(),
+        });
+      }
+    } catch (e) {
+      console.warn('Student record auto-creation notice:', e.message);
+    }
+  }
+
+  const accessToken = generateToken(newUser);
+
+  return {
+    accessToken,
+    tokenType: 'Bearer',
+    expiresIn: config.jwtExpiresIn,
+    user: toUserDTO(newUser),
   };
 }
 
@@ -119,9 +254,56 @@ export async function provisionUser({ email, password, displayName, role, studen
   return toUserDTO(newUser);
 }
 
+export async function updateProfile(userId, updateData) {
+  const allowed = [
+    'displayName',
+    'phone',
+    'bio',
+    'avatar',
+    'department',
+    'designation',
+    'officeLocation',
+    'linkedIn',
+    'github',
+    'skills',
+    'specialization',
+    'education',
+  ];
+  const payload = {};
+  for (const key of allowed) {
+    if (updateData[key] !== undefined) {
+      payload[key] = updateData[key];
+    }
+  }
+
+  const user = await User.findByIdAndUpdate(userId, { $set: payload }, { new: true, runValidators: true });
+  if (!user) {
+    throw new AppError('User not found.', 404, 'USER_NOT_FOUND');
+  }
+
+  if (user.studentId && (payload.displayName || payload.department)) {
+    try {
+      const parts = (payload.displayName || '').trim().split(' ');
+      const sUpdate = {};
+      if (parts[0]) sUpdate.firstName = parts[0];
+      if (parts.length > 1) sUpdate.lastName = parts.slice(1).join(' ');
+      if (payload.department) sUpdate.department = payload.department;
+      if (Object.keys(sUpdate).length > 0) {
+        await Student.findOneAndUpdate({ studentId: user.studentId }, { $set: sUpdate });
+      }
+    } catch {
+      // non-blocking
+    }
+  }
+
+  return toUserDTO(user);
+}
+
 export default {
   generateToken,
   verifyToken,
   login,
+  register,
   provisionUser,
+  updateProfile,
 };

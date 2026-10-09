@@ -63,10 +63,36 @@ export function AuthProvider({ children }) {
 
   const [activePortal, setActivePortal] = useState('institution');
 
-  // Automatically authenticate with backend on initial mount
+  // On initial mount: if active JWT token exists, verify with backend /auth/me
   useEffect(() => {
-    const cred = DEMO_CREDENTIALS.admin;
-    api.login(cred.email, cred.password).catch(() => {});
+    const token = sessionStorage.getItem('pratibha_token') || localStorage.getItem('pratibha_token');
+    if (token) {
+      api.getProfile().then((userData) => {
+        if (userData) {
+          let backendRole = userData.role;
+          if (backendRole === 'admin') backendRole = 'institution_admin';
+          if (backendRole === 'faculty') backendRole = 'faculty_mentor';
+          const isStudent = backendRole === 'student';
+
+          setCurrentUser({
+            id: userData.id,
+            name: userData.displayName || userData.name,
+            username: userData.username,
+            email: userData.email,
+            role: backendRole,
+            portal: isStudent ? 'student' : 'institution',
+            roleLabel: userData.designation || (isStudent ? 'Registered Student' : 'Institution Staff'),
+            department: userData.department,
+            avatar: userData.avatar,
+            phone: userData.phone,
+            bio: userData.bio,
+            studentId: userData.studentId,
+            skills: userData.skills,
+          });
+          setActivePortal(isStudent ? 'student' : 'institution');
+        }
+      }).catch(() => {});
+    }
   }, []);
 
   useEffect(() => {
@@ -100,40 +126,44 @@ export function AuthProvider({ children }) {
     return profile;
   };
 
-  const loginWithCredentials = async (email, password, selectedPortal = 'institution', specificRole = null) => {
-    const lowerEmail = email.trim().toLowerCase();
+  const loginWithCredentials = async (identifier, password, selectedPortal = 'institution', specificRole = null, rememberMe = true) => {
+    const rawTrimmed = identifier.trim();
+    const lowerIdentifier = rawTrimmed.toLowerCase();
 
-    // Determine role based on specificRole or email pattern
+    // Determine fallback role based on specificRole or identifier pattern
     let resolvedRole = specificRole;
     if (!resolvedRole) {
-      if (selectedPortal === 'student' || lowerEmail.includes('student')) {
+      if (selectedPortal === 'student' || lowerIdentifier.includes('student')) {
         resolvedRole = 'student';
-      } else if (lowerEmail.includes('faculty') || lowerEmail.includes('mentor') || lowerEmail.includes('rajesh')) {
+      } else if (lowerIdentifier.includes('faculty') || lowerIdentifier.includes('mentor') || lowerIdentifier.includes('rajesh')) {
         resolvedRole = 'faculty_mentor';
-      } else if (lowerEmail.includes('placement') || lowerEmail.includes('tpo') || lowerEmail.includes('vikram')) {
+      } else if (lowerIdentifier.includes('placement') || lowerIdentifier.includes('tpo') || lowerIdentifier.includes('vikram')) {
         resolvedRole = 'placement_officer';
       } else {
         resolvedRole = 'institution_admin';
       }
     }
 
-    let roleLabel = 'Institution Administrator';
-    let department = 'All Departments';
+    let defaultRoleLabel = 'Institution Administrator';
+    let defaultDepartment = 'All Departments';
     if (resolvedRole === 'faculty_mentor') {
-      roleLabel = 'Faculty Mentor & HOD';
-      department = 'Computer Science & Engineering';
+      defaultRoleLabel = 'Faculty Mentor & HOD';
+      defaultDepartment = 'Computer Science & Engineering';
     } else if (resolvedRole === 'placement_officer') {
-      roleLabel = 'Placement Officer (TPO)';
-      department = 'Corporate Relations & Training';
+      defaultRoleLabel = 'Placement Officer (TPO)';
+      defaultDepartment = 'Corporate Relations & Training';
     } else if (resolvedRole === 'student') {
-      roleLabel = 'Student (3rd Year B.Tech CSE)';
-      department = 'Computer Science & Engineering';
+      defaultRoleLabel = 'Student (3rd Year B.Tech CSE)';
+      defaultDepartment = 'Computer Science & Engineering';
     }
 
     try {
-      const res = await api.login(email, password);
+      const res = await api.login(rawTrimmed, password);
       if (res?.accessToken) {
         sessionStorage.setItem('pratibha_token', res.accessToken);
+        if (rememberMe) {
+          localStorage.setItem('pratibha_token', res.accessToken);
+        }
       }
       const user = res?.user || {};
       let backendRole = user.role;
@@ -141,23 +171,35 @@ export function AuthProvider({ children }) {
       if (backendRole === 'faculty') backendRole = 'faculty_mentor';
 
       const finalRole = specificRole || backendRole || resolvedRole;
+      const isStudentPortal = selectedPortal === 'student' || finalRole === 'student';
 
       const profile = {
         id: user.id || `USR_${Date.now()}`,
-        name: user.displayName || (finalRole === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : finalRole === 'placement_officer' ? 'Vikram Malhotra' : finalRole === 'student' ? 'Aarav Sharma' : 'Dr. Sunita Rao'),
+        name: user.displayName || user.name || (finalRole === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : finalRole === 'placement_officer' ? 'Vikram Malhotra' : finalRole === 'student' ? 'Aarav Sharma' : 'Dr. Sunita Rao'),
+        username: user.username || null,
         role: finalRole,
-        portal: selectedPortal,
-        roleLabel: user.roleLabel || roleLabel,
-        email: email.trim(),
-        department: user.department || department,
+        portal: isStudentPortal ? 'student' : 'institution',
+        roleLabel: user.designation || user.roleLabel || defaultRoleLabel,
+        email: user.email || rawTrimmed,
+        department: user.department || defaultDepartment,
+        avatar: user.avatar || null,
+        phone: user.phone || null,
+        bio: user.bio || null,
+        studentId: user.studentId || null,
+        skills: user.skills || [],
       };
       setCurrentUser(profile);
-      setActivePortal(selectedPortal);
+      setActivePortal(profile.portal);
       return profile;
-    } catch {
-      // In mock fallback mode, resolve matching persona or construct profile
+    } catch (err) {
+      // Re-throw validation or auth errors so the login UI can display them
+      if (err.status && err.status < 500) {
+        throw err;
+      }
+
+      // Offline mock fallback if network is completely down
       let matched = Object.values(DEMO_PROFILES).find(
-        (p) => p.email.toLowerCase() === lowerEmail || (p.role === resolvedRole && p.portal === selectedPortal)
+        (p) => p.email.toLowerCase() === lowerIdentifier || (p.role === resolvedRole && p.portal === selectedPortal)
       );
 
       if (!matched) {
@@ -166,9 +208,9 @@ export function AuthProvider({ children }) {
           name: resolvedRole === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : resolvedRole === 'placement_officer' ? 'Vikram Malhotra' : resolvedRole === 'student' ? 'Aarav Sharma' : 'Dr. Sunita Rao',
           role: resolvedRole,
           portal: selectedPortal,
-          roleLabel: roleLabel,
-          email: email.trim(),
-          department: department,
+          roleLabel: defaultRoleLabel,
+          email: rawTrimmed,
+          department: defaultDepartment,
         };
       }
 
@@ -183,24 +225,32 @@ export function AuthProvider({ children }) {
       ? 'student'
       : (specificRole || 'institution_admin');
 
-    let roleLabel = 'Institution Administrator';
-    let department = 'Campus Administration';
+    let defaultRoleLabel = 'Institution Administrator';
+    let defaultDepartment = 'Campus Administration';
 
     if (assignedRole === 'faculty_mentor') {
-      roleLabel = 'Faculty Mentor & HOD';
-      department = 'Computer Science & Engineering';
+      defaultRoleLabel = 'Faculty Mentor & HOD';
+      defaultDepartment = 'Computer Science & Engineering';
     } else if (assignedRole === 'placement_officer') {
-      roleLabel = 'Placement Officer (TPO)';
-      department = 'Corporate Relations & Career Cell';
+      defaultRoleLabel = 'Placement Officer (TPO)';
+      defaultDepartment = 'Corporate Relations & Career Cell';
     } else if (assignedRole === 'student') {
-      roleLabel = 'Registered Student';
-      department = 'Computer Science & Engineering';
+      defaultRoleLabel = 'Registered Student';
+      defaultDepartment = 'Computer Science & Engineering';
     }
 
     try {
-      const res = await api.register({ username, email, password, portal: selectedPortal, role: assignedRole });
+      const res = await api.register({
+        username: username.trim(),
+        email: email.trim(),
+        password,
+        portal: selectedPortal,
+        role: assignedRole,
+        displayName: username.trim(),
+      });
       if (res?.accessToken) {
         sessionStorage.setItem('pratibha_token', res.accessToken);
+        localStorage.setItem('pratibha_token', res.accessToken);
       }
       const user = res?.user || {};
       let backendRole = user.role;
@@ -208,28 +258,35 @@ export function AuthProvider({ children }) {
       if (backendRole === 'faculty') backendRole = 'faculty_mentor';
 
       const finalRole = specificRole || backendRole || assignedRole;
+      const isStudentPortal = selectedPortal === 'student' || finalRole === 'student';
 
       const profile = {
         id: user.id || `USR_${Date.now()}`,
         name: user.displayName || username || email.split('@')[0],
+        username: user.username || username,
         role: finalRole,
-        portal: selectedPortal,
-        roleLabel: user.roleLabel || roleLabel,
+        portal: isStudentPortal ? 'student' : 'institution',
+        roleLabel: user.roleLabel || defaultRoleLabel,
         email: email.trim(),
-        department: user.department || department,
+        department: user.department || defaultDepartment,
+        studentId: user.studentId || null,
       };
       setCurrentUser(profile);
-      setActivePortal(selectedPortal);
+      setActivePortal(isStudentPortal ? 'student' : 'institution');
       return profile;
-    } catch {
+    } catch (err) {
+      if (err.status && err.status < 500) {
+        throw err;
+      }
       const profile = {
         id: `DEMO-REG-${Math.floor(100 + Math.random() * 900)}`,
         name: username || email.split('@')[0],
+        username,
         role: assignedRole,
         portal: selectedPortal,
-        roleLabel: roleLabel,
+        roleLabel: defaultRoleLabel,
         email: email.trim(),
-        department: department,
+        department: defaultDepartment,
       };
       setCurrentUser(profile);
       setActivePortal(selectedPortal);
@@ -262,10 +319,45 @@ export function AuthProvider({ children }) {
     return profile;
   };
 
+  const updateUserProfile = async (updatedData) => {
+    try {
+      const serverResponse = await api.updateProfile(updatedData);
+      const serverUser = serverResponse?.data || serverResponse || {};
+      const merged = {
+        ...currentUser,
+        ...serverUser,
+        ...updatedData,
+        name: updatedData.name || updatedData.displayName || currentUser?.name,
+        displayName: updatedData.displayName || updatedData.name || currentUser?.displayName,
+      };
+      setCurrentUser(merged);
+      try {
+        sessionStorage.setItem('pratibha_demo_user', JSON.stringify(merged));
+        localStorage.setItem(`pratibha_profile_${merged.email || merged.id}`, JSON.stringify(merged));
+      } catch {}
+      return merged;
+    } catch {
+      const merged = {
+        ...currentUser,
+        ...updatedData,
+        name: updatedData.name || updatedData.displayName || currentUser?.name,
+        displayName: updatedData.displayName || updatedData.name || currentUser?.displayName,
+      };
+      setCurrentUser(merged);
+      try {
+        sessionStorage.setItem('pratibha_demo_user', JSON.stringify(merged));
+        localStorage.setItem(`pratibha_profile_${merged.email || merged.id}`, JSON.stringify(merged));
+      } catch {}
+      return merged;
+    }
+  };
+
   const logout = () => {
     setCurrentUser(null);
     sessionStorage.removeItem('pratibha_demo_user');
     sessionStorage.removeItem('pratibha_token');
+    localStorage.removeItem('pratibha_demo_user');
+    localStorage.removeItem('pratibha_token');
   };
 
   return (
@@ -278,6 +370,7 @@ export function AuthProvider({ children }) {
         loginWithCredentials,
         registerWithCredentials,
         loginWithGoogle,
+        updateUserProfile,
         logout,
         DEMO_PROFILES,
         isAuthenticated: !!currentUser,

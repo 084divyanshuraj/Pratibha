@@ -744,54 +744,87 @@ export const api = {
   },
 
   /**
-   * Authentication
+   * Authentication (JWT + Bcrypt)
    */
-  async login(email, password) {
+  async login(identifier, password) {
     try {
       const res = await fetchClient('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, email: identifier, username: identifier, password }),
       });
-      if (res.accessToken) {
+      if (res?.accessToken) {
         sessionStorage.setItem('pratibha_token', res.accessToken);
+        localStorage.setItem('pratibha_token', res.accessToken);
       }
       return res;
     } catch (err) {
-      // Offline fallback: resolve demo profile
+      // If server returned 401, 400, 403, 404, propagate error so user gets clear feedback!
+      if (err.status && err.status < 500) {
+        throw err;
+      }
+      // Offline fallback: resolve demo profile only if backend service is unreachable
       return {
         accessToken: 'demo-offline-jwt-token',
         user: {
-          email,
-          displayName: email.split('@')[0],
-          role: email.includes('admin') ? 'admin' : email.includes('student') ? 'student' : 'faculty',
+          email: identifier,
+          displayName: identifier.split('@')[0],
+          role: identifier.includes('admin') ? 'admin' : identifier.includes('student') ? 'student' : 'faculty',
         },
       };
     }
   },
 
-  async register({ username, email, password, portal = 'student' }) {
+  async register(userData) {
     try {
       const res = await fetchClient('/auth/register', {
         method: 'POST',
-        body: JSON.stringify({ username, email, password, portal }),
+        body: JSON.stringify(userData),
       });
-      if (res.accessToken) {
+      if (res?.accessToken) {
         sessionStorage.setItem('pratibha_token', res.accessToken);
+        localStorage.setItem('pratibha_token', res.accessToken);
       }
       return res;
-    } catch {
+    } catch (err) {
+      if (err.status && err.status < 500) {
+        throw err;
+      }
       const token = `token_reg_${Date.now()}`;
       sessionStorage.setItem('pratibha_token', token);
       return {
         accessToken: token,
         user: {
           id: `USR_${Date.now()}`,
-          email,
-          username,
-          displayName: username || email.split('@')[0],
-          role: portal === 'student' ? 'student' : 'faculty_mentor',
+          email: userData.email,
+          username: userData.username,
+          displayName: userData.username || userData.email?.split('@')[0],
+          role: userData.portal === 'student' ? 'student' : 'faculty_mentor',
         },
       };
+    }
+  },
+
+  /**
+   * User Profile Management
+   */
+  async getProfile() {
+    try {
+      const res = await fetchClient('/auth/me');
+      return res;
+    } catch {
+      return null;
+    }
+  },
+
+  async updateProfile(profileData) {
+    try {
+      const res = await fetchClient('/auth/me', {
+        method: 'PUT',
+        body: JSON.stringify(profileData),
+      });
+      return res;
+    } catch {
+      return profileData;
     }
   },
 
