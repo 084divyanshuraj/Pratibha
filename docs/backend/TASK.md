@@ -121,16 +121,16 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 10 — Deployment and integration hardening
 
-- [ ] Add production Render configuration and start command.
-- [ ] Configure MongoDB Atlas URI and least-privilege database access using service secrets.
-- [ ] Configure CORS using the exact Vercel frontend origin(s).
-- [ ] Configure ML endpoint URL and any agreed service-to-service protection.
-- [ ] Verify no secret or local-only URL is committed.
-- [ ] Test production-like health checks, startup, database failure and ML failure.
-- [ ] Publish OpenAPI docs and a small API smoke-test collection/script.
-- [ ] Run full regression tests and fix integration contract mismatches.
+- [x] Add production Render configuration and start command.
+- [x] Configure MongoDB Atlas URI and least-privilege database access using service secrets.
+- [x] Configure CORS using the exact Vercel frontend origin(s).
+- [x] Configure ML endpoint URL and any agreed service-to-service protection.
+- [x] Verify no secret or local-only URL is committed.
+- [x] Test production-like health checks, startup, database failure and ML failure.
+- [x] Publish OpenAPI docs and a small API smoke-test collection/script.
+- [x] Run full regression tests and fix integration contract mismatches.
 
-**Acceptance gate:** Deployed frontend can call backend, backend can access Atlas and call the deployed ML service, and a complete path from student data to prediction/dashboard response works.
+**Acceptance gate:** Deployed frontend can call backend, backend can access Atlas and call the deployed ML service, and a complete path from student data to prediction/dashboard response works. (PASSED)
 
 ## Required integration demo
 

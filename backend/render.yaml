@@ -1,0 +1,35 @@
+services:
+  - type: web
+    name: smart-campus-backend
+    env: node
+    plan: starter
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health/live
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: FRONTEND_ORIGIN
+        sync: false
+      - key: ML_SERVICE_URL
+        sync: false
+      - key: ML_SERVICE_TOKEN
+        sync: false
+      - key: ML_TIMEOUT_MS
+        value: 5000
+      - key: LOG_LEVEL
+        value: info
+      - key: COPILOT_ENABLED
+        value: false
+      - key: COPILOT_PROVIDER
+        value: none
