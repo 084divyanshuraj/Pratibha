@@ -91,7 +91,7 @@
   position: relative;
   width: 900px;
   max-width: 95vw;
-  height: 590px;
+  height: 620px;
   background: var(--card-dark);
   border: 2px solid var(--neon-cyan);
   border-radius: 14px;
@@ -413,9 +413,56 @@
   transform: translateY(-1px);
 }
 
-.cyber-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+/* Google Auth Button & Divider */
+.cyber-google-btn {
+  position: relative;
+  width: 100%;
+  height: 38px;
+  border-radius: 40px;
+  border: 1.2px solid rgba(255, 255, 255, 0.22);
+  background: rgba(13, 21, 39, 0.88);
+  color: #f1f5f9;
+  font-size: 0.86rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  backdrop-filter: blur(8px);
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.cyber-google-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: #00d4ff;
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(0, 162, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.cyber-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 10px 0 6px;
+  color: #64748b;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cyber-divider::before,
+.cyber-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.cyber-divider span {
+  padding: 0 10px;
 }
 
 /* Switch Link */
