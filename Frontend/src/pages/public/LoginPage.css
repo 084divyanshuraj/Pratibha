@@ -1,52 +1,72 @@
 /**
- * PRATIBHA — Login & Register Experience Styles
- * Recreating the target design with organic wave mask, animated panel transition,
- * floating intelligence preview card, and full responsive accessibility.
+ * PRATIBHA — Cyber-Institutional Animated Authentication Page
+ * Recreates the exact diagonal sweep card with neon cyan glow and sliding panels
+ * matching reference images 1, 2, 3 (@CODE_ZENITH.AI) and login-register (2).html
  */
 
-.pratibha-auth-container {
-  display: flex;
+:root {
+  --neon-cyan: #00a2ff;
+  --neon-glow: rgba(0, 162, 255, 0.55);
+  --teal-dark: #061c37;
+  --teal-mid: #0c3a6b;
+  --teal-bright: #00d4ff;
+  --card-dark: #070d18;
+  --card-bg-subtle: #0d1527;
+  --speed: 1s;
+}
+
+/* Page Container */
+.pratibha-cyber-page {
   min-height: 100vh;
   width: 100%;
-  background-color: var(--color-white, #ffffff);
-  position: relative;
-  overflow-x: hidden;
-  font-family: var(--font-sans, 'Inter', sans-serif);
-}
-
-/* Left Panel */
-.pratibha-auth-left {
-  flex: 0 0 45%;
-  max-width: 620px;
-  min-width: 440px;
-  background-color: #ffffff;
+  background: radial-gradient(circle at 50% 30%, #0c1a30 0%, #050b14 65%, #02050a 100%);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 1.85rem 3rem;
-  position: relative;
-  z-index: 10;
-  box-shadow: 10px 0 30px rgba(8, 43, 86, 0.05);
-}
-
-/* Header */
-.pratibha-auth-header {
-  display: flex;
+  justify-content: center;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
+  position: relative;
+  overflow-x: hidden;
+  padding: 20px;
+  box-sizing: border-box;
+  font-family: 'Poppins', var(--font-sans, sans-serif);
 }
 
-.pratibha-auth-header-nav {
+/* Ambient Background Glow */
+.pratibha-ambient-glow {
+  position: absolute;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(0, 162, 255, 0.12) 0%, rgba(6, 28, 55, 0.05) 50%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  filter: blur(50px);
+  z-index: 0;
+}
+
+/* Top Navigation Bar */
+.pratibha-cyber-header {
+  position: absolute;
+  top: 20px;
+  left: 36px;
+  right: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 30;
+}
+
+.pratibha-cyber-nav {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  font-size: 0.875rem;
 }
 
-.pratibha-auth-nav-link {
-  color: var(--color-navy, #082b56);
+.pratibha-cyber-nav-link {
+  color: #94a3b8;
   text-decoration: none;
+  font-size: 0.88rem;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -54,573 +74,554 @@
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px 6px;
-  border-radius: var(--radius-xs, 4px);
-  transition: color var(--transition-fast, 150ms ease);
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
-.pratibha-auth-nav-link:hover {
-  color: var(--color-blue-bright, #258bfa);
+.pratibha-cyber-nav-link:hover {
+  color: #00d4ff;
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
 }
 
-/* Main Form Wrapper */
-.pratibha-auth-content {
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
+/* =========================================================================
+   MAIN CYBER CARD (MATCHING IMAGES 1, 2, 3)
+   ========================================================================= */
+.cyber-card-container {
+  position: relative;
+  width: 900px;
+  max-width: 95vw;
+  height: 590px;
+  background: var(--card-dark);
+  border: 2px solid var(--neon-cyan);
+  border-radius: 14px;
+  box-shadow:
+    0 0 15px var(--neon-cyan),
+    0 0 45px rgba(0, 162, 255, 0.4),
+    inset 0 0 25px rgba(0, 162, 255, 0.12);
+  overflow: hidden;
+  z-index: 10;
+  margin: 30px 0 10px 0;
 }
 
-/* Eyebrow & Headings */
-.pratibha-auth-eyebrow {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
+/* =========================================================================
+   DIAGONAL GRADIENT SWEEP PANEL
+   ========================================================================= */
+.cyber-diagonal-panel {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(135deg, #05162b 0%, #0b345f 35%, #0077b6 75%, var(--teal-bright) 100%);
+  /* Login state: gradient on the RIGHT side */
+  clip-path: polygon(44% 0, 100% 0, 100% 100%, 82% 100%);
+  transition: clip-path var(--speed) ease-in-out;
+}
+
+/* Register state: gradient on the LEFT side */
+.cyber-card-container.active .cyber-diagonal-panel {
+  background: linear-gradient(225deg, #05162b 0%, #0b345f 35%, #0077b6 75%, var(--teal-bright) 100%);
+  clip-path: polygon(0 0, 68% 0, 24% 100%, 0 100%);
+}
+
+/* Sweep Animations when transitioning */
+.cyber-card-container.to-register .cyber-diagonal-panel {
+  animation: toRegisterSweep var(--speed) ease-in-out forwards;
+}
+
+.cyber-card-container.to-login .cyber-diagonal-panel {
+  animation: toLoginSweep var(--speed) ease-in-out forwards;
+}
+
+@keyframes toRegisterSweep {
+  0% {
+    clip-path: polygon(44% 0, 100% 0, 100% 100%, 82% 100%);
+  }
+  50% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(0 0, 68% 0, 24% 100%, 0 100%);
+  }
+}
+
+@keyframes toLoginSweep {
+  0% {
+    clip-path: polygon(0 0, 68% 0, 24% 100%, 0 100%);
+  }
+  50% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(44% 0, 100% 0, 100% 100%, 82% 100%);
+  }
+}
+
+/* =========================================================================
+   WELCOME INFO TEXT PANELS (Inside the Diagonal Gradient)
+   ========================================================================= */
+.cyber-info-box {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.cyber-info-box.login {
+  right: 0;
+  text-align: right;
+  padding: 0 45px 30px 100px;
+}
+
+.cyber-info-box.register {
+  left: 0;
+  text-align: left;
+  padding: 0 100px 30px 45px;
+}
+
+.cyber-info-box h2 {
   text-transform: uppercase;
-  color: var(--color-blue-primary, #1677d2);
-  margin-bottom: 0.35rem;
+  font-size: 2.2rem;
+  line-height: 1.15;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  text-shadow: 0 0 18px rgba(0, 212, 255, 0.65), 2px 2px 6px rgba(0, 0, 0, 0.6);
+  margin-bottom: 8px;
 }
 
-.pratibha-auth-title {
-  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
-  font-size: 2.15rem;
+.cyber-info-box p {
+  color: #e0f2fe;
+  font-size: 0.88rem;
+  opacity: 0.88;
+  letter-spacing: 0.02em;
+}
+
+/* =========================================================================
+   FORM BOXES (Left for Login, Right for Register)
+   ========================================================================= */
+.cyber-form-box {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 4;
+  box-sizing: border-box;
+}
+
+.cyber-form-box.login {
+  left: 0;
+  padding: 24px 38px 24px 44px;
+}
+
+.cyber-form-box.register {
+  right: 0;
+  padding: 24px 44px 24px 38px;
+}
+
+.cyber-form-title {
+  font-size: 2rem;
   font-weight: 700;
-  color: var(--color-navy, #082b56);
-  line-height: 1.2;
-  margin-bottom: 0.4rem;
-}
-
-.pratibha-auth-dot {
-  color: var(--color-blue-bright, #258bfa);
-}
-
-.pratibha-auth-subtitle {
-  color: var(--color-text-secondary, #667085);
-  font-size: 0.925rem;
-  margin-bottom: 1.5rem;
-  line-height: 1.4;
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 12px rgba(0, 162, 255, 0.4);
 }
 
 /* Portal Switcher Tabs */
-.pratibha-portal-tabs {
+.cyber-portal-tabs {
   display: flex;
-  background-color: var(--color-bg-page, #f6f8fc);
-  border: 1px solid var(--color-border, #e4e9f0);
-  padding: 4px;
-  border-radius: var(--radius-sm, 8px);
-  gap: 6px;
-  margin-bottom: 1.35rem;
+  background: rgba(13, 21, 39, 0.75);
+  border: 1px solid rgba(0, 162, 255, 0.35);
+  border-radius: 24px;
+  padding: 3px;
+  gap: 4px;
+  margin-bottom: 16px;
 }
 
-.pratibha-portal-tab-btn {
+.cyber-portal-tab {
   flex: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 9px 12px;
-  border-radius: 6px;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 20px;
   border: none;
-  font-size: 0.875rem;
+  font-size: 0.78rem;
   font-weight: 600;
+  color: #94a3b8;
+  background: transparent;
   cursor: pointer;
-  background-color: transparent;
-  color: var(--color-navy, #082b56);
-  transition: all var(--transition-fast, 150ms ease);
+  transition: all 0.25s ease;
 }
 
-.pratibha-portal-tab-btn.active {
-  background-color: var(--color-blue-primary, #1677d2);
+.cyber-portal-tab.active {
+  background: linear-gradient(90deg, #0c3a6b, #0088cc);
   color: #ffffff;
-  box-shadow: 0 2px 6px rgba(22, 119, 210, 0.32);
+  box-shadow: 0 0 10px rgba(0, 162, 255, 0.5);
 }
 
-.pratibha-portal-tab-btn:not(.active):hover {
-  background-color: rgba(22, 119, 210, 0.08);
-  color: var(--color-blue-primary, #1677d2);
-}
-
-/* Form Container & Staggered Transitions */
-.pratibha-form-viewport {
+/* Floating Underline Inputs (Matching Image 1 & 3) */
+.cyber-input-box {
   position: relative;
-  overflow: hidden;
   width: 100%;
+  height: 48px;
+  margin-top: 14px;
 }
 
-.pratibha-form-slide {
-  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-}
-
-.pratibha-form-slide.entering-from-right {
-  animation: slideInRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.pratibha-form-slide.entering-from-left {
-  animation: slideInLeft 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    transform: translateX(-40px);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Input Fields */
-.pratibha-input-group {
-  position: relative;
-  margin-bottom: 1rem;
-}
-
-.pratibha-input-icon {
-  position: absolute;
-  left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--color-text-secondary, #667085);
-  pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pratibha-input {
+.cyber-input-box input {
   width: 100%;
-  padding: 0.8rem 1rem 0.8rem 2.65rem;
-  font-size: 0.92rem;
-  border: 1px solid var(--color-border, #e4e9f0);
-  border-radius: var(--radius-sm, 8px);
-  background-color: #ffffff;
-  color: var(--color-text-main, #172033);
+  height: 100%;
+  background: transparent;
+  border: none;
   outline: none;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.35);
+  padding: 0 32px 0 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #ffffff;
   box-sizing: border-box;
-  transition: border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.pratibha-input.with-toggle {
-  padding-right: 2.85rem;
-}
-
-.pratibha-input:focus {
-  border-color: var(--color-blue-primary, #1677d2);
-  box-shadow: 0 0 0 3px rgba(22, 119, 210, 0.15);
-}
-
-.pratibha-password-toggle {
+.cyber-input-box label {
   position: absolute;
-  right: 12px;
   top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  font-size: 0.92rem;
+  color: #94a3b8;
+  pointer-events: none;
+  transition: all 0.3s ease;
+}
+
+/* Label floats up when focused or input has text */
+.cyber-input-box input:focus ~ label,
+.cyber-input-box input:not(:placeholder-shown) ~ label {
+  top: -4px;
+  font-size: 0.72rem;
+  color: #00d4ff;
+  text-shadow: 0 0 6px rgba(0, 212, 255, 0.6);
+}
+
+.cyber-input-box input:focus {
+  border-bottom-color: var(--neon-cyan);
+  box-shadow: 0 2px 8px rgba(0, 162, 255, 0.35);
+}
+
+.cyber-input-icon {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  pointer-events: none;
+  transition: color 0.3s ease;
+}
+
+.cyber-input-box input:focus ~ .cyber-input-icon {
+  color: var(--neon-cyan);
+}
+
+/* Password Eye Toggle */
+.cyber-pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--color-text-secondary, #667085);
+  color: #94a3b8;
   cursor: pointer;
-  padding: 4px;
+  padding: 2px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: color var(--transition-fast, 150ms ease);
+  transition: color 0.2s;
 }
 
-.pratibha-password-toggle:hover {
-  color: var(--color-blue-primary, #1677d2);
+.cyber-pw-toggle:hover {
+  color: var(--neon-cyan);
 }
 
 /* Checkbox & Forgot Password Row */
-.pratibha-form-row {
+.cyber-form-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  font-size: 0.85rem;
-  margin-bottom: 1.15rem;
+  align-items: center;
+  font-size: 0.78rem;
+  margin-top: 10px;
+  color: #94a3b8;
 }
 
-.pratibha-checkbox-label {
+.cyber-checkbox-label {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   cursor: pointer;
-  color: var(--color-text-main, #172033);
   user-select: none;
 }
 
-.pratibha-checkbox-label input[type='checkbox'] {
-  accent-color: var(--color-blue-primary, #1677d2);
-  width: 16px;
-  height: 16px;
+.cyber-checkbox-label input[type='checkbox'] {
+  accent-color: var(--neon-cyan);
+  width: 14px;
+  height: 14px;
   cursor: pointer;
 }
 
-.pratibha-forgot-btn {
+.cyber-forgot-link {
   background: none;
   border: none;
-  color: var(--color-blue-primary, #1677d2);
-  font-weight: 500;
+  color: #38bdf8;
+  font-size: 0.78rem;
   cursor: pointer;
-  font-size: 0.85rem;
   padding: 0;
-  transition: color var(--transition-fast, 150ms ease);
+  transition: color 0.2s;
 }
 
-.pratibha-forgot-btn:hover {
-  color: var(--color-blue-bright, #258bfa);
+.cyber-forgot-link:hover {
+  color: #00d4ff;
   text-decoration: underline;
 }
 
-/* Primary Submit Button */
-.pratibha-submit-btn {
+/* Pill Button (Matching Image 1 & 3) */
+.cyber-btn {
+  position: relative;
   width: 100%;
-  display: inline-flex;
+  height: 42px;
+  margin-top: 16px;
+  border-radius: 40px;
+  border: 1.5px solid var(--neon-cyan);
+  background: linear-gradient(90deg, #062b54 0%, #0077b6 50%, #00a2ff 100%);
+  color: #ffffff;
+  font-size: 0.94rem;
+  font-weight: 600;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 0 16px rgba(0, 162, 255, 0.45);
+  transition: all 0.3s ease;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  background-color: var(--color-blue-primary, #1677d2);
-  color: #ffffff;
-  padding: 0.85rem 1.25rem;
-  border-radius: var(--radius-sm, 8px);
-  font-size: 0.95rem;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(22, 119, 210, 0.35);
-  transition: background-color var(--transition-fast, 150ms ease), transform var(--transition-fast, 150ms ease);
+  gap: 6px;
 }
 
-.pratibha-submit-btn:hover:not(:disabled) {
-  background-color: var(--color-blue-bright, #258bfa);
+.cyber-btn:hover:not(:disabled) {
+  background: linear-gradient(90deg, #0077b6 0%, #00a2ff 50%, #00d4ff 100%);
+  box-shadow: 0 0 24px rgba(0, 162, 255, 0.75);
   transform: translateY(-1px);
 }
 
-.pratibha-submit-btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.pratibha-submit-btn:disabled {
-  opacity: 0.65;
+.cyber-btn:disabled {
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-/* Demo Notice Box */
-.pratibha-demo-notice {
-  background-color: var(--color-blue-surface, #eaf3ff);
-  border: 1px solid var(--color-blue-surface-border, rgba(22, 119, 210, 0.2));
-  border-radius: var(--radius-sm, 8px);
-  padding: 0.85rem 1rem;
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin-top: 1.35rem;
-  font-size: 0.78rem;
-  color: var(--color-navy, #082b56);
-  line-height: 1.45;
+/* Switch Link */
+.cyber-switch-link {
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 12px;
+  color: #94a3b8;
 }
 
-.pratibha-demo-notice-icon {
-  color: var(--color-blue-primary, #1677d2);
-  flex-shrink: 0;
-  margin-top: 2px;
+.cyber-switch-btn {
+  background: none;
+  border: none;
+  color: #38bdf8;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.8rem;
+  margin-left: 4px;
+  transition: color 0.2s;
 }
 
-.pratibha-demo-notice-title {
+.cyber-switch-btn:hover {
+  color: #00d4ff;
+  text-decoration: underline;
+}
+
+/* Quick 1-Click Demo Personas (Subtle cyber badge grid) */
+.cyber-personas-panel {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cyber-personas-title {
+  font-size: 0.68rem;
   font-weight: 700;
-  color: var(--color-navy, #082b56);
-}
-
-.pratibha-demo-notice-desc {
-  color: var(--color-text-secondary, #667085);
-  margin-top: 2px;
-}
-
-/* 1-Click Demo Personas */
-.pratibha-demo-personas {
-  margin-top: 1.35rem;
-}
-
-.pratibha-personas-title {
-  font-size: 0.74rem;
-  font-weight: 700;
-  color: var(--color-text-secondary, #667085);
-  margin-bottom: 8px;
+  color: #64748b;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+  text-align: center;
 }
 
-.pratibha-personas-grid {
+.cyber-personas-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 6px;
 }
 
-.pratibha-persona-btn {
-  padding: 8px 10px;
-  font-size: 0.78rem;
-  font-weight: 500;
-  text-align: left;
-  border-radius: var(--radius-sm, 8px);
-  border: 1px solid var(--color-border, #e4e9f0);
-  background-color: var(--color-bg-page, #f6f8fc);
-  color: var(--color-navy, #082b56);
+.cyber-persona-chip {
+  padding: 5px 8px;
+  font-size: 0.72rem;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 162, 255, 0.25);
+  background: rgba(13, 21, 39, 0.8);
+  color: #cbd5e1;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.cyber-persona-chip:hover {
+  background: rgba(0, 162, 255, 0.2);
+  border-color: #00d4ff;
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 162, 255, 0.4);
+}
+
+/* Staggered Slide Animations (Matching login-register (2).html) */
+.anim-slide {
+  transition: transform 0.65s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.65s ease;
+}
+
+/* Login form + login info: visible by default */
+.cyber-form-box.login .anim-slide,
+.cyber-info-box.login .anim-slide {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Register form + register info: hidden by default */
+.cyber-form-box.register .anim-slide {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.cyber-info-box.register .anim-slide {
+  transform: translateX(-120%);
+  opacity: 0;
+}
+
+/* When switched to register (container has .active) */
+.cyber-card-container.active .cyber-form-box.login .anim-slide {
+  transform: translateX(-120%);
+  opacity: 0;
+}
+
+.cyber-card-container.active .cyber-info-box.login .anim-slide {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.cyber-card-container.active .cyber-form-box.register .anim-slide {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.cyber-card-container.active .cyber-info-box.register .anim-slide {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+/* Pointer Events Guard */
+.cyber-form-box.register {
+  pointer-events: none;
+}
+
+.cyber-card-container.active .cyber-form-box.register {
+  pointer-events: auto;
+}
+
+.cyber-card-container.active .cyber-form-box.login {
+  pointer-events: none;
+}
+
+/* Demo Notice Banner */
+.cyber-demo-banner {
+  margin-top: 8px;
+  background: rgba(0, 162, 255, 0.08);
+  border: 1px solid rgba(0, 162, 255, 0.22);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.7rem;
+  color: #93c5fd;
   display: flex;
   align-items: center;
   gap: 6px;
-  transition: all var(--transition-fast, 150ms ease);
 }
 
-.pratibha-persona-btn:hover {
-  background-color: #ffffff;
-  border-color: var(--color-blue-primary, #1677d2);
-  color: var(--color-blue-primary, #1677d2);
-  box-shadow: 0 2px 6px rgba(22, 119, 210, 0.15);
-  transform: translateY(-1px);
-}
-
-/* Switch Link */
-.pratibha-switch-wrap {
-  text-align: center;
-  margin-top: 1.25rem;
-  font-size: 0.85rem;
-  color: var(--color-text-secondary, #667085);
-}
-
-.pratibha-switch-btn {
-  background: none;
-  border: none;
-  color: var(--color-blue-primary, #1677d2);
-  font-weight: 600;
-  cursor: pointer;
-  margin-left: 4px;
-  font-size: 0.85rem;
-  padding: 0;
-  text-decoration: none;
-}
-
-.pratibha-switch-btn:hover {
-  text-decoration: underline;
-  color: var(--color-blue-bright, #258bfa);
-}
-
-/* Footer Note */
-.pratibha-auth-footer {
-  text-align: center;
-  font-size: 0.75rem;
-  color: var(--color-text-muted, #94a3b8);
-  margin-top: 1.5rem;
-}
-
-/* Right Panel (Campus Photo + Floating Card) */
-.pratibha-auth-right {
-  flex: 1;
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  padding: 2.25rem 2.5rem;
-  overflow: hidden;
-}
-
-/* Organic Wave SVG Divider */
-.pratibha-organic-wave {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -2px;
-  height: 100%;
-  width: 90px;
-  pointer-events: none;
-  z-index: 5;
-}
-
-/* Floating Student Success Intelligence Card */
-.pratibha-intelligence-card {
-  background-color: rgba(255, 255, 255, 0.96);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border-radius: 18px;
-  border: 1px solid rgba(228, 233, 240, 0.9);
-  box-shadow: 0 20px 45px -10px rgba(8, 43, 86, 0.25);
-  padding: 1.45rem 1.65rem;
-  width: 320px;
-  max-width: 100%;
-  position: relative;
-  z-index: 10;
-  animation: floatCardIn 0.8s ease-out forwards;
-}
-
-@keyframes floatCardIn {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.pratibha-card-header {
+/* Error / Success Toast */
+.cyber-alert {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.76rem;
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 1.15rem;
+  gap: 6px;
 }
 
-.pratibha-card-icon-box {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  background-color: var(--color-blue-surface, #eaf3ff);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-blue-primary, #1677d2);
+.cyber-alert.error {
+  background: rgba(220, 38, 38, 0.15);
+  border: 1px solid rgba(220, 38, 38, 0.4);
+  color: #fca5a5;
 }
 
-.pratibha-card-title {
-  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
-  font-size: 1.05rem;
-  font-weight: 700;
-  color: var(--color-navy, #082b56);
-  margin: 0;
+.cyber-alert.success {
+  background: rgba(13, 148, 136, 0.15);
+  border: 1px solid rgba(13, 148, 136, 0.4);
+  color: #5eead4;
 }
 
-.pratibha-card-metrics {
-  display: flex;
-  flex-direction: column;
-  gap: 0.95rem;
-}
-
-.pratibha-metric-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.82rem;
-  margin-bottom: 6px;
-}
-
-.pratibha-metric-label {
-  color: var(--color-text-main, #172033);
-  font-weight: 500;
-}
-
-.pratibha-metric-value {
-  color: var(--color-navy, #082b56);
-  font-weight: 700;
-}
-
-.pratibha-progress-track {
-  width: 100%;
-  height: 8px;
-  background-color: #e2e8f0;
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-.pratibha-progress-fill-academic {
-  height: 100%;
-  width: 78%;
-  background-color: var(--color-blue-primary, #1677d2);
-  border-radius: 4px;
-  transition: width 1s ease-in-out;
-}
-
-.pratibha-progress-fill-placement {
-  height: 100%;
-  width: 64%;
-  background-color: #8b5cf6;
-  border-radius: 4px;
-  transition: width 1s ease-in-out;
-}
-
-/* Modals & Dialogs */
-.pratibha-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(6, 26, 51, 0.55);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 1.5rem;
-}
-
-.pratibha-modal-box {
-  background-color: #ffffff;
-  border-radius: var(--radius-md, 12px);
-  padding: 1.75rem;
-  max-width: 440px;
-  width: 100%;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-  animation: modalScaleIn 0.25s ease-out forwards;
-}
-
-@keyframes modalScaleIn {
-  from {
-    transform: scale(0.95);
-    opacity: 0;
-  }
-  to {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-/* Responsive Breakpoints */
-@media (max-width: 1024px) {
-  .pratibha-auth-left {
-    flex: 0 0 50%;
-    min-width: 380px;
-    padding: 2rem 2.25rem;
-  }
-}
-
+/* Responsive Mobile Rules */
 @media (max-width: 860px) {
-  .pratibha-auth-container {
-    flex-direction: column;
+  .cyber-card-container {
+    width: 100%;
+    height: auto;
+    min-height: 580px;
   }
 
-  .pratibha-auth-left {
-    flex: 1 1 auto;
-    max-width: 100%;
-    min-width: 100%;
-    padding: 2rem 1.5rem;
-    box-shadow: none;
+  .cyber-diagonal-panel,
+  .cyber-info-box {
+    display: none !important;
   }
 
-  .pratibha-auth-right {
+  .cyber-form-box {
+    position: static;
+    width: 100%;
+    padding: 24px 20px !important;
+  }
+
+  .cyber-form-box.register {
     display: none;
   }
 
-  .pratibha-organic-wave {
+  .cyber-card-container.active .cyber-form-box.login {
     display: none;
   }
-}
 
-/* Accessibility: Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  .pratibha-form-slide,
-  .pratibha-intelligence-card,
-  .pratibha-modal-box {
-    animation: none !important;
+  .cyber-card-container.active .cyber-form-box.register {
+    display: flex;
+    pointer-events: auto;
+  }
+
+  .anim-slide {
+    transform: none !important;
+    opacity: 1 !important;
     transition: none !important;
   }
 }

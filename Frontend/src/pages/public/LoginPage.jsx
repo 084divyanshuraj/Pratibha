@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import {
   Mail,
@@ -10,11 +10,11 @@ import {
   Info,
   Building2,
   GraduationCap,
-  BarChart3,
   HelpCircle,
   X,
   CheckCircle2,
   AlertCircle,
+  ShieldCheck,
 } from 'lucide-react';
 import BrandLogo from '../../components/common/BrandLogo';
 import { useAuth } from '../../context/AuthContext';
@@ -24,27 +24,29 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const { loginWithCredentials, loginWithDemo, registerWithCredentials } = useAuth();
 
-  // Mode: 'login' | 'register' (preserving login-register (2).html behavior)
-  const [mode, setMode] = useState('login');
-  const [transitionDirection, setTransitionDirection] = useState('right'); // 'right' | 'left'
+  // Mode: active = register mode, inactive = login mode
+  const [isRegisterActive, setIsRegisterActive] = useState(false);
+  const [animClass, setAnimClass] = useState(''); // 'to-register' | 'to-login' | ''
 
   // Portal selector: 'institution' | 'student'
   const [portal, setPortal] = useState('institution');
 
   // Form Fields - Login
-  const [identifier, setIdentifier] = useState('admin@pratibha.edu');
+  const [loginIdentifier, setLoginIdentifier] = useState('admin@pratibha.edu');
   const [loginPassword, setLoginPassword] = useState('DemoUser123!');
   const [rememberMe, setRememberMe] = useState(true);
 
-  // Form Fields - Register (Preserving all fields from login-register (2).html)
+  // Form Fields - Register
   const [regUsername, setRegUsername] = useState('');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
+  const [regConfirmPassword, setRegConfirmPassword] = useState('');
 
   // Password visibility
-  const [showPassword, setShowPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegPassword, setShowRegPassword] = useState(false);
 
-  // State & Feedback
+  // Status & Feedback
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
@@ -55,31 +57,42 @@ export default function LoginPage() {
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotSent, setForgotSent] = useState(false);
 
-  // Switch between Sign In and Sign Up with animated transition
-  const handleSwitchMode = (targetMode) => {
+  const containerRef = useRef(null);
+
+  // Switch to Register with exact diagonal sweep animation
+  const handleGoToRegister = (e) => {
+    if (e) e.preventDefault();
     setError('');
     setSuccessMsg('');
-    setShowPassword(false);
-    setTransitionDirection(targetMode === 'register' ? 'right' : 'left');
-    setMode(targetMode);
+    setAnimClass('to-register');
+    setIsRegisterActive(true);
+  };
+
+  // Switch back to Login with reverse sweep animation
+  const handleGoToLogin = (e) => {
+    if (e) e.preventDefault();
+    setError('');
+    setSuccessMsg('');
+    setAnimClass('to-login');
+    setIsRegisterActive(false);
   };
 
   // Switch portal and populate sensible defaults
   const handlePortalSwitch = (newPortal) => {
     setPortal(newPortal);
     setError('');
-    if (mode === 'login') {
+    if (!isRegisterActive) {
       if (newPortal === 'student') {
-        setIdentifier('student@example.edu');
+        setLoginIdentifier('student@example.edu');
         setLoginPassword('DemoUser123!');
       } else {
-        setIdentifier('admin@pratibha.edu');
+        setLoginIdentifier('admin@pratibha.edu');
         setLoginPassword('DemoUser123!');
       }
     }
   };
 
-  // Quick 1-Click Demo Persona
+  // 1-Click Demo Persona
   const handle1ClickDemo = async (profileKey) => {
     setError('');
     setLoading(true);
@@ -94,17 +107,16 @@ export default function LoginPage() {
     }
   };
 
-  // Submit Login
+  // Login Submit
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    const trimmedIdentifier = identifier.trim();
-    if (!trimmedIdentifier) {
-      setError('Please enter your institutional email or username.');
+    const trimmed = loginIdentifier.trim();
+    if (!trimmed) {
+      setError('Please enter your username or email.');
       return;
     }
-
     if (!loginPassword) {
       setError('Please enter your password.');
       return;
@@ -112,7 +124,7 @@ export default function LoginPage() {
 
     setLoading(true);
     try {
-      const loggedInUser = await loginWithCredentials(trimmedIdentifier, loginPassword, portal);
+      const loggedInUser = await loginWithCredentials(trimmed, loginPassword, portal);
       const targetRoute = loggedInUser.portal === 'student' ? '/student/portal' : '/institution/overview';
       navigate(targetRoute);
     } catch (err) {
@@ -122,7 +134,7 @@ export default function LoginPage() {
     }
   };
 
-  // Submit Registration (from login-register (2).html)
+  // Register Submit
   const handleRegisterSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -135,7 +147,6 @@ export default function LoginPage() {
       setError('Please choose a username.');
       return;
     }
-
     if (!trimmedEmail) {
       setError('Please enter your email address.');
       return;
@@ -152,10 +163,15 @@ export default function LoginPage() {
       return;
     }
 
+    if (regPassword !== regConfirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setLoading(true);
     try {
       const newUser = await registerWithCredentials(trimmedUsername, trimmedEmail, regPassword, portal);
-      setSuccessMsg('Account registered successfully! Redirecting to your dashboard...');
+      setSuccessMsg('Registration successful! Redirecting to dashboard...');
       setTimeout(() => {
         const targetRoute = newUser.portal === 'student' ? '/student/portal' : '/institution/overview';
         navigate(targetRoute);
@@ -166,605 +182,519 @@ export default function LoginPage() {
     }
   };
 
-  // Forgot password demo submit
-  const handleForgotSubmit = (e) => {
-    e.preventDefault();
-    if (!forgotEmail.trim()) return;
-    setForgotSent(true);
-  };
-
   return (
-    <div className="pratibha-auth-container">
+    <div className="pratibha-cyber-page">
+      {/* Background Ambient Glow */}
+      <div className="pratibha-ambient-glow" />
+
+      {/* Top Header Navigation */}
+      <header className="pratibha-cyber-header">
+        <BrandLogo variant="dark" size="default" />
+
+        <nav className="pratibha-cyber-nav" aria-label="Authentication navigation">
+          <Link to="/" className="pratibha-cyber-nav-link" id="authNavHome">
+            Home
+          </Link>
+          <button
+            type="button"
+            className="pratibha-cyber-nav-link"
+            onClick={() => setShowHelpModal(true)}
+            id="authNavHelp"
+            aria-label="Open platform help guide"
+          >
+            <HelpCircle size={15} />
+            <span>Help</span>
+          </button>
+        </nav>
+      </header>
+
       {/* =========================================================================
-          LEFT PANEL: AUTHENTICATION FORM, BRANDING & DEMO CONTROLS (45% DESKTOP)
+          MAIN CYBER CARD WITH DIAGONAL SWEEP (EXACT MATCH FOR IMAGES 1, 2, 3)
           ========================================================================= */}
-      <div className="pratibha-auth-left">
-        {/* Top Header: Brand Logo + Nav links */}
-        <div className="pratibha-auth-header">
-          <BrandLogo variant="light" size="default" />
+      <div
+        ref={containerRef}
+        className={`cyber-card-container ${isRegisterActive ? 'active' : ''} ${animClass}`}
+      >
+        {/* Diagonal Gradient Sweep Panel */}
+        <div className="cyber-diagonal-panel" />
 
-          <nav className="pratibha-auth-header-nav" aria-label="Authentication navigation">
-            <Link to="/" className="pratibha-auth-nav-link" id="authNavHome">
-              Home
-            </Link>
-            <button
-              type="button"
-              className="pratibha-auth-nav-link"
-              onClick={() => setShowHelpModal(true)}
-              id="authNavHelp"
-              aria-label="Open help and documentation"
-            >
-              <HelpCircle size={15} />
-              <span>Help</span>
-            </button>
-          </nav>
-        </div>
+        {/* =======================================================
+            LOGIN SIDE: FORM BOX (LEFT)
+            ======================================================= */}
+        <div className="cyber-form-box login">
+          <h2 className="cyber-form-title anim-slide">Login</h2>
 
-        {/* Center Main Form Content */}
-        <div className="pratibha-auth-content">
-          {/* Eyebrow & Titles */}
-          <div className="pratibha-auth-eyebrow">
-            {mode === 'login' ? 'WELCOME BACK' : 'CREATE AN ACCOUNT'}
-          </div>
-
-          <h1 className="pratibha-auth-title">
-            {mode === 'login' ? (
-              <>
-                Welcome to PRATIBHA<span className="pratibha-auth-dot">.</span>
-              </>
-            ) : (
-              <>
-                Join PRATIBHA<span className="pratibha-auth-dot">.</span>
-              </>
-            )}
-          </h1>
-
-          <p className="pratibha-auth-subtitle">
-            {mode === 'login'
-              ? 'Your student success journey starts here.'
-              : 'Register to access your institutional intelligence workspace.'}
-          </p>
-
-          {/* Institution Portal / Student Portal Selector */}
-          <div className="pratibha-portal-tabs" role="tablist" aria-label="Select target portal">
+          {/* Portal Switcher Tabs */}
+          <div className="cyber-portal-tabs anim-slide" role="tablist">
             <button
               type="button"
               role="tab"
               aria-selected={portal === 'institution'}
-              className={`pratibha-portal-tab-btn ${portal === 'institution' ? 'active' : ''}`}
+              className={`cyber-portal-tab ${portal === 'institution' ? 'active' : ''}`}
               onClick={() => handlePortalSwitch('institution')}
-              id="tabInstitutionPortal"
             >
-              <Building2 size={16} />
+              <Building2 size={13} />
               <span>Institution Portal</span>
             </button>
-
             <button
               type="button"
               role="tab"
               aria-selected={portal === 'student'}
-              className={`pratibha-portal-tab-btn ${portal === 'student' ? 'active' : ''}`}
+              className={`cyber-portal-tab ${portal === 'student' ? 'active' : ''}`}
               onClick={() => handlePortalSwitch('student')}
-              id="tabStudentPortal"
             >
-              <GraduationCap size={16} />
+              <GraduationCap size={13} />
               <span>Student Portal</span>
             </button>
           </div>
 
-          {/* Feedback & Error Messages */}
+          {/* Alerts */}
           {error && (
-            <div
-              style={{
-                backgroundColor: 'rgba(220, 38, 38, 0.08)',
-                border: '1px solid rgba(220, 38, 38, 0.25)',
-                color: 'var(--color-status-danger, #dc2626)',
-                padding: '0.7rem 0.9rem',
-                borderRadius: '8px',
-                fontSize: '0.84rem',
-                marginBottom: '1.15rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-              role="alert"
-            >
-              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+            <div className="cyber-alert error anim-slide" role="alert">
+              <AlertCircle size={14} style={{ flexShrink: 0 }} />
               <span>{error}</span>
             </div>
           )}
 
-          {successMsg && (
-            <div
-              style={{
-                backgroundColor: 'rgba(13, 148, 136, 0.08)',
-                border: '1px solid rgba(13, 148, 136, 0.28)',
-                color: 'var(--color-status-success, #0d9488)',
-                padding: '0.7rem 0.9rem',
-                borderRadius: '8px',
-                fontSize: '0.84rem',
-                marginBottom: '1.15rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
-              role="status"
+          <form onSubmit={handleLoginSubmit} id="loginForm">
+            {/* Username / Email with floating label & icon */}
+            <div className="cyber-input-box anim-slide">
+              <input
+                type="text"
+                id="loginUsername"
+                value={loginIdentifier}
+                onChange={(e) => setLoginIdentifier(e.target.value)}
+                required
+                autoComplete="username"
+                placeholder=" "
+              />
+              <label htmlFor="loginUsername">Username / Email</label>
+              <div className="cyber-input-icon">
+                <User size={16} />
+              </div>
+            </div>
+
+            {/* Password with floating label & icon */}
+            <div className="cyber-input-box anim-slide">
+              <input
+                type={showLoginPassword ? 'text' : 'password'}
+                id="loginPassword"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                placeholder=" "
+              />
+              <label htmlFor="loginPassword">Password</label>
+              <button
+                type="button"
+                className="cyber-pw-toggle"
+                onClick={() => setShowLoginPassword(!showLoginPassword)}
+                aria-label={showLoginPassword ? 'Hide password' : 'Show password'}
+              >
+                {showLoginPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
+
+            {/* Remember Me & Forgot Password */}
+            <div className="cyber-form-row anim-slide">
+              <label className="cyber-checkbox-label">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span>Remember me</span>
+              </label>
+
+              <button
+                type="button"
+                className="cyber-forgot-link"
+                onClick={() => {
+                  setForgotSent(false);
+                  setForgotEmail(loginIdentifier || '');
+                  setShowForgotModal(true);
+                }}
+              >
+                Forgot password?
+              </button>
+            </div>
+
+            {/* Pill Button: Login */}
+            <button
+              type="submit"
+              className="cyber-btn anim-slide"
+              disabled={loading}
+              id="btnLoginSubmit"
             >
-              <CheckCircle2 size={16} style={{ flexShrink: 0 }} />
+              <span>{loading ? 'Entering...' : 'Login'}</span>
+            </button>
+
+            {/* Switch to Sign Up */}
+            <div className="cyber-switch-link anim-slide">
+              <span>Don't have an account?</span>
+              <button
+                type="button"
+                className="cyber-switch-btn"
+                onClick={handleGoToRegister}
+                id="btnSwitchToRegister"
+              >
+                Sign Up
+              </button>
+            </div>
+          </form>
+
+          {/* Quick 1-Click Demo Personas */}
+          <div className="cyber-personas-panel anim-slide">
+            <div className="cyber-personas-title">Quick 1-Click Demo Personas:</div>
+            <div className="cyber-personas-grid">
+              <button
+                type="button"
+                className="cyber-persona-chip"
+                onClick={() => handle1ClickDemo('admin')}
+              >
+                <span aria-hidden="true">🏛️</span>
+                <span>Admin (Provost)</span>
+              </button>
+              <button
+                type="button"
+                className="cyber-persona-chip"
+                onClick={() => handle1ClickDemo('faculty')}
+              >
+                <span aria-hidden="true">👨‍🏫</span>
+                <span>Faculty Mentor</span>
+              </button>
+              <button
+                type="button"
+                className="cyber-persona-chip"
+                onClick={() => handle1ClickDemo('placement')}
+              >
+                <span aria-hidden="true">💼</span>
+                <span>Placement Officer</span>
+              </button>
+              <button
+                type="button"
+                className="cyber-persona-chip"
+                onClick={() => handle1ClickDemo('student')}
+              >
+                <span aria-hidden="true">🎓</span>
+                <span>Student (Aarav)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* =======================================================
+            LOGIN SIDE: WELCOME BACK INFO (RIGHT DIAGONAL PANEL)
+            ======================================================= */}
+        <div className="cyber-info-box login">
+          <h2 className="anim-slide">
+            WELCOME<br />BACK!
+          </h2>
+          <p className="anim-slide">PRATIBHA Student Success Intelligence</p>
+        </div>
+
+        {/* =======================================================
+            REGISTER SIDE: WELCOME INFO (LEFT DIAGONAL PANEL)
+            ======================================================= */}
+        <div className="cyber-info-box register">
+          <h2 className="anim-slide">WELCOME!</h2>
+          <p className="anim-slide">Join PRATIBHA Student Platform</p>
+        </div>
+
+        {/* =======================================================
+            REGISTER SIDE: FORM BOX (RIGHT)
+            ======================================================= */}
+        <div className="cyber-form-box register">
+          <h2 className="cyber-form-title anim-slide">Register</h2>
+
+          {/* Portal Switcher Tabs */}
+          <div className="cyber-portal-tabs anim-slide" role="tablist">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={portal === 'institution'}
+              className={`cyber-portal-tab ${portal === 'institution' ? 'active' : ''}`}
+              onClick={() => handlePortalSwitch('institution')}
+            >
+              <Building2 size={13} />
+              <span>Institution Portal</span>
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={portal === 'student'}
+              className={`cyber-portal-tab ${portal === 'student' ? 'active' : ''}`}
+              onClick={() => handlePortalSwitch('student')}
+            >
+              <GraduationCap size={13} />
+              <span>Student Portal</span>
+            </button>
+          </div>
+
+          {/* Alerts */}
+          {error && (
+            <div className="cyber-alert error anim-slide" role="alert">
+              <AlertCircle size={14} style={{ flexShrink: 0 }} />
+              <span>{error}</span>
+            </div>
+          )}
+          {successMsg && (
+            <div className="cyber-alert success anim-slide" role="status">
+              <CheckCircle2 size={14} style={{ flexShrink: 0 }} />
               <span>{successMsg}</span>
             </div>
           )}
 
-          {/* Viewport for Animated Form Transitions */}
-          <div className="pratibha-form-viewport">
-            {mode === 'login' ? (
-              /* =======================================================
-                 SIGN IN FORM (Preserving autocomplete, validation)
-                 ======================================================= */
-              <div
-                key="login-slide"
-                className={`pratibha-form-slide ${
-                  transitionDirection === 'left' ? 'entering-from-left' : 'entering-from-right'
-                }`}
-              >
-                <form onSubmit={handleLoginSubmit} id="loginForm" noValidate={false}>
-                  {/* Email / Username Field */}
-                  <div className="pratibha-input-group">
-                    <label htmlFor="loginIdentifier" className="visually-hidden" style={{ display: 'none' }}>
-                      Email or Username
-                    </label>
-                    <div className="pratibha-input-icon">
-                      <Mail size={17} />
-                    </div>
-                    <input
-                      type="text"
-                      id="loginIdentifier"
-                      name="username"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                      placeholder="admin@pratibha.edu"
-                      required
-                      autoComplete="username"
-                      className="pratibha-input"
-                    />
-                  </div>
-
-                  {/* Password Field */}
-                  <div className="pratibha-input-group">
-                    <label htmlFor="loginPassword" className="visually-hidden" style={{ display: 'none' }}>
-                      Password
-                    </label>
-                    <div className="pratibha-input-icon">
-                      <Lock size={17} />
-                    </div>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      id="loginPassword"
-                      name="password"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      autoComplete="current-password"
-                      className="pratibha-input with-toggle"
-                    />
-                    <button
-                      type="button"
-                      className="pratibha-password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      tabIndex={0}
-                    >
-                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                    </button>
-                  </div>
-
-                  {/* Remember Me & Forgot Password Row */}
-                  <div className="pratibha-form-row">
-                    <label className="pratibha-checkbox-label">
-                      <input
-                        type="checkbox"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        id="rememberMeCheckbox"
-                      />
-                      <span>Remember me</span>
-                    </label>
-
-                    <button
-                      type="button"
-                      className="pratibha-forgot-btn"
-                      onClick={() => {
-                        setForgotSent(false);
-                        setForgotEmail(identifier || '');
-                        setShowForgotModal(true);
-                      }}
-                      id="btnForgotPassword"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-
-                  {/* Primary Submit Button */}
-                  <button
-                    type="submit"
-                    className="pratibha-submit-btn"
-                    disabled={loading}
-                    id="btnSignInSubmit"
-                  >
-                    <span>{loading ? 'Entering Portal...' : 'Sign in'}</span>
-                    <ArrowRight size={17} />
-                  </button>
-                </form>
-
-                {/* Demo Notice Box */}
-                <div className="pratibha-demo-notice">
-                  <Info size={18} className="pratibha-demo-notice-icon" />
-                  <div>
-                    <div className="pratibha-demo-notice-title">
-                      Demo experience • No real student data.
-                    </div>
-                    <div className="pratibha-demo-notice-desc">
-                      Use the provided demo credentials to explore the platform.
-                    </div>
-                  </div>
-                </div>
-
-                {/* 1-Click Demo Personas */}
-                <div className="pratibha-demo-personas">
-                  <div className="pratibha-personas-title">QUICK 1-CLICK DEMO PERSONAS:</div>
-                  <div className="pratibha-personas-grid">
-                    <button
-                      type="button"
-                      className="pratibha-persona-btn"
-                      onClick={() => handle1ClickDemo('admin')}
-                      id="btnDemoAdmin"
-                    >
-                      <span aria-hidden="true">🏛️</span>
-                      <span>Admin (Provost)</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="pratibha-persona-btn"
-                      onClick={() => handle1ClickDemo('faculty')}
-                      id="btnDemoFaculty"
-                    >
-                      <span aria-hidden="true">👨‍🏫</span>
-                      <span>Faculty Mentor</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="pratibha-persona-btn"
-                      onClick={() => handle1ClickDemo('placement')}
-                      id="btnDemoPlacement"
-                    >
-                      <span aria-hidden="true">💼</span>
-                      <span>Placement Officer</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      className="pratibha-persona-btn"
-                      onClick={() => handle1ClickDemo('student')}
-                      id="btnDemoStudent"
-                    >
-                      <span aria-hidden="true">🎓</span>
-                      <span>Student (Aarav)</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* Switch to Register link (Preserved from login-register (2).html) */}
-                <div className="pratibha-switch-wrap">
-                  <span>Don't have an account?</span>
-                  <button
-                    type="button"
-                    className="pratibha-switch-btn"
-                    onClick={() => handleSwitchMode('register')}
-                    id="btnSwitchToRegister"
-                  >
-                    Create Account
-                  </button>
-                </div>
-              </div>
-            ) : (
-              /* =======================================================
-                 SIGN UP FORM (Preserving username, email, password min 6)
-                 ======================================================= */
-              <div
-                key="register-slide"
-                className={`pratibha-form-slide ${
-                  transitionDirection === 'right' ? 'entering-from-right' : 'entering-from-left'
-                }`}
-              >
-                <form onSubmit={handleRegisterSubmit} id="registerForm" noValidate={false}>
-                  {/* Username Field */}
-                  <div className="pratibha-input-group">
-                    <label htmlFor="regUsername" className="visually-hidden" style={{ display: 'none' }}>
-                      Username
-                    </label>
-                    <div className="pratibha-input-icon">
-                      <User size={17} />
-                    </div>
-                    <input
-                      type="text"
-                      id="regUsername"
-                      name="username"
-                      value={regUsername}
-                      onChange={(e) => setRegUsername(e.target.value)}
-                      placeholder="Username (e.g. jdoe)"
-                      required
-                      autoComplete="username"
-                      className="pratibha-input"
-                    />
-                  </div>
-
-                  {/* Email Field */}
-                  <div className="pratibha-input-group">
-                    <label htmlFor="regEmail" className="visually-hidden" style={{ display: 'none' }}>
-                      Email Address
-                    </label>
-                    <div className="pratibha-input-icon">
-                      <Mail size={17} />
-                    </div>
-                    <input
-                      type="email"
-                      id="regEmail"
-                      name="email"
-                      value={regEmail}
-                      onChange={(e) => setRegEmail(e.target.value)}
-                      placeholder="Email (e.g. name@university.edu)"
-                      required
-                      autoComplete="email"
-                      className="pratibha-input"
-                    />
-                  </div>
-
-                  {/* Password Field (minlength 6 per reference HTML) */}
-                  <div className="pratibha-input-group">
-                    <label htmlFor="regPassword" className="visually-hidden" style={{ display: 'none' }}>
-                      Password (min 6 characters)
-                    </label>
-                    <div className="pratibha-input-icon">
-                      <Lock size={17} />
-                    </div>
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      id="regPassword"
-                      name="password"
-                      value={regPassword}
-                      onChange={(e) => setRegPassword(e.target.value)}
-                      placeholder="Password (minimum 6 characters)"
-                      required
-                      minLength={6}
-                      autoComplete="new-password"
-                      className="pratibha-input with-toggle"
-                    />
-                    <button
-                      type="button"
-                      className="pratibha-password-toggle"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      tabIndex={0}
-                    >
-                      {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
-                    </button>
-                  </div>
-
-                  {/* Primary Submit Button */}
-                  <button
-                    type="submit"
-                    className="pratibha-submit-btn"
-                    disabled={loading}
-                    id="btnRegisterSubmit"
-                  >
-                    <span>{loading ? 'Creating Profile...' : 'Create Account'}</span>
-                    <ArrowRight size={17} />
-                  </button>
-                </form>
-
-                {/* Switch to Login link (Preserved from login-register (2).html) */}
-                <div className="pratibha-switch-wrap">
-                  <span>Already have an account?</span>
-                  <button
-                    type="button"
-                    className="pratibha-switch-btn"
-                    onClick={() => handleSwitchMode('login')}
-                    id="btnSwitchToLogin"
-                  >
-                    Sign In
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Footer info */}
-        <footer className="pratibha-auth-footer">
-          PRATIBHA Intelligence Platform • KPMG Challenge 4 Prototype
-        </footer>
-      </div>
-
-      {/* =========================================================================
-          RIGHT PANEL: CAMPUS PHOTOGRAPH + ORGANIC S-CURVE + INTELLIGENCE CARD
-          ========================================================================= */}
-      <div
-        className="pratibha-auth-right"
-        style={{
-          backgroundImage: `url('./assets/images/campus_day_login.jpg')`,
-        }}
-        aria-hidden="true"
-      >
-        {/* Organic S-Curve Wave SVG Divider connecting white panel and photograph */}
-        <svg
-          className="pratibha-organic-wave"
-          viewBox="0 0 100 1000"
-          preserveAspectRatio="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M 0,0 L 22,0 C 95,140 105,290 42,470 C -12,620 58,790 44,1000 L 0,1000 Z"
-            fill="#FFFFFF"
-          />
-        </svg>
-
-        {/* Floating Student Success Intelligence Preview Card */}
-        <div className="pratibha-intelligence-card">
-          {/* Card Header */}
-          <div className="pratibha-card-header">
-            <div className="pratibha-card-icon-box">
-              <BarChart3 size={18} />
-            </div>
-            <h2 className="pratibha-card-title">Student Success Intelligence</h2>
-          </div>
-
-          {/* Indicators matching target screenshot */}
-          <div className="pratibha-card-metrics">
-            {/* Academic Performance */}
-            <div>
-              <div className="pratibha-metric-row">
-                <span className="pratibha-metric-label">Academic Performance</span>
-                <span className="pratibha-metric-value">78%</span>
-              </div>
-              <div className="pratibha-progress-track">
-                <div className="pratibha-progress-fill-academic" />
+          <form onSubmit={handleRegisterSubmit} id="registerForm">
+            {/* Username */}
+            <div className="cyber-input-box anim-slide">
+              <input
+                type="text"
+                id="regUsername"
+                value={regUsername}
+                onChange={(e) => setRegUsername(e.target.value)}
+                required
+                autoComplete="username"
+                placeholder=" "
+              />
+              <label htmlFor="regUsername">Username</label>
+              <div className="cyber-input-icon">
+                <User size={16} />
               </div>
             </div>
 
-            {/* Placement Readiness */}
-            <div>
-              <div className="pratibha-metric-row">
-                <span className="pratibha-metric-label">Placement Readiness</span>
-                <span className="pratibha-metric-value">64%</span>
-              </div>
-              <div className="pratibha-progress-track">
-                <div className="pratibha-progress-fill-placement" />
+            {/* Email */}
+            <div className="cyber-input-box anim-slide">
+              <input
+                type="email"
+                id="regEmail"
+                value={regEmail}
+                onChange={(e) => setRegEmail(e.target.value)}
+                required
+                autoComplete="email"
+                placeholder=" "
+              />
+              <label htmlFor="regEmail">Email</label>
+              <div className="cyber-input-icon">
+                <Mail size={16} />
               </div>
             </div>
-          </div>
-        </div>
-      </div>
 
-      {/* =========================================================================
-          ACCESSIBLE MODALS: HELP DIALOG & FORGOT PASSWORD
-          ========================================================================= */}
-      {showHelpModal && (
-        <div
-          className="pratibha-modal-backdrop"
-          onClick={() => setShowHelpModal(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="helpModalTitle"
-        >
-          <div className="pratibha-modal-box" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 id="helpModalTitle" style={{ margin: 0, color: 'var(--color-navy, #082b56)', fontSize: '1.2rem', fontWeight: 700 }}>
-                Platform Authentication Guide
-              </h3>
+            {/* Password */}
+            <div className="cyber-input-box anim-slide">
+              <input
+                type={showRegPassword ? 'text' : 'password'}
+                id="regPassword"
+                value={regPassword}
+                onChange={(e) => setRegPassword(e.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
+                placeholder=" "
+              />
+              <label htmlFor="regPassword">Password</label>
               <button
                 type="button"
-                onClick={() => setShowHelpModal(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
-                aria-label="Close dialog"
+                className="cyber-pw-toggle"
+                onClick={() => setShowRegPassword(!showRegPassword)}
+                aria-label={showRegPassword ? 'Hide password' : 'Show password'}
               >
-                <X size={20} />
+                {showRegPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
 
-            <p style={{ fontSize: '0.88rem', color: '#475569', lineHeight: 1.5, marginBottom: '1rem' }}>
-              Welcome to the <strong>PRATIBHA Student Success Intelligence Platform</strong> prototype.
-            </p>
-
-            <div style={{ backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '0.85rem', marginBottom: '1.25rem', fontSize: '0.84rem' }}>
-              <div style={{ fontWeight: 600, color: '#082b56', marginBottom: '4px' }}>Demo Quick Personas:</div>
-              <ul style={{ margin: 0, paddingLeft: '1.2rem', color: '#475569', lineHeight: 1.5 }}>
-                <li><strong>Admin (Provost):</strong> Full institutional overview, radar, cohort segments, and ingestion studio.</li>
-                <li><strong>Faculty Mentor:</strong> Department-level cohorts, risk identification, and student drawers.</li>
-                <li><strong>Placement Officer:</strong> Decoupled divergence radar and career bootcamp simulations.</li>
-                <li><strong>Student:</strong> Personalized 360° self-service portal (Aarav Sharma).</li>
-              </ul>
+            {/* Confirm Password */}
+            <div className="cyber-input-box anim-slide">
+              <input
+                type={showRegPassword ? 'text' : 'password'}
+                id="regConfirmPassword"
+                value={regConfirmPassword}
+                onChange={(e) => setRegConfirmPassword(e.target.value)}
+                required
+                minLength={6}
+                autoComplete="new-password"
+                placeholder=" "
+              />
+              <label htmlFor="regConfirmPassword">Confirm Password</label>
+              <div className="cyber-input-icon">
+                <ShieldCheck size={16} />
+              </div>
             </div>
 
+            {/* Pill Button: Register */}
+            <button
+              type="submit"
+              className="cyber-btn anim-slide"
+              disabled={loading}
+              id="btnRegisterSubmit"
+            >
+              <span>{loading ? 'Registering...' : 'Register'}</span>
+            </button>
+
+            {/* Switch to Sign In */}
+            <div className="cyber-switch-link anim-slide">
+              <span>Already have an account?</span>
+              <button
+                type="button"
+                className="cyber-switch-btn"
+                onClick={handleGoToLogin}
+                id="btnSwitchToLogin"
+              >
+                Sign In
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* =========================================================================
+          HELP MODAL DIALOG
+          ========================================================================= */}
+      {showHelpModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 12, 0.75)',
+            backdropFilter: 'blur(5px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100,
+            padding: '20px',
+          }}
+          onClick={() => setShowHelpModal(false)}
+        >
+          <div
+            style={{
+              background: '#0d1527',
+              border: '2px solid #00a2ff',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 0 25px rgba(0, 162, 255, 0.5)',
+              color: '#ffffff',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#00d4ff' }}>Authentication Guide</h3>
+              <button
+                type="button"
+                onClick={() => setShowHelpModal(false)}
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+            <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '12px' }}>
+              Welcome to <strong>PRATIBHA Student Success Intelligence Platform</strong>.
+            </p>
+            <div style={{ background: 'rgba(0, 162, 255, 0.08)', border: '1px solid rgba(0, 162, 255, 0.25)', borderRadius: '8px', padding: '12px', fontSize: '0.8rem', lineHeight: 1.5, color: '#e2e8f0', marginBottom: '16px' }}>
+              <div><strong>1-Click Demo Personas:</strong></div>
+              <div>• <strong>Admin (Provost):</strong> Institutional overview, radar & simulations.</div>
+              <div>• <strong>Faculty:</strong> Cohort risk & student directory.</div>
+              <div>• <strong>Placement Officer:</strong> Placement readiness radar & mock bootcamp.</div>
+              <div>• <strong>Student:</strong> Personalized 360° portal.</div>
+            </div>
             <button
               type="button"
-              className="pratibha-submit-btn"
+              className="cyber-btn"
               onClick={() => setShowHelpModal(false)}
-              style={{ width: '100%', padding: '0.75rem' }}
+              style={{ width: '100%', height: '38px', margin: 0 }}
             >
-              Got it, close
+              Got it
             </button>
           </div>
         </div>
       )}
 
+      {/* =========================================================================
+          FORGOT PASSWORD MODAL
+          ========================================================================= */}
       {showForgotModal && (
         <div
-          className="pratibha-modal-backdrop"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(2, 6, 12, 0.75)',
+            backdropFilter: 'blur(5px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 100,
+            padding: '20px',
+          }}
           onClick={() => setShowForgotModal(false)}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="forgotModalTitle"
         >
-          <div className="pratibha-modal-box" onClick={(e) => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <h3 id="forgotModalTitle" style={{ margin: 0, color: 'var(--color-navy, #082b56)', fontSize: '1.2rem', fontWeight: 700 }}>
-                Reset Account Password
-              </h3>
+          <div
+            style={{
+              background: '#0d1527',
+              border: '2px solid #00a2ff',
+              borderRadius: '12px',
+              padding: '24px',
+              maxWidth: '420px',
+              width: '100%',
+              boxShadow: '0 0 25px rgba(0, 162, 255, 0.5)',
+              color: '#ffffff',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', color: '#00d4ff' }}>Password Recovery</h3>
               <button
                 type="button"
                 onClick={() => setShowForgotModal(false)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
-                aria-label="Close dialog"
+                style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer' }}
               >
-                <X size={20} />
+                <X size={18} />
               </button>
             </div>
-
             {forgotSent ? (
               <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-status-success, #0d9488)', fontWeight: 600, marginBottom: '0.5rem' }}>
-                  <CheckCircle2 size={18} />
-                  <span>Password Reset Instructions Dispatched</span>
-                </div>
-                <p style={{ fontSize: '0.86rem', color: '#475569', lineHeight: 1.5, marginBottom: '1.25rem' }}>
-                  If an active institutional profile matches <strong>{forgotEmail}</strong>, a secure reset token has been dispatched. In this demonstration, you can also sign in instantly using any 1-click persona.
+                <p style={{ fontSize: '0.85rem', color: '#5eead4', lineHeight: 1.5, marginBottom: '16px' }}>
+                  Reset instructions dispatched to <strong>{forgotEmail}</strong>. In demo mode, you can sign in directly using any 1-click persona.
                 </p>
                 <button
                   type="button"
-                  className="pratibha-submit-btn"
+                  className="cyber-btn"
                   onClick={() => setShowForgotModal(false)}
-                  style={{ width: '100%', padding: '0.75rem' }}
+                  style={{ width: '100%', height: '38px', margin: 0 }}
                 >
-                  Return to Sign In
+                  Return to Login
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleForgotSubmit}>
-                <p style={{ fontSize: '0.86rem', color: '#475569', lineHeight: 1.5, marginBottom: '1rem' }}>
-                  Enter your registered institutional email address to receive password recovery instructions.
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  setForgotSent(true);
+                }}
+              >
+                <p style={{ fontSize: '0.85rem', color: '#cbd5e1', lineHeight: 1.5, marginBottom: '12px' }}>
+                  Enter your email address to receive password reset instructions.
                 </p>
-                <div className="pratibha-input-group" style={{ marginBottom: '1.25rem' }}>
-                  <div className="pratibha-input-icon">
-                    <Mail size={17} />
-                  </div>
+                <div className="cyber-input-box" style={{ marginBottom: '16px' }}>
                   <input
                     type="email"
                     value={forgotEmail}
                     onChange={(e) => setForgotEmail(e.target.value)}
-                    placeholder="name@pratibha.edu"
                     required
-                    className="pratibha-input"
+                    placeholder=" "
                   />
+                  <label>Email Address</label>
+                  <div className="cyber-input-icon">
+                    <Mail size={16} />
+                  </div>
                 </div>
                 <button
                   type="submit"
-                  className="pratibha-submit-btn"
-                  style={{ width: '100%', padding: '0.75rem' }}
+                  className="cyber-btn"
+                  style={{ width: '100%', height: '38px', margin: 0 }}
                 >
-                  Send Recovery Link
+                  Send Reset Link
                 </button>
               </form>
             )}

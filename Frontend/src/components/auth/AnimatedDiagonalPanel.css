@@ -1,0 +1,115 @@
+/**
+ * AnimatedDiagonalPanel.css
+ * Luminous cyan/teal diagonal panel with layered depth, glowing border,
+ * and seamless coordination with PRATIBHA's institutional palette.
+ */
+
+.pratibha-diagonal-panel-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 6;
+  overflow: hidden;
+  transition: opacity 0.5s ease;
+}
+
+/* Layer 1: Diagonal Gradient Surface */
+.pratibha-diagonal-surface {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Default login mode: subtle diagonal depth extending from left boundary */
+  background: linear-gradient(
+    135deg,
+    rgba(6, 28, 55, 0.03) 0%,
+    rgba(12, 58, 107, 0.05) 50%,
+    rgba(0, 162, 255, 0.02) 100%
+  );
+  pointer-events: none;
+}
+
+/* Radial Glow Accent within moving layer */
+.pratibha-diagonal-glow-radial {
+  position: absolute;
+  top: 25%;
+  right: 55%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(
+    circle,
+    rgba(0, 162, 255, 0.12) 0%,
+    rgba(37, 139, 250, 0.05) 45%,
+    transparent 70%
+  );
+  filter: blur(28px);
+  pointer-events: none;
+}
+
+/* Layer 2: Luminous Cyan/Teal Glowing Slanted Border Beam */
+.pratibha-luminous-beam {
+  position: absolute;
+  top: -10%;
+  bottom: -10%;
+  width: 3px;
+  left: 45%;
+  transform: rotate(2.5deg);
+  transform-origin: center center;
+  background: linear-gradient(
+    180deg,
+    rgba(0, 162, 255, 0) 0%,
+    rgba(0, 162, 255, 0.85) 15%,
+    rgba(37, 139, 250, 1) 50%,
+    rgba(56, 189, 248, 0.85) 85%,
+    rgba(0, 162, 255, 0) 100%
+  );
+  box-shadow:
+    0 0 10px rgba(0, 162, 255, 0.65),
+    0 0 25px rgba(0, 162, 255, 0.4),
+    0 0 45px rgba(37, 139, 250, 0.25);
+  pointer-events: none;
+  z-index: 7;
+  opacity: 0.9;
+  transition: opacity 0.4s ease;
+}
+
+/* Pulse animation for the luminous beam */
+@keyframes beamGlowPulse {
+  0%, 100% {
+    opacity: 0.85;
+    box-shadow:
+      0 0 8px rgba(0, 162, 255, 0.6),
+      0 0 20px rgba(0, 162, 255, 0.35);
+  }
+  50% {
+    opacity: 1;
+    box-shadow:
+      0 0 14px rgba(0, 162, 255, 0.85),
+      0 0 32px rgba(0, 162, 255, 0.55),
+      0 0 50px rgba(56, 189, 248, 0.3);
+  }
+}
+
+.pratibha-luminous-beam {
+  animation: beamGlowPulse 4s ease-in-out infinite;
+}
+
+/* Mobile & Tablet adjustments */
+@media (max-width: 860px) {
+  .pratibha-diagonal-panel-wrapper,
+  .pratibha-luminous-beam {
+    display: none !important;
+  }
+}
+
+/* Accessibility: Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .pratibha-luminous-beam {
+    animation: none !important;
+  }
+}
