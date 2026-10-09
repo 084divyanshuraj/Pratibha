@@ -121,15 +121,15 @@
 - [x] `POST /api/v1/segments/rebuild` — Admin/analytics role; rebuild memberships
 
 ### Interventions & Sandbox Simulator
-- [ ] `GET /api/v1/intervention-catalog` — Staff only; catalog of interventions
-- [ ] `POST /api/v1/intervention-catalog` — Admin only; create/update catalog entry
-- [ ] `POST /api/v1/simulations` — Staff only; save new scenario definition
-- [ ] `POST /api/v1/simulations/:scenarioId/run` — Staff only; run deterministic allocation
-- [ ] `GET /api/v1/simulations/:scenarioId` — Staff; view assumptions, selected/excluded lists, capacity
-- [ ] `POST /api/v1/simulations/:scenarioId/approve` — Authorized staff; approve scenario & generate intervention assignments
-- [ ] `GET /api/v1/interventions` — Staff; student sees own only
-- [ ] `PATCH /api/v1/interventions/:interventionId` — Assigned staff; status update
-- [ ] `POST /api/v1/interventions/:interventionId/outcomes` — Authorized staff; record observed outcomes
+- [x] `GET /api/v1/intervention-catalog` — Staff only; catalog of interventions
+- [x] `POST /api/v1/intervention-catalog` — Admin only; create/update catalog entry
+- [x] `POST /api/v1/simulations` — Staff only; save new scenario definition
+- [x] `POST /api/v1/simulations/:scenarioId/run` — Staff only; run deterministic allocation
+- [x] `GET /api/v1/simulations/:scenarioId` — Staff; view assumptions, selected/excluded lists, capacity
+- [x] `POST /api/v1/simulations/:scenarioId/approve` — Authorized staff; approve scenario & generate intervention assignments
+- [x] `GET /api/v1/interventions` — Staff; student sees own only
+- [x] `PATCH /api/v1/interventions/:interventionId` — Assigned staff; status update
+- [x] `POST /api/v1/interventions/:interventionId/outcomes` — Authorized staff; record observed outcomes
 
 ### Feedback & Copilot
 - [ ] `POST /api/v1/feedback` — Authenticated; submit rating/feedback

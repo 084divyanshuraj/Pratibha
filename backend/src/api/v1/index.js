@@ -5,6 +5,9 @@ import studentRouter from '../../students/student.routes.js';
 import ingestionRouter from '../../ingestion/ingestion.routes.js';
 import analyticsRouter from '../../analytics/analytics.routes.js';
 import segmentRouter from '../../segments/segment.routes.js';
+import catalogRouter from '../../interventions/catalog.routes.js';
+import simulationRouter from '../../interventions/simulation.routes.js';
+import interventionRouter from '../../interventions/intervention.routes.js';
 import { authenticate, authorizeStudentScope } from '../../middleware/auth.js';
 
 const apiV1Router = Router();
@@ -27,6 +30,9 @@ apiV1Router.get('/', (req, res) => {
         imports: '/api/v1/imports',
         analytics: '/api/v1/analytics',
         segments: '/api/v1/segments',
+        interventionCatalog: '/api/v1/intervention-catalog',
+        simulations: '/api/v1/simulations',
+        interventions: '/api/v1/interventions',
       },
     },
     meta: {
@@ -52,6 +58,15 @@ apiV1Router.use('/analytics', analyticsRouter);
 
 // Student Segmentation
 apiV1Router.use('/segments', segmentRouter);
+
+// Intervention Catalog
+apiV1Router.use('/intervention-catalog', catalogRouter);
+
+// Sandbox Simulation Scenarios
+apiV1Router.use('/simulations', simulationRouter);
+
+// Student Interventions Tracking
+apiV1Router.use('/interventions', interventionRouter);
 
 // Scoped student record verification route (for testing object-level authorization gate)
 apiV1Router.get(

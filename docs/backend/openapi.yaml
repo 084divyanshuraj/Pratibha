@@ -674,6 +674,300 @@ paths:
         '404':
           description: Segment not found
 
+  /api/v1/intervention-catalog:
+    get:
+      summary: List intervention catalog entries
+      description: Staff roles only. Returns available intervention types, eligibility rules, and capacity units.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: activeOnly
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: List of intervention catalog entries
+        '403':
+          description: Forbidden - staff role required
+
+    post:
+      summary: Create or update intervention catalog entry
+      description: Admin only. Defines eligibility rules, cost/capacity units, and duration.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - interventionType
+                - name
+                - description
+              properties:
+                interventionType:
+                  type: string
+                  example: "remedial_classes"
+                name:
+                  type: string
+                  example: "Remedial Faculty Mentoring"
+                description:
+                  type: string
+                  example: "Weekly mentoring for struggling subjects"
+                capacityUnit:
+                  type: string
+                  default: "seats"
+                costUnits:
+                  type: number
+                  default: 0
+                durationDays:
+                  type: integer
+                  default: 30
+                eligibilityRules:
+                  type: object
+      responses:
+        '200':
+          description: Catalog entry created or updated
+        '403':
+          description: Forbidden - admin role required
+
+  /api/v1/intervention-catalog/{interventionType}:
+    get:
+      summary: Get intervention catalog entry
+      description: Staff roles only. Returns specific catalog entry by interventionType.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: interventionType
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Catalog entry details
+        '404':
+          description: Intervention type not found
+
+  /api/v1/simulations:
+    post:
+      summary: Create simulation scenario
+      description: Staff roles only. Defines a hypothetical intervention scenario in draft status.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - interventionTypes
+              properties:
+                strategy:
+                  type: string
+                  enum: [targeted, uniform, mixed, custom]
+                  default: "targeted"
+                interventionTypes:
+                  type: array
+                  items:
+                    type: string
+                cohortFilters:
+                  type: object
+                capacityConstraints:
+                  type: object
+                assumptions:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '201':
+          description: Scenario definition created in draft status
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/simulations/{scenarioId}/run:
+    post:
+      summary: Run simulation allocation engine
+      description: Staff roles only. Executes deterministic allocation, respecting capacity constraints and recording reasons for selected/excluded students.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: scenarioId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Scenario executed and results persisted with status simulated
+        '404':
+          description: Scenario not found
+
+  /api/v1/simulations/{scenarioId}:
+    get:
+      summary: Get simulation scenario details
+      description: Staff roles only. Retrieves allocations, exclusions, resource summary, assumptions, and approval state.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: scenarioId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Simulation scenario report
+        '404':
+          description: Scenario not found
+
+  /api/v1/simulations/{scenarioId}/approve:
+    post:
+      summary: Approve scenario and generate official interventions
+      description: Admin and faculty only. Transitions simulated scenario to approved and creates persistent student Intervention assignments.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: scenarioId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Scenario approved and official interventions created
+        '400':
+          description: Invalid state - scenario must be simulated before approval
+        '403':
+          description: Forbidden - admin or faculty role required
+        '409':
+          description: Scenario is already approved
+
+  /api/v1/interventions:
+    get:
+      summary: List student interventions
+      description: Authenticated users. Staff sees all/filtered interventions; students are automatically scoped to own studentId.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [planned, assigned, in_progress, completed, cancelled]
+        - in: query
+          name: interventionType
+          schema:
+            type: string
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+      responses:
+        '200':
+          description: Paginated list of interventions
+
+  /api/v1/interventions/{interventionId}:
+    get:
+      summary: Get intervention details
+      description: Authenticated users. Students can only access their own intervention.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: interventionId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Intervention details
+        '403':
+          description: Forbidden - cannot access another student intervention
+        '404':
+          description: Intervention not found
+
+    patch:
+      summary: Update intervention status and notes
+      description: Staff roles only. Updates progress status (assigned, in_progress, completed, cancelled) and participation modules.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: interventionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [planned, assigned, in_progress, completed, cancelled]
+                notes:
+                  type: string
+                participation:
+                  type: object
+      responses:
+        '200':
+          description: Intervention updated successfully
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/interventions/{interventionId}/outcomes:
+    post:
+      summary: Record observed outcome
+      description: Staff roles only. Records observed metric and value for an intervention.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: interventionId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - metric
+                - value
+              properties:
+                metric:
+                  type: string
+                  example: "attendance_improvement_pct"
+                value:
+                  example: "+12%"
+                observedAt:
+                  type: string
+                  format: date-time
+      responses:
+        '200':
+          description: Observed outcome recorded
+        '403':
+          description: Forbidden - staff role required
+
+
 
 components:
   schemas:

@@ -98,16 +98,16 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 8 — Intervention catalog and Sandbox
 
-- [ ] Implement intervention catalog with versioned eligibility rules and capacity units.
-- [ ] Implement scenario creation and validation.
-- [ ] Implement deterministic selection/allocation strategies (targeted, uniform, mixed) using explicit rules.
-- [ ] Return selected/excluded student reasons, capacity use, resource summary, rule version and assumptions.
-- [ ] Do not fabricate outcome uplift; outcome estimates remain absent unless a validated method is available.
-- [ ] Require authorized human approval before turning a scenario into assignments.
-- [ ] Implement intervention assignment, status/progress updates and outcome recording.
-- [ ] Test capacity limits, duplicate assignment, invalid strategy, role access and approval state transitions.
+- [x] Implement intervention catalog with versioned eligibility rules and capacity units.
+- [x] Implement scenario creation and validation.
+- [x] Implement deterministic selection/allocation strategies (targeted, uniform, mixed) using explicit rules.
+- [x] Return selected/excluded student reasons, capacity use, resource summary, rule version and assumptions.
+- [x] Do not fabricate outcome uplift; outcome estimates remain absent unless a validated method is available.
+- [x] Require authorized human approval before turning a scenario into assignments.
+- [x] Implement intervention assignment, status/progress updates and outcome recording.
+- [x] Test capacity limits, duplicate assignment, invalid strategy, role access and approval state transitions.
 
-**Acceptance gate:** A scenario respects capacity; repeated runs on the same frozen input and version are reproducible; output separates assumptions from observations; interventions are created only after permitted approval.
+**Acceptance gate:** A scenario respects capacity; repeated runs on the same frozen input and version are reproducible; output separates assumptions from observations; interventions are created only after permitted approval. (PASSED)
 
 ## Phase 9 — Feedback, audit and optional copilot integration
 

@@ -175,6 +175,33 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
   - Updated OpenAPI spec (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
   - Automated tests: 126 tests passing across 54 test suites with 0 failures (16 new tests across `analytics.test.js` and `segments.test.js`).
 
+- Phase 8 (Intervention catalog and Sandbox) completed and verified:
+  - Implemented Catalog Service in `backend/src/interventions/catalog.service.js`:
+    - `listCatalog`, `getCatalogEntry`, `upsertCatalogEntry` (admin only).
+    - Manages versioned eligibility rules, capacity units, and duration.
+  - Implemented Deterministic Simulation Engine in `backend/src/interventions/simulation.engine.js`:
+    - Strict capacity enforcement against `capacityConstraints`.
+    - Strategies: `targeted` (need/deficit prioritized), `uniform` (order-based), `mixed` (multi-criteria hybrid).
+    - Explicit reasons for allocated and excluded students (e.g. "Exceeded capacity limit of 2 seats").
+    - Transparent assumptions generated with zero outcome fabrication (`outcomeEstimates: null`, `estimateMethod: 'none'`).
+    - Repeatable and deterministic across frozen inputs.
+  - Implemented Scenario Lifecycle & Human Approval in `backend/src/interventions/simulation.service.js`:
+    - `createScenario`: creates draft scenario.
+    - `runScenario`: runs allocation engine, stores results and resource summary, marks status as `simulated`.
+    - `getScenario`: retrieves full simulation report.
+    - `approveScenario`: human-in-the-loop gate requiring admin/faculty approval; transitions status to `approved` and creates official, persistent `Intervention` documents in MongoDB.
+  - Implemented Intervention Tracking & Outcomes in `backend/src/interventions/intervention.service.js`:
+    - `listInterventions`: paginated, object-level student scoping (students see own only; staff can filter).
+    - `getInterventionById`: student authorization gate preventing cross-student inspection.
+    - `updateInterventionStatus`: transitions status (`assigned`, `in_progress`, `completed`, `cancelled`) and records participation metrics.
+    - `recordOutcomes`: records observed outcomes with timestamps.
+  - Mounted REST Endpoints in `backend/src/api/v1/index.js`:
+    - `/api/v1/intervention-catalog` (GET, POST)
+    - `/api/v1/simulations` (POST, GET, run, approve)
+    - `/api/v1/interventions` (GET, PATCH, outcomes)
+  - Updated OpenAPI spec (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
+  - Automated tests: 145 tests passing across 61 test suites with 0 failures (19 new tests across `interventions.test.js` and `simulations.test.js`).
+
 ## Completed phases
 
 - **Phase 0:** Repository & contract audit, `.gitignore`, `.env.example`, `CONTRACT_CHECKLIST.md`. (PASSED)
@@ -185,7 +212,8 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
 - **Phase 5:** Student Success Score formula engine (`sss-v1`), normalization, dynamic weight renormalization, drivers, versioned persistence, API endpoints, methodology documentation, and tests. (PASSED)
 - **Phase 6:** ML service integration (`ML_CONTRACT.md`), 17-feature builder with leakage prevention, resilient client, prediction persistence, zero-fabrication gate, and automated tests. (PASSED)
 - **Phase 7:** Institution analytics and segmentation (overview KPIs, coverage notes, trends, risk summary, decoupled risk divergence, explainable segment rules, rebuild endpoint, and automated tests). (PASSED)
+- **Phase 8:** Intervention catalog and Sandbox (catalog management, deterministic allocation engine, capacity limits, scenario run & approval workflow, intervention tracking, outcome recording, and automated tests). (PASSED)
 
 ## Coding-agent next action
 
-Proceed to Phase 8 (Intervention catalog and Sandbox: intervention catalog with versioned eligibility rules & capacity units, scenario creation/validation, deterministic allocation strategies, and approval workflows).
+Proceed to Phase 9 (Feedback, audit and optional copilot integration: feedback submission, aggregated summaries with comment protection, audit events for privileged actions, and safe copilot contract).

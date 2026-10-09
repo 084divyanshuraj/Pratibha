@@ -1,5 +1,23 @@
 import mongoose from 'mongoose';
 
+const allocationResultSchema = new mongoose.Schema(
+  {
+    studentId: { type: String, required: true },
+    interventionType: { type: String, required: true },
+    reason: { type: String, required: true },
+    priorityScore: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
+
+const excludedResultSchema = new mongoose.Schema(
+  {
+    studentId: { type: String, required: true },
+    reason: { type: String, required: true },
+  },
+  { _id: false }
+);
+
 const simulationScenarioSchema = new mongoose.Schema(
   {
     scenarioId: {
@@ -39,20 +57,8 @@ const simulationScenarioSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.Mixed,
       default: {},
     },
-    allocationResults: [
-      {
-        studentId: { type: String, required: true },
-        interventionType: { type: String, required: true },
-        reason: { type: String, required: true },
-        priorityScore: { type: Number, default: 0 },
-      },
-    ],
-    excludedResults: [
-      {
-        studentId: { type: String, required: true },
-        reason: { type: String, required: true },
-      },
-    ],
+    allocationResults: [allocationResultSchema],
+    excludedResults: [excludedResultSchema],
     resourceSummary: {
       type: mongoose.Schema.Types.Mixed,
       default: {},
