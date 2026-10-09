@@ -78,6 +78,7 @@ describe('Phase 8 — Sandbox Simulator & Scenario Approval Workflow', () => {
         program: 'B.Tech ME',
         semester: 6,
         enrollmentYear: 2021,
+        cohort: 'SIM_TEST_COHORT',
         status: 'active',
       },
       {
@@ -88,6 +89,7 @@ describe('Phase 8 — Sandbox Simulator & Scenario Approval Workflow', () => {
         program: 'B.Tech ME',
         semester: 6,
         enrollmentYear: 2021,
+        cohort: 'SIM_TEST_COHORT',
         status: 'active',
       },
       {
@@ -98,6 +100,7 @@ describe('Phase 8 — Sandbox Simulator & Scenario Approval Workflow', () => {
         program: 'B.Tech ME',
         semester: 6,
         enrollmentYear: 2021,
+        cohort: 'SIM_TEST_COHORT',
         status: 'active',
       },
     ]);
@@ -182,7 +185,7 @@ describe('Phase 8 — Sandbox Simulator & Scenario Approval Workflow', () => {
         .send({
           strategy: 'targeted',
           interventionTypes: ['remedial_classes'],
-          cohortFilters: { department: 'Mechanical' },
+          cohortFilters: { department: 'Mechanical', cohort: 'SIM_TEST_COHORT' },
           capacityConstraints: { remedial_classes: 2 },
           assumptions: ['Testing capacity of 2 seats'],
         });

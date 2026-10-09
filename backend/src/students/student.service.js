@@ -5,6 +5,7 @@ import { LmsActivity } from '../models/LmsActivity.js';
 import { EngagementRecord } from '../models/EngagementRecord.js';
 import { PlacementAssessment } from '../models/PlacementAssessment.js';
 import { SkillAssessment } from '../models/SkillAssessment.js';
+import { FeedbackRecord } from '../models/FeedbackRecord.js';
 import { StudentScore } from '../models/StudentScore.js';
 import { RiskPrediction } from '../models/RiskPrediction.js';
 import { toStudentDTO, toCleanDTO } from '../serializers/index.js';

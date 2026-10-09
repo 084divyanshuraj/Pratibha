@@ -34,6 +34,20 @@ function normalizeStudentQuery(text) {
  * Routes strictly through verified MongoDB records and deterministic analytics engines.
  */
 export async function processQuery(body = {}, user) {
+  if (config.copilot?.enabled === false) {
+    return {
+      status: 'not_configured',
+      configured: false,
+      message: 'Campus Copilot natural language processing is not enabled or configured.',
+      suggestedEndpoints: [
+        '/api/v1/analytics/overview',
+        '/api/v1/analytics/risk-summary',
+        '/api/v1/segments',
+        '/api/v1/intervention-catalog',
+      ],
+    };
+  }
+
   const query = body.query;
   if (!query || typeof query !== 'string' || query.trim().length < 2) {
     throw new AppError('Query text is required (minimum 2 characters).', 400, 'VALIDATION_ERROR');
@@ -231,6 +245,32 @@ In traditional campus analytics, students with high GPAs are assumed to have zer
   }
 
   // =========================================================================
+  // 3b. RISK SUMMARY & DISTRIBUTION ("How many students are at high academic risk?")
+  // =========================================================================
+  if (
+    normalized.includes('how many students are at high academic risk') ||
+    normalized.includes('risk summary') ||
+    normalized.includes('risk distribution') ||
+    normalized.includes('academic risk') ||
+    (normalized.includes('risk') && !normalized.includes('at risk') && !normalized.includes('decoupled') && !normalized.includes('who is'))
+  ) {
+    const riskSummary = await getRiskSummary();
+    return {
+      status: 'answered',
+      configured: true,
+      grounded: true,
+      intent: 'RISK_SUMMARY',
+      summary: `### 🎯 Verified Campus Risk Distribution
+- **Academic Risk:** High: ${riskSummary.academicRisk?.distribution?.high || 0}, Medium: ${riskSummary.academicRisk?.distribution?.medium || 0}, Low: ${riskSummary.academicRisk?.distribution?.low || 0}
+- **Placement Risk:** High: ${riskSummary.placementRisk?.distribution?.high || 0}, Medium: ${riskSummary.placementRisk?.distribution?.medium || 0}, Low: ${riskSummary.placementRisk?.distribution?.low || 0}
+- **Decoupled Divergence:** ${riskSummary.decoupledDivergence?.count || 0} students with High CGPA but High Placement Risk.`,
+      data: riskSummary,
+      sources: ['/api/v1/analytics/risk-summary'],
+      disclaimer: 'Verified against independent LightGBM risk models.',
+    };
+  }
+
+  // =========================================================================
   // 4. AT-RISK STUDENTS LISTING ("Who needs intervention?", "Kaun at-risk hai?")
   // =========================================================================
   if (
@@ -401,19 +441,19 @@ Administrators can launch the **Intervention Sandbox** to simulate multi-constra
   // FALLBACK WITH INTELLIGENT SUGGESTIONS
   // =========================================================================
   return {
-    status: 'answered',
+    status: 'unsupported_intent',
     configured: true,
     grounded: true,
-    intent: 'UNKNOWN_QUERY',
-    summary: `I didn't quite catch the specific student name or metric in *"${cleanQuery}"*. 
-
-Here are questions you can ask me:
-- 🎓 *"Aarav Sharma ka info do"* (or any student name/ID)
-- ⚠️ *"Show decoupled divergence students"*
-- 🚨 *"Who are the top at-risk students?"*
-- 📊 *"Show campus overview KPIs and average scores"*
-- 👥 *"List all student archetypes"*
-- 💡 *"What intervention programs are available?"*`,
+    intent: 'UNSUPPORTED_INTENT',
+    summary: `I didn't quite catch that specific metric in "${cleanQuery}". As the Campus Decision Intelligence Copilot, I answer grounded questions about verified student performance records.`,
+    supportedTopics: [
+      'Student profile lookups (e.g. "Aarav Sharma ka info do")',
+      'Decoupled divergence analysis',
+      'Campus risk distributions and at-risk students',
+      'Institutional overview KPIs and average scores',
+      'Student archetypes and behavioral segments',
+      'Active intervention catalog tracks',
+    ],
     sources: ['/api/v1/analytics'],
     disclaimer: 'Arbitrary database queries or ungrounded generative speculation are strictly prohibited.',
   };
