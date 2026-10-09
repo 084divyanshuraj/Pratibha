@@ -8,8 +8,11 @@ import {
   Info,
   ShieldCheck,
   FileText,
+  Database,
+  ArrowRight,
 } from 'lucide-react';
 import { IMAGES } from '../../assets/images';
+import { api } from '../../services/api';
 
 const CATEGORIES = [
   { key: 'academic', name: 'Academic Records', desc: 'Semester SGPA, CGPA, backlogs, and earned credits.', sampleFile: 'academic.csv' },
@@ -25,7 +28,9 @@ export default function IngestionPage() {
   const [selectedCategory, setSelectedCategory] = useState('academic');
   const [uploadedFile, setUploadedFile] = useState(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isCommitting, setIsCommitting] = useState(false);
   const [importReport, setImportReport] = useState(null);
+  const [commitSuccess, setCommitSuccess] = useState(false);
 
   const handleDownloadSample = (catKey) => {
     // Generate synthetic sample CSV data on the fly
@@ -46,27 +51,33 @@ export default function IngestionPage() {
     document.body.removeChild(link);
   };
 
-  const handleSimulateUpload = () => {
+  const handlePreviewUpload = async () => {
     if (!uploadedFile) return;
     setIsProcessing(true);
+    setCommitSuccess(false);
     setImportReport(null);
 
-    setTimeout(() => {
+    try {
+      const res = await api.previewImport(selectedCategory, uploadedFile);
+      setImportReport(res);
+    } catch (err) {
+      alert('Preview validation failed: ' + err.message);
+    } finally {
       setIsProcessing(false);
-      setImportReport({
-        importId: `IMP_${Date.now()}`,
-        datasetType: selectedCategory,
-        fileName: uploadedFile.name,
-        totalRows: 48,
-        acceptedCount: 46,
-        rejectedCount: 2,
-        warningsCount: 1,
-        errors: [
-          { row: 14, studentId: 'STU_9999', message: 'Student ID not registered in institutional directory.' },
-          { row: 29, studentId: 'STU_0042', message: 'Value out of declared range (8.5 > scale 10.0).' },
-        ],
-      });
-    }, 1200);
+    }
+  };
+
+  const handleCommitUpload = async () => {
+    if (!uploadedFile) return;
+    setIsCommitting(true);
+    try {
+      await api.commitImport(selectedCategory, uploadedFile);
+      setCommitSuccess(true);
+    } catch (err) {
+      alert('Failed to commit records to MongoDB: ' + err.message);
+    } finally {
+      setIsCommitting(false);
+    }
   };
 
   return (
@@ -198,7 +209,7 @@ export default function IngestionPage() {
 
             {uploadedFile && (
               <button
-                onClick={handleSimulateUpload}
+                onClick={handlePreviewUpload}
                 disabled={isProcessing}
                 style={{
                   marginTop: '10px',
@@ -210,9 +221,13 @@ export default function IngestionPage() {
                   fontSize: '0.84rem',
                   fontWeight: 600,
                   cursor: isProcessing ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
                 }}
               >
-                {isProcessing ? 'Validating Dataset Rows...' : 'Run Preview & Validation'}
+                <Database size={15} />
+                <span>{isProcessing ? 'Validating Dataset Rows...' : 'Run Preview & Validation'}</span>
               </button>
             )}
           </div>
@@ -242,21 +257,65 @@ export default function IngestionPage() {
 
                 <div style={{ backgroundColor: '#F8FAFC', padding: '12px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                   <div style={{ fontSize: '0.7rem', color: '#64748B', textTransform: 'uppercase' }}>Warnings</div>
-                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#D97706' }}>{importReport.warningsCount}</div>
+                  <div style={{ fontSize: '1.4rem', fontWeight: 700, color: '#D97706' }}>{importReport.warningsCount || 0}</div>
                 </div>
               </div>
 
               {/* Row Errors */}
-              <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '12px 14px' }}>
-                <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#991B1B', marginBottom: '6px' }}>
-                  Validation Errors (Bounded Row Inspector):
-                </div>
-                {importReport.errors.map((err, i) => (
-                  <div key={i} style={{ fontSize: '0.74rem', color: '#7F1D1D', marginTop: '4px' }}>
-                    • <strong>Row {err.row} [{err.studentId}]:</strong> {err.message}
+              {importReport.errors && importReport.errors.length > 0 && (
+                <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '12px 14px', marginBottom: '16px' }}>
+                  <div style={{ fontSize: '0.76rem', fontWeight: 700, color: '#991B1B', marginBottom: '6px' }}>
+                    Validation Errors (Bounded Row Inspector):
                   </div>
-                ))}
-              </div>
+                  {importReport.errors.map((err, i) => (
+                    <div key={i} style={{ fontSize: '0.74rem', color: '#7F1D1D', marginTop: '4px' }}>
+                      • <strong>Row {err.row} [{err.studentId}]:</strong> {err.message}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Commit Button to Persist in MongoDB */}
+              {commitSuccess ? (
+                <div
+                  style={{
+                    backgroundColor: '#F0FDF4',
+                    border: '1px solid #BBF7D0',
+                    borderRadius: '8px',
+                    padding: '12px 16px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '10px',
+                    color: '#15803D',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                  }}
+                >
+                  <CheckCircle size={18} />
+                  <span>Dataset Successfully Committed to MongoDB Database! Real analytics recalculated.</span>
+                </div>
+              ) : (
+                <button
+                  onClick={handleCommitUpload}
+                  disabled={isCommitting || importReport.acceptedCount === 0}
+                  style={{
+                    backgroundColor: '#0F172A',
+                    color: '#FFFFFF',
+                    border: 'none',
+                    borderRadius: '8px',
+                    padding: '10px 18px',
+                    fontSize: '0.84rem',
+                    fontWeight: 600,
+                    cursor: isCommitting ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Database size={15} />
+                  <span>{isCommitting ? 'Persisting to MongoDB...' : `Commit ${importReport.acceptedCount} Validated Rows to Database`}</span>
+                </button>
+              )}
             </div>
           )}
         </div>

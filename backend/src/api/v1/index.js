@@ -11,6 +11,7 @@ import interventionRouter from '../../interventions/intervention.routes.js';
 import feedbackRouter from '../../feedback/feedback.routes.js';
 import auditRouter from '../../audit/audit.routes.js';
 import copilotRouter from '../../copilot/copilot.routes.js';
+import healthRoutes from '../../health/health.routes.js';
 import { authenticate, authorizeStudentScope } from '../../middleware/auth.js';
 
 const apiV1Router = Router();
@@ -47,6 +48,9 @@ apiV1Router.get('/', (req, res) => {
   });
 });
 
+// Health Probes
+apiV1Router.use('/health', healthRoutes);
+
 // Authentication & Identity
 apiV1Router.use('/auth', authRouter);
 
@@ -55,6 +59,7 @@ apiV1Router.use('/institution', institutionRouter);
 
 // Data Ingestion & Batch Imports
 apiV1Router.use('/imports', ingestionRouter);
+apiV1Router.use('/ingestion', ingestionRouter);
 
 // Student Profiles & Category Records
 apiV1Router.use('/students', studentRouter);

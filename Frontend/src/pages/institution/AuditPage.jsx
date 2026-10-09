@@ -31,39 +31,7 @@ export default function AuditPage() {
     setLoading(true);
     try {
       const data = await api.getAuditEvents();
-      // Ensure we have a rich list of audit records
-      const baseEvents = data.events || [];
-      const richEvents = [
-        ...baseEvents,
-        {
-          id: 'aud_04',
-          action: 'USER_PROVISIONED',
-          resourceType: 'user',
-          actorUserId: 'admin@campus.edu',
-          metadata: { role: 'faculty_mentor', email: 'rajesh.kumar@campus.edu', department: 'Computer Science' },
-          createdAt: new Date(Date.now() - 14400000).toISOString(),
-          ipAddress: '192.168.1.104',
-        },
-        {
-          id: 'aud_05',
-          action: 'IMPORT_COMMITTED',
-          resourceType: 'import',
-          actorUserId: 'admin@campus.edu',
-          metadata: { datasetType: 'attendance', totalRows: 1420, validRows: 1420, errorRows: 0 },
-          createdAt: new Date(Date.now() - 28800000).toISOString(),
-          ipAddress: '192.168.1.104',
-        },
-        {
-          id: 'aud_06',
-          action: 'STUDENT_RECORD_MODIFIED',
-          resourceType: 'student',
-          actorUserId: 'admin@campus.edu',
-          metadata: { studentId: 'STU_0003', field: 'attendanceRate', previous: 62.5, current: 64.0 },
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          ipAddress: '192.168.1.112',
-        },
-      ];
-      setEvents(richEvents);
+      setEvents(data?.events || []);
     } catch {
       // Handled in api.js
     } finally {
