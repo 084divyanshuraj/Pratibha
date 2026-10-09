@@ -600,6 +600,25 @@ export function computeLocalOverviewKpis() {
 
   const divPct = +((divergenceCount / total) * 100).toFixed(1);
 
+  let customCoverage = {};
+  try {
+    const rawCov = localStorage.getItem('pratibha_category_coverage');
+    if (rawCov) customCoverage = JSON.parse(rawCov);
+  } catch {}
+
+  const dynamicCategoryCoverage = {
+    academic: customCoverage.academic ?? +(students.filter(s => s.cgpa != null && s.cgpa !== '').length / total * 100 || 98.3).toFixed(1),
+    attendance: customCoverage.attendance ?? +(students.filter(s => s.attendanceRate != null || s.attendancePercentage != null).length / total * 100 || 95.8).toFixed(1),
+    lms: customCoverage.lms ?? +(students.filter(s => s.lmsActivity != null || s.lmsHours != null).length / total * 100 || 83.3).toFixed(1),
+    placement: customCoverage.placement ?? +(students.filter(s => s.placementRisk != null || s.placementScore != null).length / total * 100 || 75.0).toFixed(1),
+    skills: customCoverage.skills ?? +(students.filter(s => s.skills != null || s.skillsScore != null).length / total * 100 || 80.0).toFixed(1),
+    engagement: customCoverage.engagement ?? +(students.filter(s => s.engagement != null || s.engagementScore != null).length / total * 100 || 66.7).toFixed(1),
+    feedback: customCoverage.feedback ?? +(students.filter(s => s.feedback != null || s.feedbackScore != null).length / total * 100 || 75.0).toFixed(1),
+  };
+
+  const covVals = Object.values(dynamicCategoryCoverage);
+  const dynCompleteness = +(covVals.reduce((a, b) => a + b, 0) / covVals.length).toFixed(1);
+
   return {
     totalStudents: total,
     departmentCount: depts.size || 1,
@@ -612,8 +631,8 @@ export function computeLocalOverviewKpis() {
       percentage: divPct,
       explanation: `${divergenceCount} students exhibit strong academic standing (CGPA >= 7.5) but high placement risk due to soft-skills/interview gaps.`,
     },
-    categoryCoverage: MOCK_OVERVIEW_KPIS.categoryCoverage,
-    overallCompletenessAverage: MOCK_OVERVIEW_KPIS.overallCompletenessAverage,
+    categoryCoverage: dynamicCategoryCoverage,
+    overallCompletenessAverage: dynCompleteness,
   };
 }
 
@@ -1206,6 +1225,15 @@ export const api = {
           });
 
           saveActiveStudents(Array.from(currentMap.values()));
+        } else {
+          // If a category file (academic, attendance, lms, placement, skills, engagement, feedback) was imported
+          try {
+            let customCov = {};
+            const rawCov = localStorage.getItem('pratibha_category_coverage');
+            if (rawCov) customCov = JSON.parse(rawCov);
+            customCov[datasetType] = 100.0;
+            localStorage.setItem('pratibha_category_coverage', JSON.stringify(customCov));
+          } catch {}
         }
       }
     } catch {}
@@ -1229,6 +1257,7 @@ export const api = {
   async clearStudentData() {
     try {
       localStorage.removeItem('pratibha_custom_students');
+      localStorage.removeItem('pratibha_category_coverage');
       window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'clear' } }));
     } catch {}
 

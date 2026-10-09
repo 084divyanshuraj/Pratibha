@@ -158,145 +158,229 @@ function generateCohort(count = 120) {
       });
     });
 
-    // 2. Attendance Records
-    subjects.forEach((subj) => {
-      const totalClasses = 50;
-      const attended = Math.round((baseAttendance / 100) * totalClasses);
-      attendanceRecords.push({
-        studentId,
-        term: '2026-S1',
-        subjectCode: subj.code,
-        classesHeld: totalClasses,
-        classesAttended: attended,
-        attendancePercentage: +((attended / totalClasses) * 100).toFixed(1),
-        periodStart: new Date('2026-08-01T00:00:00Z'),
-        periodEnd: new Date('2026-10-01T00:00:00Z'),
-        observedAt: new Date('2026-10-01T00:00:00Z'),
+    // Missing observation flags to showcase KPMG Challenge 4 Dynamic Data Renormalization
+    const hasAcademic = i % 60 !== 0; // ~98.3% coverage
+    const hasAttendance = i % 25 !== 0; // ~95.8% coverage
+    const hasLms = i % 6 !== 0; // ~83.3% coverage
+    const hasPlacement = i % 4 !== 0; // ~75.0% coverage
+    const hasSkills = i % 5 !== 0; // ~80.0% coverage
+    const hasEngagement = i % 3 !== 0; // ~66.7% coverage
+    const hasFeedback = i % 4 !== 1; // ~75.0% coverage
+
+    // 1. Academic Records
+    if (hasAcademic) {
+      subjects.forEach((subj) => {
+        const marks = isCriticalRisk ? Math.round(42 + Math.random() * 20) : Math.round(baseCgpa * 9.5 + Math.random() * 5);
+        academicRecords.push({
+          studentId,
+          term: '2026-S1',
+          subjectCode: subj.code,
+          subjectName: subj.name,
+          assessmentType: 'final',
+          marksObtained: marks,
+          maxMarks: 100,
+          grade: marks >= 90 ? 'A+' : marks >= 80 ? 'A' : marks >= 70 ? 'B+' : marks >= 60 ? 'B' : 'C',
+          cgpa: baseCgpa,
+          backlog: marks < 50,
+          observedAt: new Date('2026-09-15T10:00:00Z'),
+        });
       });
-    });
+    }
+
+    // 2. Attendance Records
+    if (hasAttendance) {
+      subjects.forEach((subj) => {
+        const totalClasses = 50;
+        const attended = Math.round((baseAttendance / 100) * totalClasses);
+        attendanceRecords.push({
+          studentId,
+          term: '2026-S1',
+          subjectCode: subj.code,
+          classesHeld: totalClasses,
+          classesAttended: attended,
+          attendancePercentage: +((attended / totalClasses) * 100).toFixed(1),
+          periodStart: new Date('2026-08-01T00:00:00Z'),
+          periodEnd: new Date('2026-10-01T00:00:00Z'),
+          observedAt: new Date('2026-10-01T00:00:00Z'),
+        });
+      });
+    }
 
     // 3. LMS Records
     const totalAssignments = 8;
     const completedAssignments = isCriticalRisk ? 3 : Math.min(totalAssignments, Math.round(5 + Math.random() * 3));
-    lmsRecords.push({
-      studentId,
-      periodStart: new Date('2026-08-01T00:00:00Z'),
-      periodEnd: new Date('2026-10-01T00:00:00Z'),
-      loginCount: isCriticalRisk ? 12 : Math.round(25 + Math.random() * 40),
-      activeDays: isCriticalRisk ? 10 : Math.round(20 + Math.random() * 30),
-      assignmentsAssigned: totalAssignments,
-      assignmentsCompleted: completedAssignments,
-      engagementMinutes: isCriticalRisk ? 120 : Math.round(300 + Math.random() * 600),
-      observedAt: new Date(),
-    });
+    if (hasLms) {
+      lmsRecords.push({
+        studentId,
+        periodStart: new Date('2026-08-01T00:00:00Z'),
+        periodEnd: new Date('2026-10-01T00:00:00Z'),
+        loginCount: isCriticalRisk ? 12 : Math.round(25 + Math.random() * 40),
+        activeDays: isCriticalRisk ? 10 : Math.round(20 + Math.random() * 30),
+        assignmentsAssigned: totalAssignments,
+        assignmentsCompleted: completedAssignments,
+        engagementMinutes: isCriticalRisk ? 120 : Math.round(300 + Math.random() * 600),
+        observedAt: new Date(),
+      });
+    }
 
     // 4. Placement Records
-    placementRecords.push(
-      {
-        studentId,
-        assessmentType: 'mock_interview',
-        score: mockInterviewScore,
-        maxScore: 100,
-        outcomeLabel: mockInterviewScore >= 65 ? 'Passed' : 'Needs Practice',
-        employerOrProgram: 'Campus Mock Placement Drive',
-        assessedAt: new Date('2026-09-20T00:00:00Z'),
-      },
-      {
-        studentId,
-        assessmentType: 'aptitude',
-        score: aptitudeScore,
-        maxScore: 100,
-        outcomeLabel: aptitudeScore >= 60 ? 'Cleared' : 'Borderline',
-        employerOrProgram: 'Quantitative Aptitude Assessment',
-        assessedAt: new Date('2026-09-22T00:00:00Z'),
-      }
-    );
+    if (hasPlacement) {
+      placementRecords.push(
+        {
+          studentId,
+          assessmentType: 'mock_interview',
+          score: mockInterviewScore,
+          maxScore: 100,
+          outcomeLabel: mockInterviewScore >= 65 ? 'Passed' : 'Needs Practice',
+          employerOrProgram: 'Campus Mock Placement Drive',
+          assessedAt: new Date('2026-09-20T00:00:00Z'),
+        },
+        {
+          studentId,
+          assessmentType: 'aptitude',
+          score: aptitudeScore,
+          maxScore: 100,
+          outcomeLabel: aptitudeScore >= 60 ? 'Cleared' : 'Borderline',
+          employerOrProgram: 'Quantitative Aptitude Assessment',
+          assessedAt: new Date('2026-09-22T00:00:00Z'),
+        }
+      );
+    }
 
     // 5. Skill Records
-    skillRecords.push(
-      {
-        studentId,
-        skillCategory: 'technical',
-        skillName: 'Data Structures & Algorithms',
-        score: Math.round(baseCgpa * 9),
-        maxScore: 100,
-        assessedAt: new Date(),
-      },
-      {
-        studentId,
-        skillCategory: 'technical',
-        skillName: 'System Architecture',
-        score: Math.round(baseCgpa * 8.5),
-        maxScore: 100,
-        assessedAt: new Date(),
-      }
-    );
+    if (hasSkills) {
+      skillRecords.push(
+        {
+          studentId,
+          skillCategory: 'technical',
+          skillName: 'Data Structures & Algorithms',
+          score: Math.round(baseCgpa * 9),
+          maxScore: 100,
+          assessedAt: new Date(),
+        },
+        {
+          studentId,
+          skillCategory: 'technical',
+          skillName: 'System Architecture',
+          score: Math.round(baseCgpa * 8.5),
+          maxScore: 100,
+          assessedAt: new Date(),
+        }
+      );
+    }
 
     // 6. Engagement Records
-    engagementRecords.push({
-      studentId,
-      activityType: i % 2 === 0 ? 'hackathon' : 'club',
-      activityName: i % 2 === 0 ? 'Inter-College Hackathon 2026' : 'ACM Computing Society',
-      hours: 24,
-      result: i % 2 === 0 ? 'Winner' : 'Active Member',
-      occurredAt: new Date('2026-08-15T00:00:00Z'),
-    });
+    if (hasEngagement) {
+      engagementRecords.push({
+        studentId,
+        activityType: i % 2 === 0 ? 'hackathon' : 'club',
+        activityName: i % 2 === 0 ? 'Inter-College Hackathon 2026' : 'ACM Computing Society',
+        hours: 24,
+        result: i % 2 === 0 ? 'Winner' : 'Active Member',
+        occurredAt: new Date('2026-08-15T00:00:00Z'),
+      });
+    }
 
     // 7. Feedback Records
-    feedbackRecords.push({
-      studentId,
-      feedbackType: 'course_feedback',
-      rating: isCriticalRisk ? 2 : Math.min(5, Math.max(3, Math.round(3 + Math.random() * 2))),
-      comment: 'Practical exercises were insightful; requesting additional hands-on lab sessions.',
-      visibility: 'aggregated',
-      createdAt: new Date('2026-09-28T00:00:00Z'),
-    });
+    if (hasFeedback) {
+      feedbackRecords.push({
+        studentId,
+        feedbackType: 'course_feedback',
+        rating: isCriticalRisk ? 2 : Math.min(5, Math.max(3, Math.round(3 + Math.random() * 2))),
+        comment: 'Practical exercises were insightful; requesting additional hands-on lab sessions.',
+        visibility: 'aggregated',
+        createdAt: new Date('2026-09-28T00:00:00Z'),
+      });
+    }
 
-    // Success Score Calculation (Formula sss-v1)
+    // Success Score Calculation (Formula sss-v1 with dynamic weight renormalization without zeroing)
     const normAcademic = (baseCgpa / 10) * 100;
     const normAttendance = baseAttendance;
     const normPlacement = ((mockInterviewScore + aptitudeScore) / 200) * 100;
     const normLms = isCriticalRisk ? 40 : 85;
     const normEngagement = 75;
 
-    const successScoreVal = +(
-      normAcademic * 0.35 +
-      normAttendance * 0.20 +
-      normPlacement * 0.20 +
-      normLms * 0.15 +
-      normEngagement * 0.10
-    ).toFixed(1);
+    let totalWeight = 0;
+    let weightedSum = 0;
+    const components = [];
+    const drivers = [];
+    const missingFields = [];
+
+    if (hasAcademic) {
+      totalWeight += 0.35;
+      weightedSum += normAcademic * 0.35;
+      components.push({ key: 'academic', rawValue: baseCgpa, normalizedValue: normAcademic, weight: 0.35 });
+      drivers.push({
+        name: 'Academic Performance',
+        contribution: +(normAcademic * 0.35).toFixed(1),
+        explanation: `Consistent CGPA standing of ${baseCgpa}/10.0 across major subjects.`,
+      });
+    } else {
+      missingFields.push('academic');
+    }
+
+    if (hasAttendance) {
+      totalWeight += 0.20;
+      weightedSum += normAttendance * 0.20;
+      components.push({ key: 'attendance', rawValue: baseAttendance, normalizedValue: normAttendance, weight: 0.20 });
+      drivers.push({
+        name: 'Attendance Consistency',
+        contribution: +(normAttendance * 0.20).toFixed(1),
+        explanation: `Classroom lecture attendance at ${baseAttendance}% meets criteria.`,
+      });
+    } else {
+      missingFields.push('attendance');
+    }
+
+    if (hasPlacement) {
+      totalWeight += 0.20;
+      weightedSum += normPlacement * 0.20;
+      components.push({ key: 'placement', rawValue: mockInterviewScore, normalizedValue: normPlacement, weight: 0.20 });
+      drivers.push({
+        name: 'Placement Preparedness',
+        contribution: +(normPlacement * 0.20).toFixed(1),
+        explanation: `Mock technical interview rating (${mockInterviewScore}%) observed.`,
+      });
+    } else {
+      missingFields.push('placement');
+    }
+
+    if (hasLms) {
+      totalWeight += 0.15;
+      weightedSum += normLms * 0.15;
+      components.push({ key: 'lms', rawValue: normLms, normalizedValue: normLms, weight: 0.15 });
+      drivers.push({
+        name: 'Digital LMS Engagement',
+        contribution: +(normLms * 0.15).toFixed(1),
+        explanation: `Online portal activity: ${completedAssignments}/${totalAssignments} assignments submitted.`,
+      });
+    } else {
+      missingFields.push('lms');
+    }
+
+    if (hasEngagement) {
+      totalWeight += 0.10;
+      weightedSum += normEngagement * 0.10;
+      components.push({ key: 'engagement', rawValue: normEngagement, normalizedValue: normEngagement, weight: 0.10 });
+      drivers.push({
+        name: 'Campus Co-curriculars',
+        contribution: +(normEngagement * 0.10).toFixed(1),
+        explanation: 'Active hackathon and student club participation.',
+      });
+    } else {
+      missingFields.push('engagement');
+    }
+
+    const successScoreVal = totalWeight > 0 ? +(weightedSum / totalWeight).toFixed(1) : 72.0;
 
     scores.push({
       studentId,
       period: '2026-S1',
       score: successScoreVal,
       formulaVersion: 'sss-v1',
-      components: [
-        { key: 'academic', rawValue: baseCgpa, normalizedValue: normAcademic, weight: 0.35 },
-        { key: 'attendance', rawValue: baseAttendance, normalizedValue: normAttendance, weight: 0.20 },
-        { key: 'placement', rawValue: mockInterviewScore, normalizedValue: normPlacement, weight: 0.20 },
-        { key: 'lms', rawValue: normLms, normalizedValue: normLms, weight: 0.15 },
-        { key: 'engagement', rawValue: normEngagement, normalizedValue: normEngagement, weight: 0.10 },
-      ],
-      drivers: [
-        {
-          name: 'Academic Performance',
-          contribution: +(normAcademic * 0.35).toFixed(1),
-          explanation: `Consistent CGPA standing of ${baseCgpa}/10.0 across major subjects.`,
-        },
-        {
-          name: 'Attendance Consistency',
-          contribution: +(normAttendance * 0.20).toFixed(1),
-          explanation: `Classroom lecture attendance at ${baseAttendance}% meets criteria.`,
-        },
-        {
-          name: 'Placement Preparedness',
-          contribution: +(normPlacement * 0.20).toFixed(1),
-          explanation: `Mock technical interview rating (${mockInterviewScore}%) observed.`,
-        },
-      ],
-      missingFields: [],
+      components,
+      drivers,
+      missingFields,
       calculatedAt: new Date(),
     });
 

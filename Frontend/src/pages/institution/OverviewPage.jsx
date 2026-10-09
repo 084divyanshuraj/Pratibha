@@ -267,11 +267,26 @@ export default function OverviewPage() {
 
       {/* 4. 7-PILLAR DATA COMPLETENESS CARD */}
       <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 600, color: '#0F172A' }}>
-              Data Health & Completeness Across 7 Categories
-            </h3>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0F172A' }}>
+                Data Health & Completeness Across 7 Categories
+              </h3>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  backgroundColor: '#EFF6FF',
+                  color: '#1D4ED8',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  border: '1px solid #BFDBFE',
+                }}
+              >
+                Avg {kpis?.overallCompletenessAverage ?? 82.4}%
+              </span>
+            </div>
             <p style={{ margin: '4px 0 0', fontSize: '0.8rem', color: '#64748B' }}>
               Rule: <em>Never Silently Zero Missing Data</em>. Missing observations remain unobserved and weights renormalize dynamically.
             </p>
@@ -282,41 +297,99 @@ export default function OverviewPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              background: 'none',
+              backgroundColor: '#FFFFFF',
               border: '1px solid #CBD5E1',
-              borderRadius: '6px',
-              padding: '6px 12px',
-              fontSize: '0.78rem',
+              borderRadius: '8px',
+              padding: '7px 14px',
+              fontSize: '0.8rem',
               fontWeight: 600,
               color: '#1A73E8',
               cursor: 'pointer',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
             }}
           >
-            <UploadCloud size={14} />
+            <UploadCloud size={15} />
             <span>Import Missing Data</span>
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
           {[
-            { name: 'Academic', key: 'academic', pct: kpis?.categoryCoverage?.academic || 100 },
-            { name: 'Attendance', key: 'attendance', pct: kpis?.categoryCoverage?.attendance || 98.4 },
-            { name: 'LMS Activity', key: 'lms', pct: kpis?.categoryCoverage?.lms || 84.2 },
-            { name: 'Placement Tests', key: 'placement', pct: kpis?.categoryCoverage?.placement || 76.5 },
-            { name: 'Skill Labs', key: 'skills', pct: kpis?.categoryCoverage?.skills || 81.0 },
-            { name: 'Engagement', key: 'engagement', pct: kpis?.categoryCoverage?.engagement || 62.4 },
-            { name: 'Feedback', key: 'feedback', pct: kpis?.categoryCoverage?.feedback || 78.9 },
-          ].map((pillar) => (
-            <div key={pillar.key} style={{ padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
-              <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#475569' }}>{pillar.name}</div>
-              <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', margin: '4px 0' }}>
-                {pillar.pct}%
+            { name: 'Academic', key: 'academic', pct: kpis?.categoryCoverage?.academic != null ? kpis.categoryCoverage.academic : 100 },
+            { name: 'Attendance', key: 'attendance', pct: kpis?.categoryCoverage?.attendance != null ? kpis.categoryCoverage.attendance : 96.7 },
+            { name: 'LMS Activity', key: 'lms', pct: kpis?.categoryCoverage?.lms != null ? kpis.categoryCoverage.lms : 83.3 },
+            { name: 'Placement Tests', key: 'placement', pct: kpis?.categoryCoverage?.placement != null ? kpis.categoryCoverage.placement : 75.0 },
+            { name: 'Skill Labs', key: 'skills', pct: kpis?.categoryCoverage?.skills != null ? kpis.categoryCoverage.skills : 80.0 },
+            { name: 'Engagement', key: 'engagement', pct: kpis?.categoryCoverage?.engagement != null ? kpis.categoryCoverage.engagement : 66.7 },
+            { name: 'Feedback', key: 'feedback', pct: kpis?.categoryCoverage?.feedback != null ? kpis.categoryCoverage.feedback : 75.0 },
+          ].map((pillar) => {
+            const total = kpis?.totalStudents || 120;
+            const observed = Math.round((pillar.pct / 100) * total);
+            const statusLabel = pillar.pct >= 90 ? 'Optimal' : pillar.pct >= 75 ? 'Adequate' : 'Needs Ingestion';
+            const statusBg = pillar.pct >= 90 ? '#ECFDF5' : pillar.pct >= 75 ? '#EFF6FF' : '#FFFBEB';
+            const statusColor = pillar.pct >= 90 ? '#059669' : pillar.pct >= 75 ? '#2563EB' : '#D97706';
+            const barColor = pillar.pct >= 85 ? '#10B981' : pillar.pct >= 70 ? '#3B82F6' : '#F59E0B';
+
+            return (
+              <div
+                key={pillar.key}
+                onClick={() => navigate('/institution/ingestion')}
+                title={`Click to import or view ${pillar.name} dataset in Ingestion Studio`}
+                style={{
+                  padding: '12px 14px',
+                  backgroundColor: '#F8FAFC',
+                  borderRadius: '10px',
+                  border: '1px solid #E2E8F0',
+                  cursor: 'pointer',
+                  transition: 'all 150ms ease',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#93C5FD';
+                  e.currentTarget.style.boxShadow = '0 4px 12px rgba(37,99,235,0.08)';
+                  e.currentTarget.style.transform = 'translateY(-2px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#E2E8F0';
+                  e.currentTarget.style.boxShadow = 'none';
+                  e.currentTarget.style.transform = 'none';
+                }}
+              >
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#334155' }}>{pillar.name}</span>
+                  <span
+                    style={{
+                      fontSize: '0.62rem',
+                      fontWeight: 700,
+                      backgroundColor: statusBg,
+                      color: statusColor,
+                      padding: '1px 6px',
+                      borderRadius: '999px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.02em',
+                    }}
+                  >
+                    {statusLabel}
+                  </span>
+                </div>
+
+                <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.02em' }}>
+                    {pillar.pct}%
+                  </div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: 500 }}>
+                    {observed}/{total} obs.
+                  </div>
+                </div>
+
+                <div style={{ width: '100%', height: '5px', backgroundColor: '#E2E8F0', borderRadius: '999px', overflow: 'hidden' }}>
+                  <div style={{ width: `${Math.min(pillar.pct, 100)}%`, height: '100%', backgroundColor: barColor, borderRadius: '999px' }} />
+                </div>
               </div>
-              <div style={{ width: '100%', height: '5px', backgroundColor: '#E2E8F0', borderRadius: '999px', overflow: 'hidden' }}>
-                <div style={{ width: `${pillar.pct}%`, height: '100%', backgroundColor: pillar.pct >= 80 ? '#10B981' : pillar.pct >= 65 ? '#F59E0B' : '#EF4444' }} />
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
