@@ -397,17 +397,20 @@ const DEMO_AUDIT_EVENTS = [
   },
 ];
 
-async function seed() {
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+export async function seedDatabase({ disconnect = false, force = false } = {}) {
   const isProd = config.isProd;
-  const forceProd = process.argv.includes('--force-prod-seed');
+  const forceProd = force || process.argv.includes('--force-prod-seed');
 
   if (isProd && !forceProd) {
     console.error('CRITICAL: Seed script cannot be run against production database without --force-prod-seed.');
-    process.exit(1);
+    if (disconnect) process.exit(1);
+    return;
   }
 
   console.log('[Seed] Starting database seed process...');
-  await connectDatabase(config.mongoUri);
 
   try {
     // 1. Seed Users (with hashed passwords)
@@ -483,11 +486,21 @@ async function seed() {
     console.error('[Seed] Error during seeding:', err);
     throw err;
   } finally {
-    await disconnectDatabase();
+    if (disconnect) {
+      await disconnectDatabase();
+    }
   }
 }
 
-seed().catch((err) => {
-  console.error('[Seed] Failed:', err);
-  process.exit(1);
-});
+// Direct CLI execution guard
+const currentScriptPath = path.resolve(fileURLToPath(import.meta.url));
+const executedScriptPath = process.argv[1] ? path.resolve(process.argv[1]) : '';
+
+if (currentScriptPath === executedScriptPath) {
+  connectDatabase(config.mongoUri)
+    .then(() => seedDatabase({ disconnect: true }))
+    .catch((err) => {
+      console.error('[Seed] Failed:', err);
+      process.exit(1);
+    });
+}
