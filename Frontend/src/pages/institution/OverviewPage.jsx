@@ -28,9 +28,20 @@ import {
 } from 'recharts';
 import { api } from '../../services/api';
 import { IMAGES } from '../../assets/images';
+import { useAuth } from '../../context/AuthContext';
+import {
+  Briefcase,
+  GraduationCap,
+  Shield,
+  Sparkles,
+  FileText,
+} from 'lucide-react';
 
 export default function OverviewPage() {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  const role = currentUser?.role || 'institution_admin';
+
   const [kpis, setKpis] = useState(null);
   const [trends, setTrends] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,15 +73,192 @@ export default function OverviewPage() {
     : [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      {/* 1. PAGE TITLE & ACTIONS */}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
+      {/* 1. PERSONA-SPECIFIC COMMAND CENTER BANNER */}
+      <div
+        style={{
+          backgroundColor: role === 'faculty_mentor' ? '#F0FDF4' : role === 'placement_officer' ? '#EFF6FF' : '#F8FAFC',
+          border: `1px solid ${role === 'faculty_mentor' ? '#BBF7D0' : role === 'placement_officer' ? '#BFDBFE' : '#E2E8F0'}`,
+          borderRadius: '12px',
+          padding: '1.25rem 1.5rem',
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          gap: '1.25rem',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div
+            style={{
+              width: '46px',
+              height: '46px',
+              borderRadius: '10px',
+              backgroundColor: role === 'faculty_mentor' ? '#16A34A' : role === 'placement_officer' ? '#2563EB' : '#0F172A',
+              color: '#FFFFFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            {role === 'faculty_mentor' ? <GraduationCap size={24} /> : role === 'placement_officer' ? <Briefcase size={24} /> : <Shield size={24} />}
+          </div>
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  textTransform: 'uppercase',
+                  padding: '2px 8px',
+                  borderRadius: '999px',
+                  backgroundColor: role === 'faculty_mentor' ? '#DCFCE7' : role === 'placement_officer' ? '#DBEAFE' : '#E2E8F0',
+                  color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
+                }}
+              >
+                {role === 'faculty_mentor' ? 'Faculty Mentor Persona' : role === 'placement_officer' ? 'Placement Officer (TPO)' : 'Institution Administrator'}
+              </span>
+              <strong style={{ fontSize: '0.96rem', color: '#0F172A' }}>
+                {currentUser?.name || (role === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : role === 'placement_officer' ? 'Vikram Malhotra' : 'Dr. Sunita Rao')}
+              </strong>
+            </div>
+            <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px' }}>
+              {role === 'faculty_mentor'
+                ? 'Department of Computer Science & Engineering · Mentoring Cohort Focus: Statutory Attendance (<75%) & Remedial Tutoring.'
+                : role === 'placement_officer'
+                ? 'Corporate Relations & Placement Cell (TPO) · Focus: Company Eligibility Pipeline, Mock Technical Coding & Recruiter Rosters.'
+                : 'Campus Provost & Administration · Focus: Cross-Department Performance, Data Pipeline Integrity & Accreditation Reporting.'}
+            </div>
+          </div>
+        </div>
+
+        {/* Quick Role Actions */}
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          {role === 'faculty_mentor' ? (
+            <>
+              <button
+                onClick={() => navigate('/institution/students?dept=Computer+Science')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#16A34A',
+                  color: '#FFFFFF',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                My CSE Mentees (28)
+              </button>
+              <button
+                onClick={() => navigate('/institution/risk-radar')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#FFFFFF',
+                  color: '#15803D',
+                  borderRadius: '6px',
+                  border: '1px solid #BBF7D0',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Attendance Alerts (14)
+              </button>
+            </>
+          ) : role === 'placement_officer' ? (
+            <>
+              <button
+                onClick={() => navigate('/institution/segments')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#2563EB',
+                  color: '#FFFFFF',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Inspect 2x2 Matrix
+              </button>
+              <button
+                onClick={() => navigate('/institution/students?risk=divergent')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#FFFFFF',
+                  color: '#1D4ED8',
+                  borderRadius: '6px',
+                  border: '1px solid #BFDBFE',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Mock Interview Priority (148)
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/institution/ingestion')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#0F172A',
+                  color: '#FFFFFF',
+                  borderRadius: '6px',
+                  border: 'none',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                <UploadCloud size={14} />
+                <span>Batch Data Studio</span>
+              </button>
+              <button
+                onClick={() => navigate('/institution/audit')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#FFFFFF',
+                  color: '#0F172A',
+                  borderRadius: '6px',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                <span>Audit Trail</span>
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* 2. PAGE TITLE & ACTIONS */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
-            Executive Campus Intelligence Overview
+            {role === 'faculty_mentor'
+              ? 'Faculty Mentorship & Academic Command Center'
+              : role === 'placement_officer'
+              ? 'Corporate Relations & Placement Command Center'
+              : 'Executive Campus Intelligence Overview'}
           </h1>
           <p style={{ margin: '6px 0 0', color: '#64748B', fontSize: '0.88rem' }}>
-            Multi-domain student analytics powered by explainable scoring, decoupled risk predictions, and sandbox interventions.
+            {role === 'faculty_mentor'
+              ? 'Academic retention monitoring, attendance deficit detection, and remedial mentoring workflows.'
+              : role === 'placement_officer'
+              ? 'Campus recruitment readiness, 2x2 employability segmentation, and company eligibility pipelines.'
+              : 'Multi-domain student analytics powered by explainable scoring, decoupled risk predictions, and sandbox interventions.'}
           </p>
         </div>
 

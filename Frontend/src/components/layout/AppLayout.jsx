@@ -17,12 +17,14 @@ import {
   WifiOff,
   UserCheck,
   Mic,
+  BookOpen,
+  Award,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import CopilotDrawer from '../copilot/CopilotDrawer';
 
-const NAV_ITEMS = [
+const INSTITUTION_NAV_ITEMS = [
   { path: '/institution/overview', label: 'Executive Overview', icon: BarChart3, badge: null },
   { path: '/institution/students', label: 'Student 360° Directory', icon: Users, badge: '1,420' },
   { path: '/institution/risk-radar', label: 'Decoupled Risk Radar', icon: Target, badge: 'ML' },
@@ -31,16 +33,25 @@ const NAV_ITEMS = [
   { path: '/institution/ingestion', label: 'Batch Data Studio', icon: UploadCloud, badge: '8 Pillars' },
   { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
   { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
-  { path: '/student/portal', label: 'Student Self-Portal', icon: GraduationCap, badge: 'Demo' },
+];
+
+const STUDENT_NAV_ITEMS = [
+  { path: '/student/portal', label: 'My Success Cockpit', icon: GraduationCap, badge: 'Live', tab: 'overview' },
+  { path: '/student/portal?tab=academic', label: 'Attendance & Courses', icon: BookOpen, badge: '88%', tab: 'academic' },
+  { path: '/student/portal?tab=placement', label: 'Placement Readiness', icon: Award, badge: 'Tier-1', tab: 'placement' },
+  { path: '/student/portal?tab=interventions', label: 'My Interventions', icon: Sparkles, badge: 'Active', tab: 'interventions' },
+  { path: '/student/portal?tab=feedback', label: 'Student Voice & Feedback', icon: MessageSquareHeart, badge: null, tab: 'feedback' },
 ];
 
 export default function AppLayout({ children }) {
-  const { currentUser, logout, loginWithDemo } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [backendLive, setBackendLive] = useState(false);
+
+  const isStudent = currentUser?.portal === 'student' || currentUser?.role === 'student' || location.pathname.startsWith('/student');
 
   useEffect(() => {
     // Check live connectivity to backend Express service
@@ -53,6 +64,36 @@ export default function AppLayout({ children }) {
     logout();
     navigate('/');
   };
+
+  const getNavItems = () => {
+    if (isStudent) return STUDENT_NAV_ITEMS;
+
+    if (currentUser?.role === 'faculty_mentor') {
+      return [
+        { path: '/institution/overview', label: 'Faculty Overview', icon: BarChart3, badge: 'CSE' },
+        { path: '/institution/students', label: 'CSE Mentees Directory', icon: Users, badge: '28' },
+        { path: '/institution/risk-radar', label: 'Academic Risk Radar', icon: Target, badge: 'Attendance' },
+        { path: '/institution/segments', label: 'Cohort Archetypes', icon: Layers, badge: null },
+        { path: '/institution/sandbox', label: 'Remedial Sandbox', icon: FlaskConical, badge: 'Tutoring' },
+        { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: 'New' },
+      ];
+    }
+
+    if (currentUser?.role === 'placement_officer') {
+      return [
+        { path: '/institution/overview', label: 'Placement Overview', icon: BarChart3, badge: 'TPO' },
+        { path: '/institution/segments', label: '2x2 Quadrant Matrix', icon: Layers, badge: 'Tier-1' },
+        { path: '/institution/students', label: 'Placement Roster', icon: Users, badge: 'Eligible' },
+        { path: '/institution/risk-radar', label: 'Placement Risk Radar', icon: Target, badge: 'Mock Prep' },
+        { path: '/institution/sandbox', label: 'Interview Sprints', icon: FlaskConical, badge: 'Bootcamp' },
+        { path: '/institution/feedback', label: 'Corporate Feedback', icon: MessageSquareHeart, badge: null },
+      ];
+    }
+
+    return INSTITUTION_NAV_ITEMS;
+  };
+
+  const navItems = getNavItems();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#F8FAFC' }}>
@@ -78,7 +119,7 @@ export default function AppLayout({ children }) {
                 width: '26px',
                 height: '26px',
                 borderRadius: '6px',
-                backgroundColor: '#1A73E8',
+                backgroundColor: isStudent ? '#0284C7' : '#1A73E8',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -91,7 +132,7 @@ export default function AppLayout({ children }) {
             </div>
             <strong style={{ fontSize: '0.95rem', letterSpacing: '-0.2px' }}>PRATIBHA</strong>
             <span style={{ fontSize: '0.72rem', color: '#94A3B8', paddingLeft: '4px', borderLeft: '1px solid #334155' }}>
-              Student Success Intelligence Platform
+              {isStudent ? 'Student Self-Service Intelligence' : 'Student Success Intelligence Platform'}
             </span>
           </div>
 
@@ -111,38 +152,54 @@ export default function AppLayout({ children }) {
             }}
           >
             {backendLive ? <Wifi size={12} /> : <WifiOff size={12} />}
-            <span>{backendLive ? 'Live API (port 5000)' : 'Synthetic Fixtures Mode'}</span>
+            <span>{backendLive ? 'Live API (port 5000)' : 'Synthetic Mode'}</span>
           </div>
         </div>
 
         {/* Role Switcher & Persona Menu */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ color: '#94A3B8', fontSize: '0.75rem' }}>Switch Persona:</span>
-            <select
-              value={currentUser?.role === 'student' ? 'student' : currentUser?.role === 'faculty_mentor' ? 'faculty' : currentUser?.role === 'placement_officer' ? 'placement' : 'admin'}
-              onChange={(e) => {
-                loginWithDemo(e.target.value);
-                if (e.target.value === 'student') navigate('/student/portal');
-                else navigate('/institution/overview');
-              }}
-              style={{
-                backgroundColor: '#1E293B',
-                color: '#F8FAFC',
-                border: '1px solid #334155',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                fontSize: '0.78rem',
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              <option value="admin">Administrator (Dr. Sunita Rao)</option>
-              <option value="faculty">Faculty Mentor (Prof. Rajesh Kumar)</option>
-              <option value="placement">Placement Officer (Vikram Malhotra)</option>
-              <option value="student">Student (Aarav Sharma - CSE)</option>
-            </select>
-          </div>
+          {isStudent ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '4px 12px',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  fontSize: '0.74rem',
+                  color: '#38BDF8',
+                  fontWeight: 600,
+                }}
+              >
+                <GraduationCap size={13} />
+                <span>Student Portal</span>
+              </span>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <span
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '4px 12px',
+                  borderRadius: '999px',
+                  backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  fontSize: '0.74rem',
+                  color: '#38BDF8',
+                  fontWeight: 600,
+                }}
+              >
+                <span>{currentUser?.name || 'Administrator'}</span>
+                <span style={{ color: '#475569' }}>•</span>
+                <span style={{ color: '#CBD5E1', fontWeight: 500 }}>{currentUser?.roleLabel || 'Institution Staff'}</span>
+              </span>
+            </div>
+          )}
 
           <button
             onClick={handleLogout}
@@ -183,13 +240,14 @@ export default function AppLayout({ children }) {
         >
           <div>
             <div style={{ padding: '0 0.5rem 0.75rem', fontSize: '0.72rem', fontWeight: 600, color: '#94A3B8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Intelligence Modules
+              {isStudent ? 'Student Self-Service' : 'Intelligence Modules'}
             </div>
 
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              {NAV_ITEMS.map((item) => {
+              {navItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = location.pathname === item.path;
+                const fullCurrentPath = location.pathname + location.search;
+                const isActive = fullCurrentPath === item.path || (location.pathname === item.path && !location.search && !item.path.includes('?'));
 
                 return (
                   <NavLink
@@ -246,29 +304,44 @@ export default function AppLayout({ children }) {
               gap: '10px',
             }}
           >
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                backgroundColor: '#1E293B',
-                color: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 600,
-                fontSize: '0.85rem',
-                flexShrink: 0,
-              }}
-            >
-              {currentUser?.name ? currentUser.name.charAt(0) : 'U'}
-            </div>
+            {currentUser?.avatar ? (
+              <img
+                src={currentUser.avatar}
+                alt={currentUser.name}
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                  flexShrink: 0,
+                  border: isStudent ? '2px solid #0284C7' : 'none',
+                }}
+              />
+            ) : (
+              <div
+                style={{
+                  width: '38px',
+                  height: '38px',
+                  borderRadius: '50%',
+                  backgroundColor: '#1E293B',
+                  color: '#FFFFFF',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 600,
+                  fontSize: '0.85rem',
+                  flexShrink: 0,
+                }}
+              >
+                {currentUser?.name ? currentUser.name.charAt(0) : 'U'}
+              </div>
+            )}
             <div style={{ overflow: 'hidden' }}>
               <div style={{ fontSize: '0.82rem', fontWeight: 600, color: '#0F172A', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {currentUser?.name || 'Administrator'}
+                {currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Administrator')}
               </div>
               <div style={{ fontSize: '0.72rem', color: '#64748B', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
-                {currentUser?.department || 'Institution Provost'}
+                {isStudent ? (currentUser?.email || 'B.Tech CSE · Sem 6') : (currentUser?.department || 'Institution Provost')}
               </div>
             </div>
           </div>
@@ -304,7 +377,7 @@ export default function AppLayout({ children }) {
         }}
       >
         <Sparkles size={16} color="#38BDF8" />
-        <span>Ask Campus Copilot</span>
+        <span>{isStudent ? 'Ask Student Copilot' : 'Ask Campus Copilot'}</span>
         <span
           style={{
             display: 'inline-flex',

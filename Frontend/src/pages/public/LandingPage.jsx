@@ -3,25 +3,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   ArrowRight,
   ShieldCheck,
-  Zap,
-  BarChart2,
+  Cpu,
+  Database,
+  Target,
   Users2,
-  Compass,
-  FileCheck2,
-  TrendingUp,
-  Award,
-  Layers,
   GraduationCap,
   Briefcase,
-  AlertTriangle,
   CheckCircle2,
-  Search,
-  Database,
-  Cpu,
-  Target,
-  UserCheck,
-  ChevronRight,
   Sparkles,
+  Layers,
+  Award,
 } from 'lucide-react';
 import PublicNavbar from '../../components/layout/PublicNavbar';
 import PublicFooter from '../../components/layout/PublicFooter';
@@ -43,7 +34,7 @@ export default function LandingPage() {
       <PublicNavbar />
 
       {/* =========================================================================
-          HERO SECTION — Exact Alignment with Approved Reference
+          HERO SECTION — Preserved Exactly as Approved (Image 1)
           ========================================================================= */}
       <section
         style={{
@@ -163,7 +154,7 @@ export default function LandingPage() {
               </Link>
 
               <a
-                href="#how-it-works"
+                href="#about"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -179,7 +170,7 @@ export default function LandingPage() {
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
                 onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)')}
               >
-                <span>See How It Works</span>
+                <span>About PRATIBHA</span>
                 <ArrowRight size={15} style={{ color: 'var(--color-blue-bright)' }} />
               </a>
             </div>
@@ -246,59 +237,68 @@ export default function LandingPage() {
       </section>
 
       {/* =========================================================================
-          SECTION 1: PLATFORM OVERVIEW
+          ONLY PAGE 1: ABOUT SECTION
+          Comprehensive institutional overview directly beneath the hero
           ========================================================================= */}
       <section
-        id="platform"
+        id="about"
         style={{
-          padding: '5rem 1.5rem',
+          padding: '5.5rem 1.5rem',
           backgroundColor: 'var(--color-navy)',
           color: '#FFFFFF',
-          borderBottom: '1px solid rgba(228, 233, 240, 0.08)',
+          borderBottom: '1px solid rgba(228, 233, 240, 0.1)',
         }}
       >
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '760px', margin: '0 auto 3.5rem' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 3.5rem' }}>
             <span
               style={{
                 fontSize: '0.78rem',
-                letterSpacing: '0.12em',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
                 color: 'var(--color-blue-bright)',
                 fontWeight: 700,
               }}
             >
-              PLATFORM OVERVIEW
+              KPMG CHALLENGE 4 · STUDENT SUCCESS INTELLIGENCE
             </span>
             <h2
               style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.35rem)',
+                fontSize: 'clamp(2rem, 3.2vw, 2.75rem)',
                 fontWeight: 700,
-                marginTop: '0.5rem',
+                marginTop: '0.6rem',
                 marginBottom: '1rem',
                 color: '#FFFFFF',
+                letterSpacing: '-0.02em',
               }}
             >
-              Higher Education Intelligence, Reimagined
+              About PRATIBHA
             </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '1rem', lineHeight: 1.6 }}>
-              PRATIBHA bridges the gap between institutional administrative databases and student career outcomes. By unifying seven student-data domains into explainable metrics, universities can intervene early while students gain agency over their personal trajectory.
+            <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.05rem', lineHeight: 1.65 }}>
+              PRATIBHA is an explainable intelligence ecosystem engineered to unify fragmented university data into transparent, actionable signals for timely remediation and career readiness.
             </p>
           </div>
 
+          {/* Core Mission Cards */}
           <div
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
               gap: '2rem',
+              marginBottom: '3.5rem',
             }}
           >
+            {/* Card 1: 7-Domain Unification */}
             <div
               style={{
-                backgroundColor: 'rgba(6, 26, 51, 0.6)',
+                backgroundColor: 'rgba(6, 26, 51, 0.7)',
                 border: '1px solid rgba(228, 233, 240, 0.12)',
-                borderRadius: 'var(--radius-md)',
-                padding: '2rem',
+                borderRadius: 'var(--radius-lg)',
+                padding: '2.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
               }}
             >
               <div
@@ -311,25 +311,38 @@ export default function LandingPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--color-blue-bright)',
-                  marginBottom: '1rem',
                 }}
               >
                 <Database size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-                7-Domain Unification
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+                7-Domain Holistic Diagnostic
               </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.88rem', lineHeight: 1.6 }}>
-                Eliminates information silos between ERP marks, biometric attendance, Moodle LMS activities, coding test platforms, and placement trackers.
+              <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                Eliminates information silos between ERP grades, biometric attendance, LMS activity, coding platform benchmarks, and placement cells. Every student is evaluated with full context.
               </p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} style={{ color: 'var(--color-blue-bright)' }} />
+                  <span>Academics, Attendance & LMS engagement</span>
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} style={{ color: 'var(--color-blue-bright)' }} />
+                  <span>Placement tests, Technical skills & Feedback</span>
+                </li>
+              </ul>
             </div>
 
+            {/* Card 2: Decoupled Risk Engines */}
             <div
               style={{
-                backgroundColor: 'rgba(6, 26, 51, 0.6)',
+                backgroundColor: 'rgba(6, 26, 51, 0.7)',
                 border: '1px solid rgba(228, 233, 240, 0.12)',
-                borderRadius: 'var(--radius-md)',
-                padding: '2rem',
+                borderRadius: 'var(--radius-lg)',
+                padding: '2.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
               }}
             >
               <div
@@ -342,25 +355,38 @@ export default function LandingPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#10B981',
-                  marginBottom: '1rem',
                 }}
               >
                 <Cpu size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-                Explainable Readiness Scoring
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+                Decoupled Risk Engines
               </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.88rem', lineHeight: 1.6 }}>
-                Calculates a transparent composite Success Score (0–100) where every factor contribution is explicit. Missing data is never defaulted to zero.
+              <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                Academic Risk and Placement Risk require distinct institutional actions. PRATIBHA analyzes them independently to ensure accurate, targeted faculty mentorship and placement bootcamps.
               </p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} style={{ color: '#10B981' }} />
+                  <span>Curriculum & attendance early warnings</span>
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} style={{ color: '#10B981' }} />
+                  <span>Aptitude, DSA & interview readiness benchmarks</span>
+                </li>
+              </ul>
             </div>
 
+            {/* Card 3: Explainable & Ethical AI */}
             <div
               style={{
-                backgroundColor: 'rgba(6, 26, 51, 0.6)',
+                backgroundColor: 'rgba(6, 26, 51, 0.7)',
                 border: '1px solid rgba(228, 233, 240, 0.12)',
-                borderRadius: 'var(--radius-md)',
-                padding: '2rem',
+                borderRadius: 'var(--radius-lg)',
+                padding: '2.25rem',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1rem',
               }}
             >
               <div
@@ -373,1002 +399,126 @@ export default function LandingPage() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#F59E0B',
-                  marginBottom: '1rem',
                 }}
               >
-                <Target size={22} />
+                <ShieldCheck size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 600, color: '#FFFFFF', marginBottom: '0.5rem' }}>
-                Decoupled Risk Intelligence
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+                Ethical & Explainable Metrics
               </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.7)', fontSize: '0.88rem', lineHeight: 1.6 }}>
-                Evaluates Academic Risk and Placement Risk independently, ensuring students who excel academically but struggle with coding tests receive tailored preparation.
+              <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+                Missing records are never treated as zero failure. The platform features dynamic weight redistribution, explicit factor contributions, and full data completeness transparency.
               </p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} style={{ color: '#F59E0B' }} />
+                  <span>Non-zero missing data invariant</span>
+                </li>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <CheckCircle2 size={15} style={{ color: '#F59E0B' }} />
+                  <span>Human-in-the-loop intervention logging</span>
+                </li>
+              </ul>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* =========================================================================
-          SECTION 2: SEVEN DATA DOMAINS IN-DEPTH
-          ========================================================================= */}
-      <section
-        style={{
-          padding: '5rem 1.5rem',
-          backgroundColor: 'var(--color-navy-deep)',
-          color: '#FFFFFF',
-          borderBottom: '1px solid rgba(228, 233, 240, 0.08)',
-        }}
-      >
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 3.5rem' }}>
-            <span
-              style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--color-blue-bright)',
-                fontWeight: 700,
-              }}
-            >
-              SEVEN STUDENT-DATA DOMAINS
-            </span>
-            <h2
-              style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.35rem)',
-                fontWeight: 700,
-                marginTop: '0.5rem',
-                marginBottom: '1rem',
-                color: '#FFFFFF',
-              }}
-            >
-              Comprehensive 360° Student Diagnostics
-            </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '1rem', lineHeight: 1.6 }}>
-              PRATIBHA maps indicators across seven vital dimensions to construct an actionable, holistic profile of every learner.
-            </p>
-          </div>
-
+          {/* Persona & Portal Quick Access Strip */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-              gap: '1.5rem',
+              backgroundColor: 'rgba(8, 43, 86, 0.55)',
+              border: '1px solid rgba(0, 162, 255, 0.3)',
+              borderRadius: 'var(--radius-lg)',
+              padding: '2.5rem',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1.75rem',
             }}
           >
-            {[
-              {
-                title: '1. Academics',
-                weight: '30% Weight',
-                desc: 'Internal marks, semester SGPA/CGPA progression, historical backlogs, and subject-level trends.',
-                icon: GraduationCap,
-                color: 'var(--color-blue-bright)',
-              },
-              {
-                title: '2. Attendance',
-                weight: '15% Weight',
-                desc: 'Overall and subject-wise attendance tracking with early statutory 75% alerts and absence streak detection.',
-                icon: BarChart2,
-                color: '#10B981',
-              },
-              {
-                title: '3. LMS Activity',
-                weight: '10% Weight',
-                desc: 'Weekly platform logins, digital assignment submission timeliness, and online learning video completion.',
-                icon: Layers,
-                color: '#8B5CF6',
-              },
-              {
-                title: '4. Engagement',
-                weight: '8% Weight',
-                desc: 'Student club participation, leadership roles, campus event attendance, and hackathon projects.',
-                icon: Users2,
-                color: '#EC4899',
-              },
-              {
-                title: '5. Placement Readiness',
-                weight: '20% Weight',
-                desc: 'Quantitative aptitude benchmarks, DSA coding assessments, and mock technical/HR interview evaluations.',
-                icon: Briefcase,
-                color: '#F59E0B',
-              },
-              {
-                title: '6. Skills',
-                weight: '10% Weight',
-                desc: 'Verified technical skill proficiencies, programming languages, and validated soft-skill endorsements.',
-                icon: Award,
-                color: '#06B6D4',
-              },
-              {
-                title: '7. Feedback',
-                weight: '7% Weight',
-                desc: 'Student satisfaction indices, course experience ratings, and faculty mentoring guidance reviews.',
-                icon: Compass,
-                color: '#3B82F6',
-              },
-            ].map((card) => {
-              const IconComp = card.icon;
-              return (
-                <div
-                  key={card.title}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
+              <div>
+                <span style={{ fontSize: '0.76rem', color: 'var(--color-blue-bright)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  READY TO EXPLORE
+                </span>
+                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#FFFFFF', marginTop: '4px' }}>
+                  Access Dedicated Portals or Test Demo Personas
+                </h3>
+              </div>
+              <Link
+                to="/login"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  backgroundColor: 'var(--color-blue-primary)',
+                  color: '#FFFFFF',
+                  padding: '0.75rem 1.5rem',
+                  borderRadius: 'var(--radius-sm)',
+                  fontSize: '0.9rem',
+                  fontWeight: 600,
+                  textDecoration: 'none',
+                  boxShadow: '0 4px 12px rgba(22, 119, 210, 0.4)',
+                }}
+              >
+                <span>Go to Login / Sign In</span>
+                <ArrowRight size={16} />
+              </Link>
+            </div>
+
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                gap: '1rem',
+              }}
+            >
+              {[
+                { title: 'Admin (Provost)', role: 'admin', icon: '🏛️', desc: 'Campus KPI dashboard & department radar' },
+                { title: 'Faculty Mentor', role: 'faculty', icon: '👨‍🏫', desc: 'Student directory & intervention logging' },
+                { title: 'Placement Officer', role: 'placement', icon: '💼', desc: '2x2 Matrix & placement benchmarks' },
+                { title: 'Student (Aarav)', role: 'student', icon: '🎓', desc: 'Personal 360° cockpit & roadmaps' },
+              ].map((p) => (
+                <button
+                  key={p.role}
+                  type="button"
+                  onClick={() => handleLaunchRole(p.role)}
                   style={{
-                    backgroundColor: 'rgba(8, 43, 86, 0.65)',
-                    border: '1px solid rgba(228, 233, 240, 0.12)',
+                    backgroundColor: 'rgba(6, 26, 51, 0.65)',
+                    border: '1px solid rgba(228, 233, 240, 0.15)',
                     borderRadius: 'var(--radius-md)',
-                    padding: '1.75rem',
+                    padding: '1.25rem',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    color: '#FFFFFF',
                     display: 'flex',
                     flexDirection: 'column',
-                    gap: '0.85rem',
-                    transition: 'all var(--transition-fast)',
+                    gap: '6px',
+                    transition: 'all 0.2s ease',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(37, 139, 250, 0.5)';
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.boxShadow = '0 8px 24px rgba(6, 26, 51, 0.4)';
+                    e.currentTarget.style.borderColor = 'var(--color-blue-bright)';
+                    e.currentTarget.style.backgroundColor = 'rgba(0, 162, 255, 0.12)';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(228, 233, 240, 0.12)';
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.boxShadow = 'none';
+                    e.currentTarget.style.borderColor = 'rgba(228, 233, 240, 0.15)';
+                    e.currentTarget.style.backgroundColor = 'rgba(6, 26, 51, 0.65)';
                   }}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <div
-                      style={{
-                        width: '40px',
-                        height: '40px',
-                        borderRadius: 'var(--radius-sm)',
-                        backgroundColor: 'rgba(37, 139, 250, 0.15)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: card.color,
-                      }}
-                    >
-                      <IconComp size={22} />
-                    </div>
-                    <span
-                      style={{
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        padding: '3px 8px',
-                        borderRadius: 'var(--radius-full)',
-                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                        color: 'rgba(255, 255, 255, 0.85)',
-                      }}
-                    >
-                      {card.weight}
-                    </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '1.1rem' }}>{p.icon}</span>
+                    <strong style={{ fontSize: '0.92rem' }}>{p.title}</strong>
                   </div>
-                  <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: '#FFFFFF' }}>{card.title}</h3>
-                  <p style={{ fontSize: '0.86rem', color: 'rgba(255, 255, 255, 0.7)', lineHeight: 1.55 }}>
-                    {card.desc}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 3: HOW PRATIBHA WORKS — INTEGRATE → ANALYZE → ACT
-          ========================================================================= */}
-      <section
-        id="how-it-works"
-        style={{
-          padding: '5rem 1.5rem',
-          backgroundColor: 'var(--color-navy)',
-          color: '#FFFFFF',
-          borderBottom: '1px solid rgba(228, 233, 240, 0.08)',
-        }}
-      >
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 3.5rem' }}>
-            <span
-              style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--color-blue-bright)',
-                fontWeight: 700,
-              }}
-            >
-              OPERATIONAL WORKFLOW
-            </span>
-            <h2
-              style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.35rem)',
-                fontWeight: 700,
-                marginTop: '0.5rem',
-                marginBottom: '1rem',
-                color: '#FFFFFF',
-              }}
-            >
-              How PRATIBHA Works: Integrate → Analyze → Act
-            </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '1rem', lineHeight: 1.6 }}>
-              A straightforward, transparent 3-stage intelligence cycle from raw campus data ingestion to measurable student remediation.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
-              position: 'relative',
-            }}
-          >
-            {/* Step 1: Integrate */}
-            <div
-              style={{
-                backgroundColor: 'rgba(6, 26, 51, 0.65)',
-                border: '1px solid rgba(228, 233, 240, 0.12)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2.25rem',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(37, 139, 250, 0.15)',
-                  padding: '4px 10px',
-                  borderRadius: 'var(--radius-full)',
-                  color: 'var(--color-blue-bright)',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  width: 'fit-content',
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <span>STEP 01</span>
-                <span>•</span>
-                <span>INGESTION</span>
-              </div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
-                1. Integrate & Normalize
-              </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.9rem', lineHeight: 1.65, marginBottom: '1.5rem' }}>
-                Feeds data from campus ERPs, LMS portals, biometric devices, and coding test platforms. Validates record completeness and identifies missing fields dynamically.
-              </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} style={{ color: 'var(--color-blue-bright)' }} />
-                  <span>Real-time CSV validation & schema checking</span>
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} style={{ color: 'var(--color-blue-bright)' }} />
-                  <span>Dynamic weight redistribution for missing data</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Step 2: Analyze */}
-            <div
-              style={{
-                backgroundColor: 'rgba(6, 26, 51, 0.65)',
-                border: '1px solid rgba(228, 233, 240, 0.12)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2.25rem',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  padding: '4px 10px',
-                  borderRadius: 'var(--radius-full)',
-                  color: '#10B981',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  width: 'fit-content',
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <span>STEP 02</span>
-                <span>•</span>
-                <span>INTELLIGENCE</span>
-              </div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
-                2. Analyze & Decouple
-              </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.9rem', lineHeight: 1.65, marginBottom: '1.5rem' }}>
-                Computes explainable composite Success Scores and independently assesses Academic Risk vs. Placement Risk. Maps students onto the 2x2 Segmentation Matrix.
-              </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#10B981' }} />
-                  <span>Decoupled risk engines with diagnostic root causes</span>
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#10B981' }} />
-                  <span>4-quadrant student segmentation matrix</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* Step 3: Act */}
-            <div
-              style={{
-                backgroundColor: 'rgba(6, 26, 51, 0.65)',
-                border: '1px solid rgba(228, 233, 240, 0.12)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2.25rem',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(245, 158, 11, 0.15)',
-                  padding: '4px 10px',
-                  borderRadius: 'var(--radius-full)',
-                  color: '#F59E0B',
-                  fontSize: '0.78rem',
-                  fontWeight: 700,
-                  width: 'fit-content',
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <span>STEP 03</span>
-                <span>•</span>
-                <span>ACTION</span>
-              </div>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
-                3. Act & Empower
-              </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.9rem', lineHeight: 1.65, marginBottom: '1.5rem' }}>
-                Enables faculty to assign targeted mentorship interventions while students track their own readiness, complete remedial tasks, and access AI-curated roadmaps.
-              </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#F59E0B' }} />
-                  <span>Mentorship logging & intervention tracking</span>
-                </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#F59E0B' }} />
-                  <span>Personal student cockpit & recommendations</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 4: INSTITUTION & STUDENT PORTAL BENEFITS
-          ========================================================================= */}
-      <section
-        style={{
-          padding: '5rem 1.5rem',
-          backgroundColor: '#FFFFFF',
-          color: 'var(--color-navy)',
-          borderBottom: '1px solid var(--color-border)',
-        }}
-      >
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '760px', margin: '0 auto 3.5rem' }}>
-            <span
-              style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--color-blue-primary)',
-                fontWeight: 700,
-              }}
-            >
-              PORTAL CAPABILITIES
-            </span>
-            <h2
-              style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.35rem)',
-                fontWeight: 700,
-                marginTop: '0.5rem',
-                marginBottom: '1rem',
-                color: 'var(--color-navy)',
-              }}
-            >
-              Tailored Portals for Campus Leaders and Students
-            </h2>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>
-              PRATIBHA serves both administrative and learner needs with specialized interfaces designed for distinct campus workflows.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
-              gap: '2.5rem',
-            }}
-          >
-            {/* Column 1: Institution Portal Benefits */}
-            <div
-              style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2.5rem',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'var(--color-blue-surface)',
-                  color: 'var(--color-blue-primary)',
-                  padding: '4px 10px',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  marginBottom: '1rem',
-                }}
-              >
-                <span>INSTITUTION PORTAL</span>
-              </div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-navy)', marginBottom: '0.75rem' }}>
-                For Administrators, Faculty & Placement Officers
-              </h3>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                Actionable cohort intelligence to detect early attrition risks, track intervention outcomes, and boost institutional placement metrics.
-              </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.88rem' }}>
-                {[
-                  'Campus-wide KPI cockpit with department breakdowns',
-                  'Student Directory with faceted search, risk filters, and sorting',
-                  'Individual Student 360° deep-dive profile across all 7 domains',
-                  'Decoupled Academic Risk vs. Placement Risk views',
-                  '2x2 Academic Performance × Placement Readiness matrix',
-                  'Intervention workflow manager with mentorship logging',
-                  'Client-side CSV report export and data integration health',
-                ].map((item, idx) => (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <div style={{ color: 'var(--color-blue-primary)', marginTop: '2px' }}>
-                      <CheckCircle2 size={16} />
-                    </div>
-                    <span style={{ color: 'var(--color-text-main)', lineHeight: 1.45 }}>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <div style={{ marginTop: '2rem' }}>
-                <button
-                  onClick={() => handleLaunchRole('admin')}
-                  style={{
-                    backgroundColor: 'var(--color-blue-primary)',
-                    color: '#FFFFFF',
-                    padding: '0.75rem 1.25rem',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.88rem',
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span>Explore Institution Portal</span>
-                  <ArrowRight size={15} />
+                  <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>{p.desc}</span>
                 </button>
-              </div>
-            </div>
-
-            {/* Column 2: Student Portal Benefits */}
-            <div
-              style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2.5rem',
-              }}
-            >
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'rgba(13, 148, 136, 0.12)',
-                  color: 'var(--color-status-success)',
-                  padding: '4px 10px',
-                  borderRadius: 'var(--radius-full)',
-                  fontSize: '0.75rem',
-                  fontWeight: 700,
-                  marginBottom: '1rem',
-                }}
-              >
-                <span>STUDENT PORTAL</span>
-              </div>
-              <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--color-navy)', marginBottom: '0.75rem' }}>
-                For Individual Students & Learners
-              </h3>
-              <p style={{ color: 'var(--color-text-secondary)', fontSize: '0.92rem', lineHeight: 1.6, marginBottom: '1.5rem' }}>
-                Personalized transparency to understand personal readiness, track statutory attendance, and target skill deficits before placement drives.
-              </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '1rem', fontSize: '0.88rem' }}>
-                {[
-                  'Personal Success Score with transparent factor attribution',
-                  'Independent Academic Standing and Placement Readiness indicators',
-                  'Verified Academic Record and technical skill ledger',
-                  'Longitudinal attendance tracker with statutory 75% markers',
-                  'AI-curated learning roadmaps, coding practice, and certifications',
-                  'Assigned faculty mentorship tasks with progress completion',
-                  'Course experience and faculty mentorship feedback submission',
-                ].map((item, idx) => (
-                  <li key={idx} style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-                    <div style={{ color: 'var(--color-status-success)', marginTop: '2px' }}>
-                      <CheckCircle2 size={16} />
-                    </div>
-                    <span style={{ color: 'var(--color-text-main)', lineHeight: 1.45 }}>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <div style={{ marginTop: '2rem' }}>
-                <button
-                  onClick={() => handleLaunchRole('student')}
-                  style={{
-                    backgroundColor: 'var(--color-navy)',
-                    color: '#FFFFFF',
-                    padding: '0.75rem 1.25rem',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.88rem',
-                    fontWeight: 600,
-                    border: 'none',
-                    cursor: 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
-                >
-                  <span>Explore Student Experience</span>
-                  <ArrowRight size={15} />
-                </button>
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
       {/* =========================================================================
-          SECTION 5: EXPLAINABLE SUCCESS SCORE & SEPARATE RISK INDICATORS
+          ONLY PAGE 2: PUBLIC FOOTER
+          Preserved clean footer directly after the About Section
           ========================================================================= */}
-      <section
-        id="insights"
-        style={{
-          padding: '5rem 1.5rem',
-          backgroundColor: '#FFFFFF',
-          color: 'var(--color-navy)',
-        }}
-      >
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '760px', margin: '0 auto 3.5rem' }}>
-            <span
-              style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--color-blue-primary)',
-                fontWeight: 700,
-              }}
-            >
-              RESPONSIBLE ANALYTICS METHODOLOGY
-            </span>
-            <h2
-              style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.35rem)',
-                fontWeight: 700,
-                marginTop: '0.5rem',
-                marginBottom: '1rem',
-                color: 'var(--color-navy)',
-              }}
-            >
-              Decoupled Risk Engines & Explainable Intelligence
-            </h2>
-            <p style={{ color: 'var(--color-text-secondary)', fontSize: '1rem', lineHeight: 1.6 }}>
-              Academic Risk and Placement Risk require distinct institutional responses. PRATIBHA evaluates them independently, ensuring support is precisely targeted.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '2rem',
-              alignItems: 'stretch',
-            }}
-          >
-            {/* Box 1: Academic Risk Engine */}
-            <div
-              style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: 'var(--radius-sm)',
-                    backgroundColor: 'rgba(217, 119, 6, 0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--color-status-warning)',
-                  }}
-                >
-                  <AlertTriangle size={20} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-navy)' }}>
-                    Academic Risk Engine
-                  </h3>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-                    Curriculum & Attendance Health
-                  </span>
-                </div>
-              </div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-                Monitors course comprehension, CGPA trends, active backlogs, and statutory 75% attendance criteria. Triggers faculty mentoring and subject-specific tutoring.
-              </p>
-              <div
-                style={{
-                  marginTop: 'auto',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
-                  border: '1px solid var(--color-border)',
-                  fontSize: '0.82rem',
-                }}
-              >
-                <div style={{ fontWeight: 600, color: 'var(--color-navy)', marginBottom: '6px' }}>
-                  Illustrative Diagnostic Alert:
-                </div>
-                <div style={{ color: 'var(--color-status-danger)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>⚠️</span>
-                  <span>Attendance dropped below statutory 75% in Data Structures</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Box 2: Placement Risk Engine */}
-            <div
-              style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: 'var(--radius-sm)',
-                    backgroundColor: 'rgba(22, 119, 210, 0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--color-blue-primary)',
-                  }}
-                >
-                  <Briefcase size={20} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-navy)' }}>
-                    Placement Readiness Engine
-                  </h3>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-                    Hiring Benchmark Diagnostics
-                  </span>
-                </div>
-              </div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-                Evaluates quantitative aptitude, algorithmic coding speed, and mock HR/technical interviews. Triggers coding bootcamps and communication workshops.
-              </p>
-              <div
-                style={{
-                  marginTop: 'auto',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
-                  border: '1px solid var(--color-border)',
-                  fontSize: '0.82rem',
-                }}
-              >
-                <div style={{ fontWeight: 600, color: 'var(--color-navy)', marginBottom: '6px' }}>
-                  Illustrative Diagnostic Alert:
-                </div>
-                <div style={{ color: 'var(--color-status-warning)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span>🎯</span>
-                  <span>DSA Coding benchmark (44%) below Tier-1 eligibility (65%)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Box 3: Explainable Success Score & Non-Zero Rule */}
-            <div
-              style={{
-                backgroundColor: 'var(--color-bg-page)',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--radius-lg)',
-                padding: '2rem',
-                display: 'flex',
-                flexDirection: 'column',
-              }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '1rem' }}>
-                <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: 'var(--radius-sm)',
-                    backgroundColor: 'rgba(13, 148, 136, 0.15)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'var(--color-status-success)',
-                  }}
-                >
-                  <CheckCircle2 size={20} />
-                </div>
-                <div>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--color-navy)' }}>
-                    Non-Zero Missing Data Rule
-                  </h3>
-                  <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
-                    Ethical Mathematical Invariant
-                  </span>
-                </div>
-              </div>
-              <p style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)', lineHeight: 1.6, marginBottom: '1.25rem' }}>
-                Missing ERP feeds are never penalized as zero. Weights are dynamically reallocated among valid domains, accompanied by a transparent Data Completeness metric.
-              </p>
-              <div
-                style={{
-                  marginTop: 'auto',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 'var(--radius-sm)',
-                  padding: '1rem',
-                  border: '1px solid var(--color-border)',
-                  fontSize: '0.82rem',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                  <span style={{ fontWeight: 600, color: 'var(--color-navy)' }}>Data Completeness:</span>
-                  <span style={{ color: 'var(--color-blue-primary)', fontWeight: 700 }}>92% Active</span>
-                </div>
-                <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--color-border)', borderRadius: '3px' }}>
-                  <div style={{ width: '92%', height: '100%', backgroundColor: 'var(--color-blue-primary)', borderRadius: '3px' }} />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 6: 1-CLICK DEMO PERSONAS GATEWAY
-          ========================================================================= */}
-      <section
-        id="portals"
-        style={{
-          padding: '5rem 1.5rem',
-          backgroundColor: 'var(--color-navy-deep)',
-          color: '#FFFFFF',
-          borderTop: '1px solid rgba(228, 233, 240, 0.1)',
-        }}
-      >
-        <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto 3.5rem' }}>
-            <span
-              style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: 'var(--color-blue-bright)',
-                fontWeight: 700,
-              }}
-            >
-              EXPERIENCE THE PLATFORM
-            </span>
-            <h2
-              style={{
-                fontSize: 'clamp(1.75rem, 3vw, 2.35rem)',
-                fontWeight: 700,
-                marginTop: '0.5rem',
-                marginBottom: '1rem',
-                color: '#FFFFFF',
-              }}
-            >
-              Test Real Institutional Workflows
-            </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.75)', fontSize: '1rem', lineHeight: 1.6 }}>
-              Select a demo role below to immediately experience the platform from that stakeholder's vantage point.
-            </p>
-          </div>
-
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '1.5rem',
-            }}
-          >
-            {[
-              {
-                key: 'admin',
-                roleTitle: 'Institution Administrator',
-                name: 'Dr. Sunita Rao',
-                tag: 'Provost / Dean',
-                features: 'Campus KPI dashboard, 7-domain data integration, department risk heatmaps & accreditation reports.',
-                btnText: 'Launch Admin View →',
-              },
-              {
-                key: 'faculty',
-                roleTitle: 'Faculty Mentor',
-                name: 'Prof. Rajesh Kumar',
-                tag: 'Computer Science & Engg.',
-                features: 'Student Directory, early academic warning alerts, 1-on-1 intervention logging & attendance tracking.',
-                btnText: 'Launch Mentor View →',
-              },
-              {
-                key: 'placement',
-                roleTitle: 'Placement Officer (TPO)',
-                name: 'Vikram Malhotra',
-                tag: 'Corporate Relations',
-                features: '2x2 Segmentation matrix, coding benchmarks, company eligibility filters & CSV roster exports.',
-                btnText: 'Launch TPO View →',
-              },
-              {
-                key: 'student',
-                roleTitle: 'Student Experience',
-                name: 'Aarav Sharma',
-                tag: '3rd Year B.Tech CSE',
-                features: 'Personal Success Score, progress tracking, AI-curated skill recommendations & feedback submission.',
-                btnText: 'Launch Student Portal →',
-              },
-            ].map((persona) => (
-              <div
-                key={persona.key}
-                style={{
-                  backgroundColor: 'rgba(8, 43, 86, 0.55)',
-                  border: '1px solid rgba(228, 233, 240, 0.15)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '2rem 1.5rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1rem',
-                  transition: 'all var(--transition-fast)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-blue-bright)';
-                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(37, 139, 250, 0.25)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'rgba(228, 233, 240, 0.15)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <div>
-                  <span
-                    style={{
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      color: 'var(--color-blue-bright)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.06em',
-                    }}
-                  >
-                    {persona.tag}
-                  </span>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#FFFFFF', marginTop: '4px' }}>
-                    {persona.roleTitle}
-                  </h3>
-                  <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.7)', marginTop: '2px' }}>
-                    Demo Persona: {persona.name}
-                  </div>
-                </div>
-
-                <p style={{ fontSize: '0.86rem', color: 'rgba(255, 255, 255, 0.65)', lineHeight: 1.55 }}>
-                  {persona.features}
-                </p>
-
-                <button
-                  onClick={() => handleLaunchRole(persona.key)}
-                  style={{
-                    marginTop: 'auto',
-                    backgroundColor: 'rgba(37, 139, 250, 0.15)',
-                    border: '1px solid var(--color-blue-bright)',
-                    color: '#FFFFFF',
-                    padding: '0.65rem 1rem',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.88rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    transition: 'all var(--transition-fast)',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-blue-primary)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(37, 139, 250, 0.15)')}
-                >
-                  {persona.btnText}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION 7: FINAL CALL TO ACTION
-          ========================================================================= */}
-      <section
-        style={{
-          padding: '4.5rem 1.5rem',
-          backgroundColor: 'var(--color-navy)',
-          textAlign: 'center',
-          borderTop: '1px solid rgba(228, 233, 240, 0.1)',
-        }}
-      >
-        <div style={{ maxWidth: '780px', margin: '0 auto' }}>
-          <h2
-            style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(2rem, 3.5vw, 2.75rem)',
-              color: '#FFFFFF',
-              fontWeight: 700,
-              marginBottom: '1rem',
-            }}
-          >
-            Ready to empower your campus with explainable intelligence?
-          </h2>
-          <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.05rem', lineHeight: 1.6, marginBottom: '2rem' }}>
-            Experience PRATIBHA today with interactive simulated cohorts, or test individual student workflows.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-            <Link
-              to="/login"
-              style={{
-                backgroundColor: 'var(--color-blue-primary)',
-                color: '#FFFFFF',
-                padding: '0.85rem 1.85rem',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.95rem',
-                fontWeight: 600,
-                textDecoration: 'none',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 12px rgba(22, 119, 210, 0.35)',
-              }}
-            >
-              <span>Access Login Gateway</span>
-              <ArrowRight size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Public Footer */}
       <PublicFooter />
     </div>
   );
