@@ -111,13 +111,13 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 9 — Feedback, audit and optional copilot integration
 
-- [ ] Implement feedback submission and authorized aggregated summaries.
-- [ ] Ensure raw comments have restricted access and are not automatically model features.
-- [ ] Add minimal audit events for imports, user provisioning, scenario approval and privileged actions.
-- [ ] Implement a copilot route only after a provider/contract is approved; route only through authorized backend services.
-- [ ] Do not allow arbitrary LLM-generated database queries.
+- [x] Implement feedback submission and authorized aggregated summaries.
+- [x] Ensure raw comments have restricted access and are not automatically model features.
+- [x] Add minimal audit events for imports, user provisioning, scenario approval and privileged actions.
+- [x] Implement a copilot route only after a provider/contract is approved; route only through authorized backend services.
+- [x] Do not allow arbitrary LLM-generated database queries.
 
-**Acceptance gate:** Feedback privacy and role boundaries are tested; audit events avoid secrets; if copilot is not configured, API behavior is explicit rather than deceptive.
+**Acceptance gate:** Feedback privacy and role boundaries are tested; audit events avoid secrets; if copilot is not configured, API behavior is explicit rather than deceptive. (PASSED)
 
 ## Phase 10 — Deployment and integration hardening
 

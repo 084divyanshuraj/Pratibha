@@ -213,7 +213,12 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
 - **Phase 6:** ML service integration (`ML_CONTRACT.md`), 17-feature builder with leakage prevention, resilient client, prediction persistence, zero-fabrication gate, and automated tests. (PASSED)
 - **Phase 7:** Institution analytics and segmentation (overview KPIs, coverage notes, trends, risk summary, decoupled risk divergence, explainable segment rules, rebuild endpoint, and automated tests). (PASSED)
 - **Phase 8:** Intervention catalog and Sandbox (catalog management, deterministic allocation engine, capacity limits, scenario run & approval workflow, intervention tracking, outcome recording, and automated tests). (PASSED)
+- **Phase 9:** Feedback, audit and optional copilot integration:
+  - Feedback subsystem (`backend/src/feedback/`): `POST /api/v1/feedback`, `GET /api/v1/feedback/summary`, `GET /api/v1/feedback` with strict student self-scoping and aggregated privacy boundaries (comments strictly withheld from aggregate summaries and masked for private records).
+  - Audit logging subsystem (`backend/src/audit/`): `GET /api/v1/audit/events` (admin-only), automatic credential/token scrubbing from metadata, hooked into user provisioning, import commit, scenario approval, outcome recording, and segment rebuilds.
+  - Copilot subsystem (`backend/src/copilot/`): `POST /api/v1/copilot/query`, explicit non-deceptive `not_configured` response when disabled, zero arbitrary SQL/NoSQL query execution, safe grounded routing to verified internal analytical services (`/overview`, `/risk-summary`, `/segments`, `/intervention-catalog`).
+  - Automated tests: 27 new tests in `feedback.test.js`, `audit.test.js`, `copilot.test.js` (total test suite: 172 passing tests across 70 suites, 0 failures). (PASSED)
 
 ## Coding-agent next action
 
-Proceed to Phase 9 (Feedback, audit and optional copilot integration: feedback submission, aggregated summaries with comment protection, audit events for privileged actions, and safe copilot contract).
+Proceed to Phase 10 (Deployment and integration hardening: Render production configuration, MongoDB Atlas URI verification, CORS configuration for Vercel frontend, smoke-test script, final verification).

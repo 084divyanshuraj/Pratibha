@@ -132,6 +132,8 @@
 - [x] `POST /api/v1/interventions/:interventionId/outcomes` — Authorized staff; record observed outcomes
 
 ### Feedback & Copilot
-- [ ] `POST /api/v1/feedback` — Authenticated; submit rating/feedback
-- [ ] `GET /api/v1/feedback/summary` — Staff only; aggregated summary (comments redacted/protected)
-- [ ] `POST /api/v1/copilot/query` — (Optional / deferred until approved provider)
+- [x] `POST /api/v1/feedback` — Authenticated; submit rating/feedback
+- [x] `GET /api/v1/feedback/summary` — Staff only; aggregated summary (comments redacted/protected)
+- [x] `GET /api/v1/feedback` — Role-scoped list with comment redaction
+- [x] `GET /api/v1/audit/events` — Admin only; privileged action audit logs
+- [x] `POST /api/v1/copilot/query` — Grounded natural language analytical query dispatcher

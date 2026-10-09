@@ -967,7 +967,137 @@ paths:
         '403':
           description: Forbidden - staff role required
 
+  /api/v1/feedback:
+    post:
+      summary: Submit student or faculty feedback
+      description: Authenticated users. Students are restricted to submitting feedback for their own studentId.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - feedbackType
+              properties:
+                studentId:
+                  type: string
+                feedbackType:
+                  type: string
+                  enum: [student_satisfaction, faculty_feedback, course_feedback, other]
+                rating:
+                  type: integer
+                  minimum: 1
+                  maximum: 5
+                comment:
+                  type: string
+                  maxLength: 1000
+                visibility:
+                  type: string
+                  enum: [private, staff_only, aggregated]
+                  default: "staff_only"
+      responses:
+        '201':
+          description: Feedback submitted successfully
+        '400':
+          description: Validation error
+        '403':
+          description: Forbidden - cross-student feedback submission attempt
 
+    get:
+      summary: List feedback records
+      description: Authenticated users. Students see only their own feedback. Private comments submitted by peers are redacted for non-admin faculty.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: studentId
+          schema:
+            type: string
+        - in: query
+          name: feedbackType
+          schema:
+            type: string
+        - in: query
+          name: visibility
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated feedback list
+
+  /api/v1/feedback/summary:
+    get:
+      summary: Aggregated institutional feedback summary
+      description: Staff roles only. Returns aggregated distributions and average ratings; raw student comments are strictly withheld.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: feedbackType
+          schema:
+            type: string
+        - in: query
+          name: studentId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Aggregated feedback summary report
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/audit/events:
+    get:
+      summary: List audit trail events
+      description: Admin role only. Returns security-relevant administrative audit logs with sanitized credentials.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: action
+          schema:
+            type: string
+        - in: query
+          name: resourceType
+          schema:
+            type: string
+        - in: query
+          name: actorUserId
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of audit events
+        '403':
+          description: Forbidden - admin role required
+
+  /api/v1/copilot/query:
+    post:
+      summary: AI Copilot natural language query assistant
+      description: Authenticated users. Grounded query dispatcher routing strictly to verified backend analytics services. Disallows arbitrary SQL/NoSQL injections.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - query
+              properties:
+                query:
+                  type: string
+                  minLength: 2
+                  maxLength: 500
+      responses:
+        '200':
+          description: Grounded analytical response or explicit not_configured status
+        '400':
+          description: Validation error or unauthorized query syntax attempt
 
 components:
   schemas:

@@ -4,6 +4,7 @@ import {
   updateInterventionStatus,
   recordOutcomes,
 } from './intervention.service.js';
+import auditService from '../audit/audit.service.js';
 
 export async function listInterventionsHandler(req, res, next) {
   try {
@@ -73,6 +74,18 @@ export async function recordOutcomesHandler(req, res, next) {
       req.body,
       req.user
     );
+
+    await auditService.logAuditEvent({
+      actorUserId: req.user?.id || req.user?.email || 'SYSTEM',
+      action: 'INTERVENTION_OUTCOME_RECORDED',
+      resourceType: 'intervention',
+      resourceId: req.params.interventionId,
+      requestId: req.id,
+      metadata: {
+        studentId: updated.studentId,
+        observedOutcomesCount: updated.observedOutcomes?.length,
+      },
+    });
 
     res.status(200).json({
       success: true,

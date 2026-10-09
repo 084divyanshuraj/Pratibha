@@ -3,6 +3,7 @@ import {
   processImport,
   getImportById,
 } from './ingestion.service.js';
+import auditService from '../audit/audit.service.js';
 
 export async function previewImportHandler(req, res, next) {
   try {
@@ -36,6 +37,20 @@ export async function commitImportHandler(req, res, next) {
       fileName,
       uploadedBy: req.user.email || req.user.id,
       dryRun: false,
+    });
+
+    await auditService.logAuditEvent({
+      actorUserId: req.user.id || req.user.email,
+      action: 'IMPORT_COMMITTED',
+      resourceType: 'import',
+      resourceId: result.importId,
+      requestId: req.id,
+      metadata: {
+        datasetType: req.params.datasetType,
+        fileName,
+        acceptedCount: result.acceptedCount,
+        rejectedCount: result.rejectedCount,
+      },
     });
 
     res.status(201).json({

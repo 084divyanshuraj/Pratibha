@@ -3,6 +3,7 @@ import {
   getSegmentByKey,
   rebuildSegments,
 } from './segment.service.js';
+import auditService from '../audit/audit.service.js';
 
 /**
  * Controller to list all student segments with summary metrics
@@ -58,6 +59,17 @@ export async function rebuildSegmentsHandler(req, res, next) {
     };
 
     const result = await rebuildSegments(options);
+
+    await auditService.logAuditEvent({
+      actorUserId: req.user?.id || req.user?.email || 'SYSTEM',
+      action: 'SEGMENTS_REBUILT',
+      resourceType: 'segment',
+      requestId: req.id,
+      metadata: {
+        processedCount: result.processedCount,
+        segmentCounts: result.segmentCounts,
+      },
+    });
 
     res.status(200).json({
       success: true,

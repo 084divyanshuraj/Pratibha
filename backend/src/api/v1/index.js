@@ -8,6 +8,9 @@ import segmentRouter from '../../segments/segment.routes.js';
 import catalogRouter from '../../interventions/catalog.routes.js';
 import simulationRouter from '../../interventions/simulation.routes.js';
 import interventionRouter from '../../interventions/intervention.routes.js';
+import feedbackRouter from '../../feedback/feedback.routes.js';
+import auditRouter from '../../audit/audit.routes.js';
+import copilotRouter from '../../copilot/copilot.routes.js';
 import { authenticate, authorizeStudentScope } from '../../middleware/auth.js';
 
 const apiV1Router = Router();
@@ -33,6 +36,9 @@ apiV1Router.get('/', (req, res) => {
         interventionCatalog: '/api/v1/intervention-catalog',
         simulations: '/api/v1/simulations',
         interventions: '/api/v1/interventions',
+        feedback: '/api/v1/feedback',
+        audit: '/api/v1/audit/events',
+        copilot: '/api/v1/copilot/query',
       },
     },
     meta: {
@@ -67,6 +73,15 @@ apiV1Router.use('/simulations', simulationRouter);
 
 // Student Interventions Tracking
 apiV1Router.use('/interventions', interventionRouter);
+
+// Student Feedback Subsystem
+apiV1Router.use('/feedback', feedbackRouter);
+
+// Audit Logging Subsystem
+apiV1Router.use('/audit', auditRouter);
+
+// AI Copilot Query Assistant (Safe structured dispatcher)
+apiV1Router.use('/copilot', copilotRouter);
 
 // Scoped student record verification route (for testing object-level authorization gate)
 apiV1Router.get(

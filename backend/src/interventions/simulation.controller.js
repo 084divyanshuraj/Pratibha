@@ -4,6 +4,7 @@ import {
   getScenario,
   approveScenario,
 } from './simulation.service.js';
+import auditService from '../audit/audit.service.js';
 
 export async function createScenarioHandler(req, res, next) {
   try {
@@ -56,6 +57,19 @@ export async function getScenarioHandler(req, res, next) {
 export async function approveScenarioHandler(req, res, next) {
   try {
     const result = await approveScenario(req.params.scenarioId, req.user);
+
+    await auditService.logAuditEvent({
+      actorUserId: req.user?.id || req.user?.email || 'SYSTEM',
+      action: 'SCENARIO_APPROVED',
+      resourceType: 'simulation_scenario',
+      resourceId: req.params.scenarioId,
+      requestId: req.id,
+      metadata: {
+        status: result.status,
+        allocatedCount: result.allocationResults?.length,
+        interventionAssignmentsCreated: result.interventionAssignmentsCreated,
+      },
+    });
 
     res.status(200).json({
       success: true,

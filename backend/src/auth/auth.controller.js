@@ -1,4 +1,5 @@
 import authService from './auth.service.js';
+import auditService from '../audit/audit.service.js';
 
 /**
  * Handle POST /api/v1/auth/login
@@ -39,6 +40,18 @@ export function getCurrentUser(req, res) {
 export async function provisionUser(req, res, next) {
   try {
     const result = await authService.provisionUser(req.body);
+
+    await auditService.logAuditEvent({
+      actorUserId: req.user?.id || req.user?.email || 'SYSTEM',
+      action: 'USER_PROVISIONED',
+      resourceType: 'user',
+      resourceId: result.id,
+      requestId: req.id,
+      metadata: {
+        email: result.email,
+        role: result.role,
+      },
+    });
 
     res.status(201).json({
       success: true,
