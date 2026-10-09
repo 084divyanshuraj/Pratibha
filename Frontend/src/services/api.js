@@ -1277,6 +1277,36 @@ ${rec}`;
           sources: [`/api/v1/students/${matchedStudent.studentId}`, `/api/v1/students/${matchedStudent.studentId}/success-score`],
           disclaimer: 'Verified against stored student entity. Zero LLM hallucination.',
         };
+      } else {
+        const namedMatch = clean.match(/(?:student\s+named|named|called|profile\s+of|details\s+of)\s+([A-Za-z0-9_\s]+)/i);
+        const stopWords = new Set([
+          'ka', 'ki', 'ke', 'ko', 'info', 'do', 'batao', 'details', 'detail', 'profile', 'student',
+          'students', 'about', 'tell', 'me', 'who', 'is', 'check', 'show', 'search', 'hai', 'kya',
+          'tha', 'de', 'give', 'list', 'all', 'data', 'score', 'risk', 'marks', 'attendance', 'cgpa',
+          'department', 'dept', 'backlog', 'backlogs', 'campus', 'top', 'low', 'high', 'overall',
+          'named', 'called', 'name', 'the', 'of', 'in', 'for', 'with', 'by',
+        ]);
+        const words = norm.split(/[\s,?.!]+/).filter((w) => w && w.length >= 3 && !stopWords.has(w));
+        let targetName = null;
+        if (namedMatch) {
+          targetName = namedMatch[1].trim().replace(/\s+(ka|ki|ke|details|detail|info|status|\?)$/i, '').trim();
+        } else if (words.length > 0 && (clean.includes('student') || clean.includes('cgpa') || clean.includes('profile'))) {
+          targetName = words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        }
+
+        if (idMatch || targetName) {
+          const missingIdentifier = idMatch ? idMatch[1].toUpperCase() : targetName;
+          return {
+            status: 'not_found',
+            grounded: true,
+            intent: 'STUDENT_NOT_FOUND',
+            summary: `⚠️ **Student Not Found:** No record exists for **"${missingIdentifier}"** in the campus database.
+
+Please verify the name or student ID (e.g., \`Aarav Sharma\`, \`STU_0001\`). You can inspect active students in the **Student 360 Directory**.`,
+            sources: ['/api/v1/students'],
+            disclaimer: 'Verified against stored student roster. Zero LLM hallucination.',
+          };
+        }
       }
 
       // 3. Attendance Shortfall Filter (< 75%)

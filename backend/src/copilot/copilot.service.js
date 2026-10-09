@@ -106,8 +106,8 @@ How can I assist your campus administration today?`,
   // =========================================================================
   // 2. SPECIFIC STUDENT 360° LOOKUP (By ID or Name in English / Hinglish)
   // =========================================================================
-  // Check for student ID pattern: STU_0001, STU0001, STU_PH4_001, etc.
-  const idMatch = cleanQuery.match(/\b(STU[_-]?[A-Z0-9]+)\b/i);
+  // Check for student ID pattern: STU_0001, STU0001, STU_PH4_001, etc. (do not match word 'student')
+  const idMatch = cleanQuery.match(/\b(STU[_-]?\d{1,5}|STU[_-]PH\d+[_-]\d+)\b/i);
   let studentDoc = null;
 
   if (idMatch) {
@@ -130,6 +130,7 @@ How can I assist your campus administration today?`,
       'department', 'dept', 'backlog', 'backlogs', 'campus', 'top', 'low', 'high', 'overall',
       'please', 'can', 'you', 'karo', 'dikhao', 'which', 'whom', 'where', 'status', 'summary',
       'shortfall', 'divergence', 'decoupled', 'failing', 'passed', 'average', 'need', 'intervention',
+      'named', 'called', 'name', 'the', 'of', 'in', 'for', 'with', 'by',
     ]);
     const words = normalized.split(/[\s,?.!]+/).filter((w) => w && w.length >= 3 && !nonNameWords.has(w));
 
@@ -140,6 +141,31 @@ How can I assist your campus administration today?`,
         orConditions.push({ lastName: new RegExp(`^${w}$`, 'i') });
       }
       studentDoc = await Student.findOne({ $or: orConditions }).lean();
+    }
+
+    if (!studentDoc) {
+      const namedMatch = cleanQuery.match(/(?:student\s+named|named|called|profile\s+of|details\s+of)\s+([A-Za-z0-9_\s]+)/i);
+      let targetName = null;
+      if (namedMatch) {
+        targetName = namedMatch[1].trim().replace(/\s+(ka|ki|ke|details|detail|info|status|\?)$/i, '').trim();
+      } else if (words.length > 0 && (cleanQuery.toLowerCase().includes('student') || cleanQuery.toLowerCase().includes('cgpa') || cleanQuery.toLowerCase().includes('profile'))) {
+        targetName = words.map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      }
+
+      if (idMatch || targetName) {
+        const missingIdentifier = idMatch ? idMatch[1].toUpperCase() : targetName;
+        return {
+          status: 'not_found',
+          configured: true,
+          grounded: true,
+          intent: 'STUDENT_NOT_FOUND',
+          summary: `⚠️ **Student Not Found:** No record exists for **"${missingIdentifier}"** in the campus database.
+
+Please verify the name or student ID (e.g., \`Aarav Sharma\`, \`STU_0001\`). You can inspect active students in the **Student 360 Directory**.`,
+          sources: ['/api/v1/students'],
+          disclaimer: 'Verified against stored MongoDB student entities. Zero LLM hallucination.',
+        };
+      }
     }
   }
 
