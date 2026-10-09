@@ -344,44 +344,46 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Quick 1-Click Demo Personas */}
-          <div className="cyber-personas-panel anim-slide">
-            <div className="cyber-personas-title">Quick 1-Click Demo Personas:</div>
-            <div className="cyber-personas-grid">
-              <button
-                type="button"
-                className="cyber-persona-chip"
-                onClick={() => handle1ClickDemo('admin')}
-              >
-                <span aria-hidden="true">🏛️</span>
-                <span>Admin (Provost)</span>
-              </button>
-              <button
-                type="button"
-                className="cyber-persona-chip"
-                onClick={() => handle1ClickDemo('faculty')}
-              >
-                <span aria-hidden="true">👨‍🏫</span>
-                <span>Faculty Mentor</span>
-              </button>
-              <button
-                type="button"
-                className="cyber-persona-chip"
-                onClick={() => handle1ClickDemo('placement')}
-              >
-                <span aria-hidden="true">💼</span>
-                <span>Placement Officer</span>
-              </button>
-              <button
-                type="button"
-                className="cyber-persona-chip"
-                onClick={() => handle1ClickDemo('student')}
-              >
-                <span aria-hidden="true">🎓</span>
-                <span>Student (Aarav)</span>
-              </button>
+          {/* Quick 1-Click Demo Personas (Only for Institution Portal) */}
+          {portal === 'institution' && (
+            <div className="cyber-personas-panel anim-slide">
+              <div className="cyber-personas-title">Quick 1-Click Demo Personas:</div>
+              <div className="cyber-personas-grid">
+                <button
+                  type="button"
+                  className="cyber-persona-chip"
+                  onClick={() => handle1ClickDemo('admin')}
+                >
+                  <span aria-hidden="true">🏛️</span>
+                  <span>Admin (Provost)</span>
+                </button>
+                <button
+                  type="button"
+                  className="cyber-persona-chip"
+                  onClick={() => handle1ClickDemo('faculty')}
+                >
+                  <span aria-hidden="true">👨‍🏫</span>
+                  <span>Faculty Mentor</span>
+                </button>
+                <button
+                  type="button"
+                  className="cyber-persona-chip"
+                  onClick={() => handle1ClickDemo('placement')}
+                >
+                  <span aria-hidden="true">💼</span>
+                  <span>Placement Officer</span>
+                </button>
+                <button
+                  type="button"
+                  className="cyber-persona-chip"
+                  onClick={() => handle1ClickDemo('student')}
+                >
+                  <span aria-hidden="true">🎓</span>
+                  <span>Student (Aarav)</span>
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         {/* =======================================================
