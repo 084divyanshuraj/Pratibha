@@ -11,6 +11,10 @@ import {
   recalculateStudentScoreHandler,
 } from '../scores/score.controller.js';
 import {
+  getPredictionsHandler,
+  generatePredictionHandler,
+} from '../ml/ml.controller.js';
+import {
   authenticate,
   authorizeRoles,
   authorizeStudentScope,
@@ -72,6 +76,22 @@ router.post(
   authenticate,
   authorizeRoles('admin', 'faculty', 'placement_officer'),
   recalculateStudentScoreHandler
+);
+
+// Staff or owner student access to latest risk predictions
+router.get(
+  '/:studentId/predictions',
+  authenticate,
+  authorizeStudentScope('studentId'),
+  getPredictionsHandler
+);
+
+// Staff-only trigger to generate fresh ML risk predictions
+router.post(
+  '/:studentId/predictions',
+  authenticate,
+  authorizeRoles('admin', 'faculty', 'placement_officer'),
+  generatePredictionHandler
 );
 
 export default router;

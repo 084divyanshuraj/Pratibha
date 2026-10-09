@@ -132,6 +132,25 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
   - Updated OpenAPI specification (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
   - Automated tests: 100 tests passing across 42 test suites with 0 failures (12 pure formula unit tests + 6 API integration tests).
 
+- Phase 6 (ML service integration) completed and verified:
+  - Documented complete shared ML inference contract in `docs/backend/ML_CONTRACT.md` based on teammate's trained models in `models/model_metadata.json` (`academic_risk` ~91% accuracy, `placement_risk` ~69% accuracy).
+  - Implemented `backend/src/ml/feature.builder.js`:
+    - Constructs exact 17 features: `cgpa`, `backlogs`, `overall_attendance_pct`, `lms_assignment_completion_pct`, `lms_logins_per_week`, `aptitude_score`, `coding_skills`, `dsa_score`, `system_design`, `internships`, `projects_count`, `certifications`, `hackathons`, `open_source`, `communication_skills`, `ml_knowledge`, `faculty_feedback_rating`.
+    - Enforces strict `asOfDate` cutoff filtering across all 7 categories to prevent target leakage.
+    - Captures source record watermarks.
+  - Implemented resilient ML client in `backend/src/ml/ml.client.js`:
+    - Configurable `ML_SERVICE_URL`, timeout (`5000ms`), and abort signals.
+    - Pluggable mock inference handler for deterministic testing.
+    - Zero-fabrication error policy: returns 503/504 and never fabricates synthetic predictions on service failure.
+  - Implemented service layer in `backend/src/ml/ml.service.js`:
+    - Persists `StudentFeature` vectors.
+    - Manages versioned `RiskPrediction` records (`valid` vs `superseded`).
+  - Mounted REST endpoints in `backend/src/students/student.routes.js`:
+    - `GET /api/v1/students/:studentId/predictions`: staff or owner student (`authorizeStudentScope`).
+    - `POST /api/v1/students/:studentId/predictions`: staff only.
+  - Updated OpenAPI spec (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
+  - Automated tests: 110 tests passing across 46 test suites with 0 failures (3 unit tests for features and leakage + 7 API integration tests including zero-fabrication safety gate).
+
 ## Completed phases
 
 - **Phase 0:** Repository & contract audit, `.gitignore`, `.env.example`, `CONTRACT_CHECKLIST.md`. (PASSED)
@@ -140,7 +159,8 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
 - **Phase 3:** Authentication & role authorization (`/auth/login`, `/auth/me`, `/institution/users`), JWT issuance/verification, RBAC, object-level student scoping, and security tests. (PASSED)
 - **Phase 4:** Student profiles, search & pagination, integrated category records, batch CSV/JSON ingestion engine (preview, commit, inspection), missing-data preservation, sample dataset files, and automated tests. (PASSED)
 - **Phase 5:** Student Success Score formula engine (`sss-v1`), normalization, dynamic weight renormalization, drivers, versioned persistence, API endpoints, methodology documentation, and tests. (PASSED)
+- **Phase 6:** ML service integration (`ML_CONTRACT.md`), 17-feature builder with leakage prevention, resilient client, prediction persistence, zero-fabrication gate, and automated tests. (PASSED)
 
 ## Coding-agent next action
 
-Wait for user review of Phase 5 implementation. Upon review approval, proceed to Phase 6 (ML service integration: feature builder from category records matching teammate's `model_metadata.json` 17 features, ML client with timeout and circuit safety, risk prediction orchestration, validation, and zero-fabrication error handling).
+Wait for user review of Phase 6 implementation. Upon review approval, proceed to Phase 7 (Institution analytics and segmentation: overview KPI endpoint with data completeness coverage, trends and risk-summary endpoints, explainable segment rules and membership rebuild).

@@ -76,15 +76,15 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 6 — ML service integration
 
-- [ ] Obtain the ML teammate's exact feature/target schema and inference API details.
-- [ ] Create/approve `ML_CONTRACT.md` before real integration if the team needs a standalone contract.
-- [ ] Implement a small ML client with configurable `ML_SERVICE_URL`, timeout, bounded safe retry policy and response validation.
-- [ ] Build features using an explicit feature builder and `as_of_date`; avoid target leakage.
-- [ ] Implement prediction generation, persistence, history retrieval and stable error responses.
-- [ ] Handle ML timeout, offline service, invalid output, unsupported target and model-version mismatch.
-- [ ] Never fabricate predictions when the ML service is missing.
+- [x] Obtain the ML teammate's exact feature/target schema and inference API details.
+- [x] Create/approve `ML_CONTRACT.md` before real integration if the team needs a standalone contract.
+- [x] Implement a small ML client with configurable `ML_SERVICE_URL`, timeout, bounded safe retry policy and response validation.
+- [x] Build features using an explicit feature builder and `as_of_date`; avoid target leakage.
+- [x] Implement prediction generation, persistence, history retrieval and stable error responses.
+- [x] Handle ML timeout, offline service, invalid output, unsupported target and model-version mismatch.
+- [x] Never fabricate predictions when the ML service is missing.
 
-**Acceptance gate:** Backend can call a local mocked ML service in tests; request/response matches the agreed contract; ML failure becomes a stable error and does not create a fake prediction record.
+**Acceptance gate:** Backend can call a local mocked ML service in tests; request/response matches the agreed contract; ML failure becomes a stable error and does not create a fake prediction record. (PASSED)
 
 ## Phase 7 — Institution analytics and segmentation
 

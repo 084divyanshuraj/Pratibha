@@ -110,8 +110,8 @@
 - [x] `POST /api/v1/students/:studentId/success-score/recalculate` — Staff/internal recalculation
 
 ### ML Predictions & Integration
-- [ ] `GET /api/v1/students/:studentId/predictions` — Staff or owner student; latest risk prediction
-- [ ] `POST /api/v1/students/:studentId/predictions` — Staff only; orchestrates external ML call, validates, persists
+- [x] `GET /api/v1/students/:studentId/predictions` — Staff or owner student; latest risk prediction
+- [x] `POST /api/v1/students/:studentId/predictions` — Staff only; orchestrates external ML call, validates, persists
 
 ### Analytics & Segments
 - [ ] `GET /api/v1/analytics/overview` — Staff only; institutional KPIs and coverage notes

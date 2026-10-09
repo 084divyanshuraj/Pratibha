@@ -425,6 +425,58 @@ paths:
         '403':
           description: Forbidden - staff role required
 
+  /api/v1/students/{studentId}/predictions:
+    get:
+      summary: Get student ML risk predictions
+      description: Staff roles or owning student. Returns latest active predictions for academic_risk and placement_risk.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Latest predictions retrieved successfully
+        '403':
+          description: Forbidden - student cannot access other student predictions
+        '404':
+          description: Student not found
+
+    post:
+      summary: Generate fresh ML risk predictions
+      description: Staff only (admin, faculty, placement_officer). Builds 17 features as-of date, invokes external ML service, validates, and persists without fabrication.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                target:
+                  type: string
+                  enum: [academic_risk, placement_risk, all]
+                  default: "academic_risk"
+                asOfDate:
+                  type: string
+                  format: date-time
+      responses:
+        '201':
+          description: ML risk prediction generated and persisted
+        '403':
+          description: Forbidden - staff role required
+        '503':
+          description: ML service unavailable or offline
+
   /api/v1/imports/{datasetType}/preview:
     post:
       summary: Dry-run preview import
