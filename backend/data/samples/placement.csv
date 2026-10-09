@@ -1,0 +1,8 @@
+studentId,assessmentType,score,maxScore,outcomeLabel,employerOrProgram,assessedAt
+STU_2024_001,aptitude,85,100,Cleared,,2025-04-10T00:00:00Z
+STU_2024_001,coding,92,100,Advanced,,2025-04-12T00:00:00Z
+STU_2024_002,aptitude,90,100,Cleared,,2025-04-10T00:00:00Z
+STU_2024_002,coding,95,100,Advanced,,2025-04-12T00:00:00Z
+STU_2024_003,aptitude,65,100,Average,,2025-04-10T00:00:00Z
+STU_2024_004,aptitude,45,100,At Risk,,2025-04-10T00:00:00Z
+STU_2024_005,mock_interview,78,100,Satisfactory,,2025-04-15T00:00:00Z

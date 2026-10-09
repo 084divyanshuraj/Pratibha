@@ -1,0 +1,9 @@
+studentId,skillCategory,skillName,score,maxScore,assessedAt
+STU_2024_001,technical,Data Structures,90,100,2025-04-01T00:00:00Z
+STU_2024_001,technical,Python,88,100,2025-04-01T00:00:00Z
+STU_2024_001,soft_skill,Communication,82,100,2025-04-02T00:00:00Z
+STU_2024_002,technical,System Design,85,100,2025-04-01T00:00:00Z
+STU_2024_002,technical,Machine Learning,92,100,2025-04-01T00:00:00Z
+STU_2024_003,technical,Web Development,70,100,2025-04-01T00:00:00Z
+STU_2024_004,technical,Circuit Analysis,50,100,2025-04-01T00:00:00Z
+STU_2024_005,soft_skill,Leadership,85,100,2025-04-02T00:00:00Z

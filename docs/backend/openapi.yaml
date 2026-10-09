@@ -219,6 +219,212 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/students:
+    get:
+      summary: List students with pagination and filters
+      description: Accessible by staff roles (admin, faculty, placement_officer). Filter by department, semester, cohort, status, or search query.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 20
+        - in: query
+          name: department
+          schema:
+            type: string
+        - in: query
+          name: semester
+          schema:
+            type: integer
+        - in: query
+          name: cohort
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [active, inactive, graduated, suspended]
+        - in: query
+          name: search
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Paginated list of student profiles
+        '403':
+          description: Forbidden - staff role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      summary: Create student profile
+      description: Admin-only. Creates a new student record with unique uppercase studentId.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [studentId, firstName, lastName, department, program, semester, enrollmentYear]
+              properties:
+                studentId:
+                  type: string
+                  example: "STU_2024_001"
+                firstName:
+                  type: string
+                  example: "Aarav"
+                lastName:
+                  type: string
+                  example: "Sharma"
+                department:
+                  type: string
+                  example: "Computer Science"
+                program:
+                  type: string
+                  example: "B.Tech CSE"
+                semester:
+                  type: integer
+                  example: 6
+                enrollmentYear:
+                  type: integer
+                  example: 2021
+      responses:
+        '201':
+          description: Student profile created successfully
+        '409':
+          description: Conflict - studentId already exists
+
+  /api/v1/students/{studentId}:
+    get:
+      summary: Get student profile
+      description: Accessible by staff or the owning student.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Student profile retrieved
+        '403':
+          description: Forbidden - student cannot access other student profiles
+        '404':
+          description: Student not found
+
+    patch:
+      summary: Update student profile
+      description: Admin and faculty only. Updates allowed fields. studentId is immutable.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                status:
+                  type: string
+                  enum: [active, inactive, graduated, suspended]
+      responses:
+        '200':
+          description: Student profile updated
+        '400':
+          description: Validation error or attempt to modify studentId
+
+  /api/v1/students/{studentId}/records:
+    get:
+      summary: Get student integrated category records
+      description: Accessible by staff or owning student. Returns records across all 7 categories. Students cannot see staff_only feedback.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Aggregated category records and counts
+
+  /api/v1/imports/{datasetType}/preview:
+    post:
+      summary: Dry-run preview import
+      description: Admin only. Validates CSV or JSON dataset without persisting records.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: datasetType
+          required: true
+          schema:
+            type: string
+            enum: [academic, attendance, lms, engagement, placement, skills, feedback, students]
+      responses:
+        '200':
+          description: Validation preview report with counts and row errors
+
+  /api/v1/imports/{datasetType}:
+    post:
+      summary: Batch commit dataset import
+      description: Admin only. Validates and persists accepted records, tags with sourceImportId, and creates Import record.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: datasetType
+          required: true
+          schema:
+            type: string
+            enum: [academic, attendance, lms, engagement, placement, skills, feedback, students]
+      responses:
+        '201':
+          description: Batch import completed with status and counts
+
+  /api/v1/imports/{importId}:
+    get:
+      summary: Get import status and row error report
+      description: Admin only. Returns details of an executed import job.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: importId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Import record details
+        '404':
+          description: Import not found
+
 components:
   schemas:
     Meta:

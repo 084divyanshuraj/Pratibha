@@ -1,0 +1,6 @@
+studentId,feedbackType,rating,comment,visibility
+STU_2024_001,faculty_feedback,5,Consistent participation and excellent lab project work.,staff_only
+STU_2024_002,faculty_feedback,5,Top tier performer in algorithms and system design.,staff_only
+STU_2024_003,faculty_feedback,3,Needs to improve consistency in programming assignments.,staff_only
+STU_2024_004,faculty_feedback,2,Critical attendance shortfall; recommended for remedial tutoring.,staff_only
+STU_2024_005,student_satisfaction,4,Course syllabus is well paced and practical.,aggregated

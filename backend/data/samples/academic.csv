@@ -1,0 +1,8 @@
+studentId,term,subjectCode,subjectName,assessmentType,marksObtained,maxMarks,grade,cgpa,backlog,observedAt
+STU_2024_001,Spring 2025,CS301,Data Structures & Algorithms,final,88,100,A,8.8,false,2025-05-15T00:00:00Z
+STU_2024_001,Spring 2025,CS302,Database Management Systems,final,82,100,A,8.5,false,2025-05-18T00:00:00Z
+STU_2024_002,Spring 2025,CS301,Data Structures & Algorithms,final,94,100,A+,9.4,false,2025-05-15T00:00:00Z
+STU_2024_002,Spring 2025,CS302,Database Management Systems,final,91,100,A+,9.2,false,2025-05-18T00:00:00Z
+STU_2024_003,Spring 2025,IT201,Object Oriented Programming,final,68,100,B,6.8,false,2025-05-20T00:00:00Z
+STU_2024_004,Spring 2025,EC301,Digital Signal Processing,final,48,100,C,4.8,true,2025-05-22T00:00:00Z
+STU_2024_005,Spring 2025,ME401,Thermal Engineering,final,75,100,B+,7.5,false,2025-05-25T00:00:00Z

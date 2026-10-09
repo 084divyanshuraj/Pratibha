@@ -53,15 +53,15 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 4 — Student profiles and integrated data
 
-- [ ] Implement student create/list/search/detail/update endpoints with pagination.
-- [ ] Implement a consistent stable `studentId` across all related records.
-- [ ] Implement CSV/JSON import preview and commit for all seven categories.
-- [ ] Validate input schema, range constraints, duplicates, missing IDs and date formats.
-- [ ] Return an import report with accepted/rejected/warning counts and bounded row errors.
-- [ ] Ensure missing values remain missing instead of silently becoming zero.
-- [ ] Add example import files or API fixtures so frontend and ML can test independently.
+- [x] Implement student create/list/search/detail/update endpoints with pagination.
+- [x] Implement a consistent stable `studentId` across all related records.
+- [x] Implement CSV/JSON import preview and commit for all seven categories.
+- [x] Validate input schema, range constraints, duplicates, missing IDs and date formats.
+- [x] Return an import report with accepted/rejected/warning counts and bounded row errors.
+- [x] Ensure missing values remain missing instead of silently becoming zero.
+- [x] Add example import files or API fixtures so frontend and ML can test independently.
 
-**Acceptance gate:** Each of the seven categories can be represented and imported; a malformed dataset produces actionable errors without corrupting existing data; successful imports link to students consistently.
+**Acceptance gate:** Each of the seven categories can be represented and imported; a malformed dataset produces actionable errors without corrupting existing data; successful imports link to students consistently. (PASSED)
 
 ## Phase 5 — Student Success Score
 

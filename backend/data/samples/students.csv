@@ -1,0 +1,6 @@
+studentId,firstName,lastName,department,program,semester,cohort,enrollmentYear,status,email
+STU_2024_001,Aarav,Sharma,Computer Science,B.Tech CSE,6,2021-2025,2021,active,aarav.sharma@campus.edu
+STU_2024_002,Priya,Patel,Computer Science,B.Tech CSE,6,2021-2025,2021,active,priya.patel@campus.edu
+STU_2024_003,Rohan,Gupta,Information Technology,B.Tech IT,4,2022-2026,2022,active,rohan.gupta@campus.edu
+STU_2024_004,Ananya,Iyer,Electronics,B.Tech ECE,6,2021-2025,2021,active,ananya.iyer@campus.edu
+STU_2024_005,Kavita,Deshmukh,Mechanical,B.Tech ME,8,2020-2024,2020,active,kavita.deshmukh@campus.edu

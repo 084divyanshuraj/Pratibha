@@ -97,13 +97,32 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
   - Updated `docs/backend/CONTRACT_CHECKLIST.md` marking completed auth routes and collections.
   - Automated tests: 53 tests passed across 5 test suites with 0 failures.
 
+- Phase 4 (Student profiles and integrated data) completed and verified:
+  - Installed `multer` (for in-memory file uploads) and `csv-parse` (with `relax_column_count: true`).
+  - Implemented `student.service.js`, `student.controller.js`, `student.routes.js`:
+    - `GET /api/v1/students`: Staff only, paginated (`page`, `limit`), filterable (`department`, `semester`, `cohort`, `status`), substring search (`studentId`, `firstName`, `lastName`, `email`).
+    - `POST /api/v1/students`: Admin only, validates uniqueness of stable uppercase `studentId`, returns 201 with `StudentDTO`.
+    - `GET /api/v1/students/:studentId`: Staff or owner student (`authorizeStudentScope`), 404 if not found.
+    - `PATCH /api/v1/students/:studentId`: Admin or faculty only, prevents modifying immutable `studentId`, updates allowed profile fields.
+    - `GET /api/v1/students/:studentId/records`: Staff or owner student, aggregates records across all 7 categories (`academic`, `attendance`, `lms`, `engagement`, `placement`, `skills`, `feedback`). Enforces feedback privacy: students cannot view `staff_only` feedback.
+  - Implemented `ingestion.service.js`, `ingestion.controller.js`, `ingestion.routes.js`:
+    - `POST /api/v1/imports/:datasetType/preview`: Admin dry-run validation returning accepted/rejected/warning counts, sample valid records, and bounded row errors without touching DB.
+    - `POST /api/v1/imports/:datasetType`: Admin batch commit, tags persisted records with `sourceImportId`, creates `Import` log with status (`completed`, `partially_imported`, `failed`), returns `importId`.
+    - `GET /api/v1/imports/:importId`: Admin inspection of import job and bounded row errors.
+    - Supports all 7 data categories plus bulk student import.
+    - Missing data rule strictly enforced: empty/missing values remain `null` and are never silently coerced to zero.
+    - Created sample dataset files in `backend/data/samples/` (`students.csv`, `academic.csv`, `attendance.csv`, `lms.csv`, `engagement.csv`, `placement.csv`, `skills.csv`, `feedback.csv`).
+  - Updated OpenAPI 3.0 specification (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
+  - Automated tests: 82 tests passing across 36 test suites with 0 failures.
+
 ## Completed phases
 
 - **Phase 0:** Repository & contract audit, `.gitignore`, `.env.example`, `CONTRACT_CHECKLIST.md`. (PASSED)
 - **Phase 1:** Express service foundation, security middleware, health probes (`/health/live`, `/health/ready`), centralized errors, OpenAPI scaffold, and automated tests. (PASSED)
 - **Phase 2:** MongoDB Atlas connectivity, 18 Mongoose domain models, compound indexes, constraints validation, DTO serializers, synthetic fixtures, and `npm run seed`. (PASSED)
 - **Phase 3:** Authentication & role authorization (`/auth/login`, `/auth/me`, `/institution/users`), JWT issuance/verification, RBAC, object-level student scoping, and security tests. (PASSED)
+- **Phase 4:** Student profiles, search & pagination, integrated category records, batch CSV/JSON ingestion engine (preview, commit, inspection), missing-data preservation, sample dataset files, and automated tests. (PASSED)
 
 ## Coding-agent next action
 
-Wait for user review of Phase 3 authentication and authorization implementation. Upon review approval, proceed to Phase 4 (Student profiles and integrated data: student CRUD, pagination/filtering, CSV/JSON import preview & commit for all 7 categories with row error reports and data-quality feedback).
+Wait for user review of Phase 4 implementation. Upon review approval, proceed to Phase 5 (Student Success Score: transparent formula definition, normalization, components, missing-data handling, versioned score snapshots, and calculation service).

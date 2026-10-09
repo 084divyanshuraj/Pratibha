@@ -94,16 +94,16 @@
 - [x] `POST /api/v1/institution/users` — Admin only, provisions user with hashed password
 
 ### Student Profiles
-- [ ] `GET /api/v1/students` — Staff roles only; paginated, filterable
-- [ ] `POST /api/v1/students` — Admin only; create student profile
-- [ ] `GET /api/v1/students/:studentId` — Staff or owner student only
-- [ ] `PATCH /api/v1/students/:studentId` — Admin / authorized staff only
-- [ ] `GET /api/v1/students/:studentId/records` — Staff or owner student; category records summary
+- [x] `GET /api/v1/students` — Staff roles only; paginated, filterable
+- [x] `POST /api/v1/students` — Admin only; create student profile
+- [x] `GET /api/v1/students/:studentId` — Staff or owner student only
+- [x] `PATCH /api/v1/students/:studentId` — Admin / authorized staff only
+- [x] `GET /api/v1/students/:studentId/records` — Staff or owner student; category records summary
 
 ### Data Ingestion
-- [ ] `POST /api/v1/imports/:datasetType/preview` — Admin; dry-run validation with row error report
-- [ ] `POST /api/v1/imports/:datasetType` — Admin; batch ingest with status report
-- [ ] `GET /api/v1/imports/:importId` — Admin; inspect import execution status and row errors
+- [x] `POST /api/v1/imports/:datasetType/preview` — Admin; dry-run validation with row error report
+- [x] `POST /api/v1/imports/:datasetType` — Admin; batch ingest with status report
+- [x] `GET /api/v1/imports/:importId` — Admin; inspect import execution status and row errors
 
 ### Student Success Score
 - [ ] `GET /api/v1/students/:studentId/success-score` — Staff or owner student; deterministic score + components
