@@ -26,6 +26,7 @@ import {
   demoFeedbackRecords,
   demoInterventionCatalog,
 } from '../src/db/seeds/fixtures.js';
+import { rebuildSegments } from '../src/segments/segment.service.js';
 
 async function seed() {
   const isProd = config.isProd;
@@ -97,6 +98,11 @@ async function seed() {
       );
     }
     console.log(`[Seed] Seeded ${demoInterventionCatalog.length} intervention catalog entries.`);
+ 
+     // 5. Build Initial Student Segments
+    console.log('[Seed] Rebuilding initial student segments...');
+    const segmentResult = await rebuildSegments();
+    console.log(`[Seed] Initialized ${segmentResult.rebuiltCount} student segments.`);
 
     console.log('[Seed] Database seed completed successfully.');
   } catch (err) {

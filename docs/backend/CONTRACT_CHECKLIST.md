@@ -114,11 +114,11 @@
 - [x] `POST /api/v1/students/:studentId/predictions` — Staff only; orchestrates external ML call, validates, persists
 
 ### Analytics & Segments
-- [ ] `GET /api/v1/analytics/overview` — Staff only; institutional KPIs and coverage notes
-- [ ] `GET /api/v1/analytics/trends` — Staff only; time-series trends
-- [ ] `GET /api/v1/analytics/risk-summary` — Staff only; risk level distribution
-- [ ] `GET /api/v1/segments` — Staff only; segment definitions & aggregate counts
-- [ ] `POST /api/v1/segments/rebuild` — Admin/analytics role; rebuild memberships
+- [x] `GET /api/v1/analytics/overview` — Staff only; institutional KPIs and coverage notes
+- [x] `GET /api/v1/analytics/trends` — Staff only; time-series trends
+- [x] `GET /api/v1/analytics/risk-summary` — Staff only; risk level distribution
+- [x] `GET /api/v1/segments` — Staff only; segment definitions & aggregate counts
+- [x] `POST /api/v1/segments/rebuild` — Admin/analytics role; rebuild memberships
 
 ### Interventions & Sandbox Simulator
 - [ ] `GET /api/v1/intervention-catalog` — Staff only; catalog of interventions

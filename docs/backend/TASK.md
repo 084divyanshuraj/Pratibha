@@ -88,13 +88,13 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 7 — Institution analytics and segmentation
 
-- [ ] Implement overview KPI endpoint based on actual data and explain available-data coverage.
-- [ ] Implement trends and risk-summary endpoints with filters and bounded queries.
-- [ ] Implement explainable segment rules and membership rebuild.
-- [ ] Keep aggregates authorized; do not leak individual records through cohort endpoints.
-- [ ] Test empty data, mixed periods, pagination/filters and inconsistent/missing category data.
+- [x] Implement overview KPI endpoint based on actual data and explain available-data coverage.
+- [x] Implement trends and risk-summary endpoints with filters and bounded queries.
+- [x] Implement explainable segment rules and membership rebuild.
+- [x] Keep aggregates authorized; do not leak individual records through cohort endpoints.
+- [x] Test empty data, mixed periods, pagination/filters and inconsistent/missing category data.
 
-**Acceptance gate:** Metrics derive from stored records; definitions and time windows are explicit; empty or missing data does not show invented counts or imply zero risk.
+**Acceptance gate:** Metrics derive from stored records; definitions and time windows are explicit; empty or missing data does not show invented counts or imply zero risk. (PASSED)
 
 ## Phase 8 — Intervention catalog and Sandbox
 

@@ -151,6 +151,30 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
   - Updated OpenAPI spec (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
   - Automated tests: 110 tests passing across 46 test suites with 0 failures (3 unit tests for features and leakage + 7 API integration tests including zero-fabrication safety gate).
 
+- Phase 7 (Institution analytics and segmentation) completed and verified:
+  - Implemented Analytics Engine in `backend/src/analytics/analytics.service.js`:
+    - `getOverviewKpis`: returns student counts (`total`, `active`, `inactive`), Success Score distribution (`critical`, `moderate`, `good`, `excellent`), decoupled independent risk counts (`academicRisk` and `placementRisk` with `unassessed` tracking), 7-category data coverage metrics, and human-readable `coverageNotes`.
+    - `getTrends`: time-series performance and attendance trends grouped by period.
+    - `getRiskSummary`: department and semester breakdowns, top cohort risk drivers, and decoupled risk divergence detection (identifying high academic standing with high placement risk).
+  - Implemented Segmentation Engine in `backend/src/segments/segment.service.js` & `segment.definitions.js`:
+    - 5 explainable, versioned (`v1`) supportive archetypes matching KPMG Challenge brief:
+      1. `high_academic_low_placement`: CGPA >= 7.5 or Academic >= 75% with Placement Assessment < 60% or High Placement Risk.
+      2. `attendance_critical_risk`: Overall attendance < 75%.
+      3. `lms_disengaged`: Assignment completion < 50% or logins per week < 2.
+      4. `high_potential_achievers`: Success Score >= 85 and CGPA >= 8.5.
+      5. `holistic_support_needed`: Success Score < 60, active backlogs >= 2, or High Academic Risk.
+    - Versioned persistence in `StudentSegment` collection (`criteriaVersion: 'v1'`, `studentIds`, aggregate `indicators`, `generatedAt`).
+    - Seed script integration: `npm run seed` automatically triggers `rebuildSegments()` for initial demonstration data.
+  - Mounted REST Endpoints in `backend/src/api/v1/index.js`:
+    - `GET /api/v1/analytics/overview`: staff only (`admin`, `faculty`, `placement_officer`).
+    - `GET /api/v1/analytics/trends`: staff only.
+    - `GET /api/v1/analytics/risk-summary`: staff only.
+    - `GET /api/v1/segments`: staff only; returns definitions and member counts (studentIds omitted by default for privacy).
+    - `POST /api/v1/segments/rebuild`: admin and faculty only; recomputes segment memberships.
+    - `GET /api/v1/segments/:segmentKey`: staff only; detailed criteria and member student IDs.
+  - Updated OpenAPI spec (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
+  - Automated tests: 126 tests passing across 54 test suites with 0 failures (16 new tests across `analytics.test.js` and `segments.test.js`).
+
 ## Completed phases
 
 - **Phase 0:** Repository & contract audit, `.gitignore`, `.env.example`, `CONTRACT_CHECKLIST.md`. (PASSED)
@@ -160,7 +184,8 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
 - **Phase 4:** Student profiles, search & pagination, integrated category records, batch CSV/JSON ingestion engine (preview, commit, inspection), missing-data preservation, sample dataset files, and automated tests. (PASSED)
 - **Phase 5:** Student Success Score formula engine (`sss-v1`), normalization, dynamic weight renormalization, drivers, versioned persistence, API endpoints, methodology documentation, and tests. (PASSED)
 - **Phase 6:** ML service integration (`ML_CONTRACT.md`), 17-feature builder with leakage prevention, resilient client, prediction persistence, zero-fabrication gate, and automated tests. (PASSED)
+- **Phase 7:** Institution analytics and segmentation (overview KPIs, coverage notes, trends, risk summary, decoupled risk divergence, explainable segment rules, rebuild endpoint, and automated tests). (PASSED)
 
 ## Coding-agent next action
 
-Wait for user review of Phase 6 implementation. Upon review approval, proceed to Phase 7 (Institution analytics and segmentation: overview KPI endpoint with data completeness coverage, trends and risk-summary endpoints, explainable segment rules and membership rebuild).
+Proceed to Phase 8 (Intervention catalog and Sandbox: intervention catalog with versioned eligibility rules & capacity units, scenario creation/validation, deterministic allocation strategies, and approval workflows).

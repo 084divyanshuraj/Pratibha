@@ -529,6 +529,152 @@ paths:
         '404':
           description: Import not found
 
+  /api/v1/analytics/overview:
+    get:
+      summary: Institutional overview KPIs & 7-category data coverage
+      description: Staff roles only (admin, faculty, placement_officer). Returns student population metrics, success score summary/distribution, decoupled risk distributions, and 7-category coverage with human-readable coverage notes.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: department
+          schema:
+            type: string
+        - in: query
+          name: semester
+          schema:
+            type: integer
+        - in: query
+          name: cohort
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Overview KPIs and data coverage report
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/analytics/trends:
+    get:
+      summary: Time-series performance and attendance trends
+      description: Staff roles only. Returns aggregated metrics across historical academic periods/semesters.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: department
+          schema:
+            type: string
+        - in: query
+          name: semester
+          schema:
+            type: integer
+        - in: query
+          name: cohort
+          schema:
+            type: string
+        - in: query
+          name: metric
+          schema:
+            type: string
+            default: "success_score"
+      responses:
+        '200':
+          description: Time-series trend points
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/analytics/risk-summary:
+    get:
+      summary: Cohort risk summary & decoupled risk divergence
+      description: Staff roles only. Returns breakdowns grouped by department and semester, top cohort risk drivers, and decoupled risk divergence insights.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: department
+          schema:
+            type: string
+        - in: query
+          name: semester
+          schema:
+            type: integer
+        - in: query
+          name: cohort
+          schema:
+            type: string
+        - in: query
+          name: target
+          schema:
+            type: string
+            enum: [academic_risk, placement_risk]
+      responses:
+        '200':
+          description: Risk breakdown and divergence summary
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/segments:
+    get:
+      summary: List student segments
+      description: Staff roles only. Returns segment definitions and aggregate student counts. Member studentIds list is omitted unless includeStudents=true is requested.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: includeStudents
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '200':
+          description: List of defined segments
+        '403':
+          description: Forbidden - staff role required
+
+  /api/v1/segments/rebuild:
+    post:
+      summary: Rebuild student segment memberships
+      description: Admin and faculty only. Evaluates all active students against versioned segment rules and updates persisted segment documents.
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                department:
+                  type: string
+                semester:
+                  type: integer
+                cohort:
+                  type: string
+      responses:
+        '200':
+          description: Rebuild completed successfully with segment summaries
+        '403':
+          description: Forbidden - admin or faculty role required
+
+  /api/v1/segments/{segmentKey}:
+    get:
+      summary: Get student segment details and member list
+      description: Staff roles only. Returns detailed criteria and student IDs for a specific segment.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: segmentKey
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Segment details and student member list
+        '404':
+          description: Segment not found
+
+
 components:
   schemas:
     Meta:
