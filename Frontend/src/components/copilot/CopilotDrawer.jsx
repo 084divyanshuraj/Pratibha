@@ -16,7 +16,7 @@ import {
 import { api } from '../../services/api';
 
 const PROMPT_SUGGESTIONS = [
-  'Aarav Sharma ka score batao',
+  "What is Aarav Sharma's score?",
   'Who has attendance below 75%?',
   'Show decoupled divergence students',
   'Which students have backlogs?',
@@ -173,7 +173,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
     {
       id: 'init-1',
       sender: 'copilot',
-      text: 'Hello! I am your **Campus Analytics Copilot** (Voice AI Enabled 🎙️). You can type or click the microphone to ask queries in English or Hindi/Hinglish.\n\nTry asking: *"Aarav Sharma ka score batao"* or *"Show decoupled divergence students"*.',
+      text: "Hello! I am your **Campus Analytics Copilot** (Voice AI Enabled 🎙️). You can type or click the microphone to ask queries in natural English.\n\nTry asking: *\"What is Aarav Sharma's score?\"* or *\"Show decoupled divergence students\"*.",
       sources: ['/api/v1/analytics/overview'],
       disclaimer: 'Verified against stored MongoDB records. Zero LLM hallucination.',
     },
@@ -247,12 +247,14 @@ export default function CopilotDrawer({ isOpen, onClose }) {
     const utterance = new SpeechSynthesisUtterance(clean);
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
-    utterance.lang = 'en-IN';
+    utterance.lang = 'en-US';
 
     const voices = window.speechSynthesis.getVoices();
+    // Prioritize natural English voices
     const preferredVoice =
-      voices.find((v) => v.lang === 'en-IN' || v.lang === 'hi-IN') ||
-      voices.find((v) => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Microsoft'))) ||
+      voices.find((v) => (v.lang === 'en-US' || v.lang === 'en-GB' || v.lang === 'en-IN') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Microsoft') || v.name.includes('Samantha') || v.name.includes('Jenny') || v.name.includes('Guy') || v.name.includes('English'))) ||
+      voices.find((v) => v.lang === 'en-US' || v.lang === 'en-GB') ||
+      voices.find((v) => v.lang.startsWith('en')) ||
       voices[0];
 
     if (preferredVoice) utterance.voice = preferredVoice;
@@ -285,7 +287,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
       const recognition = new SpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = true;
-      recognition.lang = 'en-IN';
+      recognition.lang = 'en-US';
       recognitionRef.current = recognition;
 
       recognition.onstart = () => {
@@ -667,7 +669,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
                 <span className="voice-wave-bar" style={{ animationDelay: '150ms' }} />
                 <span className="voice-wave-bar" style={{ animationDelay: '300ms' }} />
                 <span className="voice-wave-bar" style={{ animationDelay: '450ms' }} />
-                <span>Listening... Bolna shuru kijiye (English / Hindi)...</span>
+                <span>Listening... Start speaking your query...</span>
               </div>
               <button
                 type="button"
@@ -720,7 +722,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
 
             <input
               type="text"
-              placeholder={isListening ? 'Listening to voice...' : 'Type or speak: "Aarav Sharma ka score" or "Who has backlogs?"...'}
+              placeholder={isListening ? 'Listening... Speak now...' : 'Type or speak: "What is Aarav Sharma\'s score?" or "Who has backlogs?"...'}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               style={{
@@ -759,9 +761,9 @@ export default function CopilotDrawer({ isOpen, onClose }) {
           <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: '6px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
             <span>Zero LLM hallucination</span>
             <span>•</span>
-            <span>Voice-to-Text & Text-to-Speech Ready</span>
+            <span>Real-time Speech Recognition & Spoken Audio</span>
             <span>•</span>
-            <span>English + Hinglish Support</span>
+            <span>Verified Mongo Analytics</span>
           </div>
         </div>
       </div>
