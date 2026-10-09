@@ -18,9 +18,7 @@ export default function PublicNavbar() {
   };
 
   const navLinks = [
-    { label: 'Platform', href: '#platform' },
-    { label: 'Insights', href: '#insights' },
-    { label: 'How It Works', href: '#workflow' },
+    { label: 'Home', href: '#' },
     { label: 'About', href: '#about' },
   ];
 
