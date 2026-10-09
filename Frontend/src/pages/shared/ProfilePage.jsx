@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   User,
   Mail,
@@ -23,6 +24,7 @@ import {
   ZoomIn,
   ZoomOut,
   Sliders,
+  ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import './ProfilePage.css';
@@ -39,7 +41,9 @@ const PRESET_AVATARS = [
 
 export default function ProfilePage() {
   const { currentUser, updateUserProfile } = useAuth();
+  const [searchParams] = useSearchParams();
   const isStudent = currentUser?.portal === 'student' || currentUser?.role === 'student';
+  const isOnboarding = searchParams.get('onboarding') === 'true' || currentUser?.isNewUser;
 
   // Form State
   const [displayName, setDisplayName] = useState('');
@@ -58,7 +62,7 @@ export default function ProfilePage() {
   // Student specific
   const [studentId, setStudentId] = useState('');
   const [program, setProgram] = useState('');
-  const [semester, setSemester] = useState('5');
+  const [semester, setSemester] = useState('1');
   const [careerGoals, setCareerGoals] = useState('');
   const [skills, setSkills] = useState([]);
   const [newSkillInput, setNewSkillInput] = useState('');
@@ -79,28 +83,46 @@ export default function ProfilePage() {
   // Initialize data from currentUser
   useEffect(() => {
     if (currentUser) {
+      const isDemo =
+        currentUser.id?.startsWith('admin') ||
+        currentUser.id?.startsWith('faculty') ||
+        currentUser.id?.startsWith('placement') ||
+        currentUser.id?.startsWith('student') ||
+        currentUser.email === 'admin@example.edu' ||
+        currentUser.email === 'student@example.edu' ||
+        currentUser.email === 'faculty@example.edu' ||
+        currentUser.email === 'placement@example.edu';
+
+      const isFreshUser = currentUser.isNewUser || (!isDemo && !currentUser.department);
+
       setDisplayName(currentUser.name || currentUser.displayName || '');
       setEmail(currentUser.email || '');
-      setPhone(currentUser.phone || '+91 98765 43210');
+      setPhone(currentUser.phone || (isFreshUser ? '' : '+91 98765 43210'));
       setBio(
         currentUser.bio ||
-          (isStudent
+          (isFreshUser
+            ? ''
+            : isStudent
             ? 'Passionate 3rd year Computer Science undergraduate focusing on distributed systems, data structures, and modern cloud deployment.'
             : 'Dedicated academic leader steering outcome-based education, predictive institutional analytics, and student mentorship initiatives.')
       );
-      setDepartment(currentUser.department || 'Computer Science & Engineering');
-      setDesignation(currentUser.designation || currentUser.roleLabel || (isStudent ? 'B.Tech Student Candidate' : 'Senior Faculty / Administrator'));
-      setOfficeLocation(currentUser.officeLocation || 'Campus Block-B, Room 304');
-      setSpecialization(currentUser.specialization || (isStudent ? 'Algorithms, Web Architecture, Machine Learning' : 'Curriculum Governance & Student Success'));
-      setEducation(currentUser.education || (isStudent ? 'B.Tech in Computer Science (2022-2026)' : 'Ph.D. in Computer Engineering'));
-      setOfficeHours(currentUser.officeHours || 'Mon–Thu: 3:00 PM – 5:00 PM');
-      setLinkedIn(currentUser.linkedIn || 'https://linkedin.com/in/pratibha-scholar');
-      setGithub(currentUser.github || 'https://github.com/pratibha-edu');
-      setStudentId(currentUser.studentId || (isStudent ? 'STU_0001' : 'FAC-CSE-028'));
-      setProgram(currentUser.program || 'B.Tech CSE');
-      setSemester(currentUser.semester || '5');
-      setCareerGoals(currentUser.careerGoals || 'Software Development Engineer at Tier-1 Tech Firm');
-      setSkills(currentUser.skills && currentUser.skills.length > 0 ? currentUser.skills : ['React', 'Python', 'Algorithms', 'System Design', 'SQL', 'Git']);
+      setDepartment(currentUser.department || (isFreshUser ? '' : 'Computer Science & Engineering'));
+      setDesignation(
+        currentUser.designation ||
+          currentUser.roleLabel ||
+          (isFreshUser ? (isStudent ? 'Enrolled Student' : 'Institutional Staff') : (isStudent ? 'B.Tech Student Candidate' : 'Senior Faculty / Administrator'))
+      );
+      setOfficeLocation(currentUser.officeLocation || (isFreshUser ? '' : 'Campus Block-B, Room 304'));
+      setSpecialization(currentUser.specialization || (isFreshUser ? '' : (isStudent ? 'Algorithms, Web Architecture, Machine Learning' : 'Curriculum Governance & Student Success')));
+      setEducation(currentUser.education || (isFreshUser ? '' : (isStudent ? 'B.Tech in Computer Science (2022-2026)' : 'Ph.D. in Computer Engineering')));
+      setOfficeHours(currentUser.officeHours || (isFreshUser ? '' : 'Mon–Thu: 3:00 PM – 5:00 PM'));
+      setLinkedIn(currentUser.linkedIn || (isFreshUser ? '' : 'https://linkedin.com/in/pratibha-scholar'));
+      setGithub(currentUser.github || (isFreshUser ? '' : 'https://github.com/pratibha-edu'));
+      setStudentId(currentUser.studentId || (isFreshUser ? '' : (isStudent ? 'STU_0001' : 'FAC-CSE-028')));
+      setProgram(currentUser.program || (isFreshUser ? (isStudent ? 'B.Tech' : '') : 'B.Tech CSE'));
+      setSemester(currentUser.semester || (isFreshUser ? '1' : '5'));
+      setCareerGoals(currentUser.careerGoals || (isFreshUser ? '' : 'Software Development Engineer at Tier-1 Tech Firm'));
+      setSkills(currentUser.skills && currentUser.skills.length > 0 ? currentUser.skills : (isFreshUser ? [] : ['React', 'Python', 'Algorithms', 'System Design', 'SQL', 'Git']));
       setAvatar(currentUser.avatar || '');
     }
   }, [currentUser, isStudent]);
@@ -249,7 +271,7 @@ export default function ProfilePage() {
                 <span>Verified Account</span>
               </span>
               <span className="profile-id-pill">
-                <span>ID: {studentId || 'USR_001'}</span>
+                <span>ID: {studentId || currentUser?.studentId || (isStudent ? 'STU_NEW' : 'USR_001')}</span>
               </span>
             </div>
 
@@ -269,6 +291,14 @@ export default function ProfilePage() {
               <Save size={15} />
               <span>{isSaving ? 'Saving to Database...' : 'Save Profile'}</span>
             </button>
+            <Link
+              to={isStudent ? '/student/portal' : '/institution/overview'}
+              className="profile-dash-link-btn"
+              title="Navigate to Dashboard"
+            >
+              <span>{isStudent ? 'Go to Student Dashboard' : 'Go to Overview'}</span>
+              <ArrowRight size={14} />
+            </Link>
           </div>
         </div>
       </div>
@@ -284,6 +314,23 @@ export default function ProfilePage() {
         <div className="profile-alert error" role="alert">
           <AlertCircle size={16} />
           <span>{errorMsg}</span>
+        </div>
+      )}
+
+      {/* ONBOARDING WELCOME BANNER FOR NEW USERS */}
+      {isOnboarding && (
+        <div className="profile-onboarding-banner" role="region" aria-label="Onboarding Instructions">
+          <div className="onboarding-banner-icon">
+            <Sparkles size={24} />
+          </div>
+          <div className="onboarding-banner-content">
+            <h3 className="onboarding-banner-title">
+              Welcome to Pratibha! Complete Your Academic Profile
+            </h3>
+            <p className="onboarding-banner-desc">
+              Please enter your <strong>Branch / Department</strong>, <strong>Degree Program</strong>, <strong>Current Semester</strong>, and <strong>Student Roll Number</strong> below. Once saved, your personalized success radar and predictive risk analytics will activate automatically.
+            </p>
+          </div>
         </div>
       )}
 
@@ -375,13 +422,15 @@ export default function ProfilePage() {
                     id="pfPhone"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+91 98765 43210"
+                    placeholder="e.g. +91 98765 43210"
                   />
                 </div>
               </div>
 
               <div className="profile-input-group">
-                <label htmlFor="pfDept">Primary Department / Division</label>
+                <label htmlFor="pfDept">
+                  {isStudent ? 'Branch / Engineering Department *' : 'Primary Department / Division *'}
+                </label>
                 <div className="profile-input-box">
                   <Building2 size={16} className="profile-field-icon" />
                   <input
@@ -389,10 +438,32 @@ export default function ProfilePage() {
                     id="pfDept"
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
-                    placeholder="e.g. Computer Science & Engineering"
+                    required
+                    placeholder={
+                      isStudent
+                        ? 'e.g. Computer Science, Information Technology, ECE'
+                        : 'e.g. Computer Science & Engineering'
+                    }
                   />
                 </div>
               </div>
+
+              {isStudent && (
+                <div className="profile-input-group">
+                  <label htmlFor="pfStudentId">Student Roll No. / Institutional ID *</label>
+                  <div className="profile-input-box">
+                    <Shield size={16} className="profile-field-icon" />
+                    <input
+                      type="text"
+                      id="pfStudentId"
+                      value={studentId}
+                      onChange={(e) => setStudentId(e.target.value)}
+                      placeholder="e.g. 2024CS104 / STU-0042"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="profile-input-group full-width" style={{ marginTop: '1rem' }}>
@@ -441,9 +512,16 @@ export default function ProfilePage() {
                   <input
                     type="text"
                     id="pfDesignation"
-                    value={designation}
-                    onChange={(e) => setDesignation(e.target.value)}
-                    placeholder={isStudent ? 'B.Tech CSE' : 'Associate Professor & HOD'}
+                    value={isStudent ? (program || designation) : designation}
+                    onChange={(e) => {
+                      if (isStudent) {
+                        setProgram(e.target.value);
+                        setDesignation(e.target.value);
+                      } else {
+                        setDesignation(e.target.value);
+                      }
+                    }}
+                    placeholder={isStudent ? 'e.g. B.Tech Computer Science / BCA / MCA' : 'Associate Professor & HOD'}
                   />
                 </div>
               </div>
@@ -683,6 +761,17 @@ export default function ProfilePage() {
           </button>
         </div>
       </form>
+
+      {/* DIRECT DASHBOARD NAVIGATION ACTION BAR */}
+      <div className="profile-dashboard-action-bar">
+        <Link
+          to={isStudent ? '/student/portal' : '/institution/overview'}
+          className="profile-goto-dashboard-btn"
+        >
+          <span>Proceed to {isStudent ? 'Student Success Radar Dashboard' : 'Institution Overview Dashboard'}</span>
+          <ArrowRight size={16} />
+        </Link>
+      </div>
 
       {/* =========================================================================
           PHOTO UPLOAD & ADJUSTMENT MODAL

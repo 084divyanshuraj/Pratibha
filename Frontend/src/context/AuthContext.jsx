@@ -88,6 +88,9 @@ export function AuthProvider({ children }) {
             bio: userData.bio,
             studentId: userData.studentId,
             skills: userData.skills,
+            program: userData.program || null,
+            semester: userData.semester || null,
+            careerGoals: userData.careerGoals || null,
           });
           setActivePortal(isStudent ? 'student' : 'institution');
         }
@@ -268,8 +271,11 @@ export function AuthProvider({ children }) {
         portal: isStudentPortal ? 'student' : 'institution',
         roleLabel: user.roleLabel || defaultRoleLabel,
         email: email.trim(),
-        department: user.department || defaultDepartment,
-        studentId: user.studentId || null,
+        department: user.department || null,
+        program: user.program || null,
+        semester: user.semester || null,
+        studentId: user.studentId || (isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
+        isNewUser: true,
       };
       setCurrentUser(profile);
       setActivePortal(isStudentPortal ? 'student' : 'institution');
@@ -286,7 +292,11 @@ export function AuthProvider({ children }) {
         portal: selectedPortal,
         roleLabel: defaultRoleLabel,
         email: email.trim(),
-        department: defaultDepartment,
+        department: null,
+        program: null,
+        semester: null,
+        studentId: isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null,
+        isNewUser: true,
       };
       setCurrentUser(profile);
       setActivePortal(selectedPortal);

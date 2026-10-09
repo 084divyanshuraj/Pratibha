@@ -166,7 +166,9 @@ export async function register({
     displayName: finalDisplayName,
     role: mappedRole,
     studentId: finalStudentId,
-    department: department || (mappedRole === 'student' ? 'Computer Science & Engineering' : 'Academic Affairs'),
+    department: department || null,
+    program: null,
+    semester: null,
     isActive: true,
   });
 
@@ -268,6 +270,10 @@ export async function updateProfile(userId, updateData) {
     'skills',
     'specialization',
     'education',
+    'program',
+    'semester',
+    'careerGoals',
+    'studentId',
   ];
   const payload = {};
   for (const key of allowed) {
@@ -281,13 +287,18 @@ export async function updateProfile(userId, updateData) {
     throw new AppError('User not found.', 404, 'USER_NOT_FOUND');
   }
 
-  if (user.studentId && (payload.displayName || payload.department)) {
+  if (user.studentId && (payload.displayName || payload.department || payload.program || payload.semester)) {
     try {
       const parts = (payload.displayName || '').trim().split(' ');
       const sUpdate = {};
       if (parts[0]) sUpdate.firstName = parts[0];
       if (parts.length > 1) sUpdate.lastName = parts.slice(1).join(' ');
       if (payload.department) sUpdate.department = payload.department;
+      if (payload.program) sUpdate.program = payload.program;
+      if (payload.semester) {
+        const parsedSem = parseInt(payload.semester, 10);
+        if (!isNaN(parsedSem)) sUpdate.semester = parsedSem;
+      }
       if (Object.keys(sUpdate).length > 0) {
         await Student.findOneAndUpdate({ studentId: user.studentId }, { $set: sUpdate });
       }

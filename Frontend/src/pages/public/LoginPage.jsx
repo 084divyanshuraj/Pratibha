@@ -315,9 +315,9 @@ export default function LoginPage() {
         portal,
         portal === 'institution' ? institutionRole : 'student'
       );
-      setSuccessMsg('Registration successful! Redirecting to dashboard...');
+      setSuccessMsg('Account created successfully! Redirecting to setup your profile...');
       setTimeout(() => {
-        const targetRoute = newUser.portal === 'student' ? '/student/portal' : '/institution/overview';
+        const targetRoute = newUser.portal === 'student' ? '/student/profile?onboarding=true' : '/institution/profile?onboarding=true';
         navigate(targetRoute);
       }, 700);
     } catch (err) {

@@ -98,6 +98,21 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
+    program: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    semester: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    careerGoals: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     isActive: {
       type: Boolean,
       default: true,

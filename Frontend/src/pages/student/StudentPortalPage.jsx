@@ -55,10 +55,16 @@ export default function StudentPortalPage() {
   // Student Identity & State
   const [student, setStudent] = useState({
     studentId: currentUser?.studentId || 'STU-2024-0042',
-    fullName: currentUser?.name || 'Aarav Sharma',
+    fullName: currentUser?.name || currentUser?.displayName || 'Student Scholar',
     avatar: currentUser?.avatar || STUDENT_AVATARS[0],
-    program: currentUser?.program || 'B.Tech Computer Science & Engineering',
-    semester: currentUser?.semester || 'Semester 6',
+    program:
+      currentUser?.program ||
+      (currentUser?.department ? `B.Tech in ${currentUser.department}` : 'B.Tech Program'),
+    semester: currentUser?.semester
+      ? (String(currentUser.semester).toLowerCase().includes('semester')
+          ? currentUser.semester
+          : `Semester ${currentUser.semester}`)
+      : 'Semester 1',
     email: currentUser?.email || 'student@campus.edu',
     cgpa: 8.42,
     attendanceRate: 88.5,
@@ -67,6 +73,26 @@ export default function StudentPortalPage() {
     placementRisk: 'Low to Moderate',
     dataCompleteness: 100,
   });
+
+  useEffect(() => {
+    if (currentUser) {
+      setStudent((prev) => ({
+        ...prev,
+        studentId: currentUser.studentId || prev.studentId,
+        fullName: currentUser.name || currentUser.displayName || prev.fullName,
+        avatar: currentUser.avatar || prev.avatar,
+        program:
+          currentUser.program ||
+          (currentUser.department ? `B.Tech in ${currentUser.department}` : prev.program),
+        semester: currentUser.semester
+          ? (String(currentUser.semester).toLowerCase().includes('semester')
+              ? currentUser.semester
+              : `Semester ${currentUser.semester}`)
+          : prev.semester,
+        email: currentUser.email || prev.email,
+      }));
+    }
+  }, [currentUser]);
 
   // Score Drivers (Explainable PRD compliance)
   const [scoreDrivers] = useState([
