@@ -16,6 +16,7 @@ import {
   Wifi,
   WifiOff,
   UserCheck,
+  Mic,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -304,6 +305,22 @@ export default function AppLayout({ children }) {
       >
         <Sparkles size={16} color="#38BDF8" />
         <span>Ask Campus Copilot</span>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '4px',
+            backgroundColor: 'rgba(56, 189, 248, 0.16)',
+            color: '#38BDF8',
+            padding: '2px 8px',
+            borderRadius: '999px',
+            fontSize: '0.68rem',
+            fontWeight: 700,
+            letterSpacing: '0.02em',
+          }}
+        >
+          <Mic size={10} /> Voice AI
+        </span>
       </button>
 
       {/* 4. COPILOT SLIDE-OVER DRAWER */}
