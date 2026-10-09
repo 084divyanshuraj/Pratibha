@@ -598,11 +598,22 @@ export async function processImport({
   const importId = `IMP_${Date.now()}_${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
 
   if (acceptedRecords.length > 0) {
-    const documentsToInsert = acceptedRecords.map((r) => ({
-      ...r,
-      sourceImportId: importId,
-    }));
-    await TargetModel.insertMany(documentsToInsert, { ordered: false });
+    if (datasetType === 'students') {
+      const ops = acceptedRecords.map((r) => ({
+        updateOne: {
+          filter: { studentId: r.studentId },
+          update: { $set: { ...r, sourceImportId: importId } },
+          upsert: true,
+        },
+      }));
+      await TargetModel.bulkWrite(ops);
+    } else {
+      const documentsToInsert = acceptedRecords.map((r) => ({
+        ...r,
+        sourceImportId: importId,
+      }));
+      await TargetModel.insertMany(documentsToInsert, { ordered: false });
+    }
 
     // Recalculate Student Success Scores for affected students
     try {

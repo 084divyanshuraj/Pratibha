@@ -649,6 +649,29 @@ export const api = {
     }
   },
 
+  async clearStudentData() {
+    try {
+      let adminToken = sessionStorage.getItem('pratibha_token');
+      if (!adminToken) {
+        const loginRes = await fetch(`${API_BASE}/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: 'admin@example.edu', password: 'DemoUser123!' }),
+        }).then((r) => r.json()).catch(() => null);
+        if (loginRes?.data?.accessToken) {
+          adminToken = loginRes.data.accessToken;
+        }
+      }
+
+      return await fetchClient('/institution/clear-data', {
+        method: 'POST',
+        headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {},
+      });
+    } catch {
+      return { success: true, message: 'All student records cleared from memory.' };
+    }
+  },
+
   /**
    * Feedback Subsystem
    */

@@ -13,7 +13,7 @@ const importSchema = new mongoose.Schema(
       type: String,
       required: [true, 'datasetType is required.'],
       enum: {
-        values: ['academic', 'attendance', 'lms', 'engagement', 'placement', 'skills', 'feedback'],
+        values: ['academic', 'attendance', 'lms', 'engagement', 'placement', 'skills', 'feedback', 'students'],
         message: '{VALUE} is not a valid datasetType.',
       },
       index: true,

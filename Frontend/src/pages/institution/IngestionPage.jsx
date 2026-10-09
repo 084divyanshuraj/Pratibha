@@ -14,6 +14,7 @@ import {
   RefreshCw,
   Sliders,
   ExternalLink,
+  Trash2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
@@ -199,6 +200,20 @@ export default function IngestionPage() {
     }
   };
 
+  const handleClearDatabase = async () => {
+    if (window.confirm('Are you sure you want to clear synthetic demo student records? This will leave the database empty and ready for your fresh CSV import.')) {
+      try {
+        await api.clearStudentData();
+        setImportReport(null);
+        setCommitResult(null);
+        setUploadedFile(null);
+        alert('All synthetic student records cleared. You can now upload your custom departmental CSVs!');
+      } catch (err) {
+        alert('Failed to clear database: ' + (err.message || 'Error'));
+      }
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem', maxWidth: '1400px', margin: '0 auto' }}>
       {/* Header Banner */}
@@ -216,7 +231,27 @@ export default function IngestionPage() {
               Upload departmental CSV dumps across all 8 student performance pillars. Automatically executes dry-run row-level validation, relational integrity checks, and triggers real-time MongoDB Success Score recalculation.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            <button
+              onClick={handleClearDatabase}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: '1px solid #E2E8F0',
+                backgroundColor: '#FFFFFF',
+                color: '#64748B',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+              title="Clear synthetic test data to perform a 100% clean custom student import"
+            >
+              <Trash2 size={14} color="#EF4444" />
+              <span>Clear for Fresh Import</span>
+            </button>
             <button
               onClick={() => handleDownloadSample(selectedCategory, false)}
               style={{
