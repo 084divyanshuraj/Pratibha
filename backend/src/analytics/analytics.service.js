@@ -106,6 +106,13 @@ export async function getOverviewKpis(filters = {}) {
       coverageNotes: [
         'No students found matching the specified filters.',
       ],
+      totalStudents: 0,
+      departmentCount: 0,
+      averageSuccessScore: 0,
+      scoreDistribution: { critical: 0, moderate: 0, good: 0, excellent: 0 },
+      decoupledDivergence: { count: 0, percentage: 0, explanation: 'No divergence.' },
+      overallCompletenessAverage: 0,
+      categoryCoverage: { academic: 0, attendance: 0, lms: 0, placement: 0, skills: 0, engagement: 0, feedback: 0 },
     };
   }
 
@@ -296,6 +303,46 @@ export async function getOverviewKpis(filters = {}) {
     coverageNotes.push('Comprehensive data coverage observed across all 7 categories and risk models.');
   }
 
+  const uniqueDepts = new Set(students.map((s) => s.department).filter(Boolean));
+  const departmentCount = uniqueDepts.size || 1;
+
+  // Decoupled Risk Divergence (High CGPA >= 7.5 but High Placement Risk)
+  const academicsAgg = await AcademicRecord.aggregate([
+    { $match: { studentId: { $in: studentIds } } },
+    { $sort: { studentId: 1, observedAt: -1 } },
+    {
+      $group: {
+        _id: '$studentId',
+        cgpa: { $first: '$cgpa' },
+      },
+    },
+  ]);
+  const cgpaByStudent = new Map();
+  for (const item of academicsAgg) {
+    if (item.cgpa != null) cgpaByStudent.set(item._id, item.cgpa);
+  }
+
+  const placementRiskMap = new Map();
+  for (const item of riskAgg) {
+    if (item._id.target === 'placement_risk') {
+      placementRiskMap.set(item._id.studentId, item.riskLevel);
+    }
+  }
+
+  let divergenceCount = 0;
+  for (const s of students) {
+    const cgpa = cgpaByStudent.get(s.studentId);
+    const pRisk = placementRiskMap.get(s.studentId);
+    if (cgpa != null && cgpa >= 7.5 && pRisk === 'high') {
+      divergenceCount += 1;
+    }
+  }
+
+  const divergencePercentage =
+    totalStudents > 0
+      ? Math.round((divergenceCount / totalStudents) * 1000) / 10
+      : 0;
+
   return {
     filters: {
       department: filters.department || null,
@@ -323,6 +370,27 @@ export async function getOverviewKpis(filters = {}) {
       overallCompletenessAverage,
     },
     coverageNotes,
+
+    // Dynamic top-level properties for UI fidelity
+    totalStudents,
+    departmentCount,
+    averageSuccessScore: scoreAvg ?? 0,
+    scoreDistribution: distribution,
+    decoupledDivergence: {
+      count: divergenceCount,
+      percentage: divergencePercentage,
+      explanation: `${divergenceCount} students have strong academic standing (CGPA >= 7.5) but high placement risk due to soft-skills/mock interview gaps.`,
+    },
+    overallCompletenessAverage,
+    categoryCoverage: {
+      academic: categories.academic?.percentage ?? 0,
+      attendance: categories.attendance?.percentage ?? 0,
+      lms: categories.lms?.percentage ?? 0,
+      placement: categories.placement?.percentage ?? 0,
+      skills: categories.skills?.percentage ?? 0,
+      engagement: categories.engagement?.percentage ?? 0,
+      feedback: categories.feedback?.percentage ?? 0,
+    },
   };
 }
 

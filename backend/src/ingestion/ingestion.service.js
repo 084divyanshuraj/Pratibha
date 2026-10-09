@@ -1,4 +1,5 @@
 import { parse as parseCsv } from 'csv-parse/sync';
+import * as XLSX from 'xlsx';
 import { Student } from '../models/Student.js';
 import { AcademicRecord } from '../models/AcademicRecord.js';
 import { AttendanceRecord } from '../models/AttendanceRecord.js';
@@ -106,8 +107,21 @@ function toBoolean(val, defaultVal = false) {
  */
 export function extractRawRecords(req) {
   try {
-    // Case 1: Multer file uploaded
+    // Case 1: Multer file uploaded (Excel or CSV)
     if (req.file && req.file.buffer) {
+      const origName = req.file.originalname || 'upload.csv';
+      const isExcel = /\.(xlsx|xls)$/i.test(origName);
+
+      if (isExcel) {
+        const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+        const firstSheet = workbook.SheetNames[0];
+        if (!firstSheet) {
+          throw new AppError('Uploaded Excel file contains no readable sheets.', 400, 'MALFORMED_EXCEL');
+        }
+        const records = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: null });
+        return { records, fileName: origName };
+      }
+
       const fileContent = req.file.buffer.toString('utf-8');
       const records = parseCsv(fileContent, {
         columns: true,
@@ -115,7 +129,7 @@ export function extractRawRecords(req) {
         trim: true,
         relax_column_count: true,
       });
-      return { records, fileName: req.file.originalname || 'upload.csv' };
+      return { records, fileName: origName };
     }
 
     // Case 2: Raw CSV string in req.body.csv or plain text body
@@ -129,7 +143,8 @@ export function extractRawRecords(req) {
       return { records, fileName: req.body.fileName || 'inline.csv' };
     }
   } catch (err) {
-    throw new AppError(`Malformed CSV payload: ${err.message}`, 400, 'MALFORMED_CSV');
+    if (err instanceof AppError) throw err;
+    throw new AppError(`Malformed file payload: ${err.message}`, 400, 'MALFORMED_FILE');
   }
 
   // Case 3: JSON array in req.body.records
@@ -615,14 +630,14 @@ export async function processImport({
       await TargetModel.insertMany(documentsToInsert, { ordered: false });
     }
 
-    // Recalculate Student Success Scores for affected students
+    // Recalculate Student Success Scores for affected students synchronously
     try {
       const affectedStudentIds = [...new Set(acceptedRecords.map((r) => r.studentId).filter(Boolean))];
-      for (const sId of affectedStudentIds) {
-        recalculateStudentScore(sId).catch(() => {});
-      }
+      await Promise.all(
+        affectedStudentIds.map((sId) => recalculateStudentScore(sId).catch(() => {}))
+      );
     } catch {
-      // Non-blocking background recalculation
+      // Non-blocking background recalculation fallback
     }
   }
 

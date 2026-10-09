@@ -58,6 +58,9 @@ export default function OverviewPage() {
 
   useEffect(() => {
     loadData();
+    const handleDataUpdate = () => loadData();
+    window.addEventListener('pratibha_data_updated', handleDataUpdate);
+    return () => window.removeEventListener('pratibha_data_updated', handleDataUpdate);
   }, []);
 
   const distributionChartData = kpis?.scoreDistribution
@@ -316,10 +319,10 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0F172A', marginTop: '10px' }}>
-            {kpis?.totalStudents?.toLocaleString() || '1,420'}
+            {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'}
           </div>
           <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span>Active Across 5 Departments</span>
+            <span>Active Across {kpis?.departmentCount || 5} Department{kpis?.departmentCount === 1 ? '' : 's'}</span>
           </div>
         </div>
 
@@ -334,7 +337,7 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0F172A', marginTop: '10px' }}>
-            {kpis?.averageSuccessScore || '74.9'}
+            {kpis?.averageSuccessScore != null ? kpis.averageSuccessScore : '74.9'}
             <span style={{ fontSize: '1rem', color: '#94A3B8', fontWeight: 400 }}>/100</span>
           </div>
           <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '4px' }}>
@@ -353,9 +356,9 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#92400E', marginTop: '10px' }}>
-            {kpis?.decoupledDivergence?.count || '148'}
+            {kpis?.decoupledDivergence?.count != null ? kpis.decoupledDivergence.count : '148'}
             <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#B45309', marginLeft: '6px' }}>
-              ({kpis?.decoupledDivergence?.percentage || '10.4'}%)
+              ({kpis?.decoupledDivergence?.percentage != null ? kpis.decoupledDivergence.percentage : '10.4'}%)
             </span>
           </div>
           <div style={{ fontSize: '0.74rem', color: '#78350F', marginTop: '4px' }}>
@@ -374,7 +377,7 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0F172A', marginTop: '10px' }}>
-            {kpis?.overallCompletenessAverage || '83.1'}%
+            {kpis?.overallCompletenessAverage != null ? kpis.overallCompletenessAverage : '83.1'}%
           </div>
           <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '4px' }}>
             Across all 7 Institutional Pillars
@@ -396,7 +399,7 @@ export default function OverviewPage() {
               </p>
             </div>
             <span style={{ fontSize: '0.74rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '4px 8px', borderRadius: '6px', color: '#64748B' }}>
-              N = 1,420
+              N = {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'}
             </span>
           </div>
 
@@ -650,7 +653,7 @@ export default function OverviewPage() {
                 <ChevronRight size={16} color="#1A73E8" />
               </h4>
               <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B', lineHeight: '1.45' }}>
-                Browse 1,420 profiles with live multi-criteria search, radar breakdowns, and instant slide-over drawer inspections.
+                Browse {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'} profiles with live multi-criteria search, radar breakdowns, and instant slide-over drawer inspections.
               </p>
             </div>
           </div>

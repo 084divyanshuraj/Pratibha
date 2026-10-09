@@ -32,7 +32,7 @@ The platform unifies 7 categories of institutional data (Academic, Attendance, L
 | **Success Score & Risk Identification** | 25% | `backend/src/scores/` — explainable `sss-v1` composite formula. `backend/src/ml/` — decoupled Academic & Placement risk models. `backend/src/segments/` — 5 rule-based student archetypes *(Bonus)*. |
 | **Dashboard & Visualization** | 25% | `Frontend/src/pages/institution/` — 8 interactive institution views. `Frontend/src/pages/student/` — student self-portal. Score drivers visible per student *(Bonus)*. |
 | **Problem Understanding** | 10% | See Section "Why This Approach" below. |
-| **Presentation & Demo** | 10% | `STUDENT_SUCCESS_SCORE_NOTE.md` — methodology note. This README acts as submission documentation. |
+| **Presentation & Demo** | 10% | [`docs/backend/SUCCESS_SCORE_METHODOLOGY.md`](docs/backend/SUCCESS_SCORE_METHODOLOGY.md) — methodology note. This README acts as submission documentation. |
 
 ---
 
@@ -96,6 +96,8 @@ A transparent, explainable composite readiness index (0–100 scale). **Not** an
 
 Every student receives human-readable driver explanations, e.g.:
 > *"Academic Performance: CGPA 7.45/10, zero active backlogs → +26.1 pts"*
+
+> 📖 **Full Formulation Note:** Detailed mathematical formulation, weight justifications, and ethical boundaries: [`docs/backend/SUCCESS_SCORE_METHODOLOGY.md`](docs/backend/SUCCESS_SCORE_METHODOLOGY.md)
 
 ---
 
@@ -183,7 +185,9 @@ Backend API (Node.js + Express) ─────────── Port 5000 / Re
 PRATIBHA/
 │
 ├── README.md                        ← You are here
-├── STUDENT_SUCCESS_SCORE_NOTE.md    ← KPMG Deliverable: Score methodology note
+├── docs/
+│   └── backend/
+│       └── SUCCESS_SCORE_METHODOLOGY.md ← KPMG Deliverable: Score methodology note
 ├── ml_service.py                    ← Python ML inference entry point
 ├── kaggle.csv                       ← 50,000-record training dataset
 │

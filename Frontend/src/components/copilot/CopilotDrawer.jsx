@@ -4,10 +4,156 @@ import { api } from '../../services/api';
 
 const PROMPT_SUGGESTIONS = [
   'Aarav Sharma ka info do',
+  'Who has attendance below 75%?',
   'Show decoupled divergence students',
-  'Who are the top at-risk students?',
-  'Show campus overview KPIs & average score',
+  'Which students have backlogs?',
+  'Show Computer Science students',
+  'Who are the top performers?',
 ];
+
+function renderInlineFormatting(str) {
+  if (!str) return str;
+  const parts = [];
+  const regex = /(`[^`]+`|\*\*[^*]+\*\*)/g;
+  let lastIdx = 0;
+  let match;
+  let keyCounter = 0;
+
+  while ((match = regex.exec(str)) !== null) {
+    if (match.index > lastIdx) {
+      parts.push(str.substring(lastIdx, match.index));
+    }
+    const token = match[0];
+    if (token.startsWith('`') && token.endsWith('`')) {
+      const codeText = token.slice(1, -1);
+      parts.push(
+        <code
+          key={`code-${keyCounter++}`}
+          style={{
+            backgroundColor: 'rgba(15, 23, 42, 0.08)',
+            padding: '1px 5px',
+            borderRadius: '4px',
+            fontFamily: 'Consolas, Monaco, monospace',
+            fontSize: '0.84em',
+            color: '#0F172A',
+            fontWeight: 600,
+          }}
+        >
+          {codeText}
+        </code>
+      );
+    } else if (token.startsWith('**') && token.endsWith('**')) {
+      const boldText = token.slice(2, -2);
+      parts.push(
+        <strong key={`bold-${keyCounter++}`} style={{ fontWeight: 650, color: '#0F172A' }}>
+          {boldText}
+        </strong>
+      );
+    }
+    lastIdx = regex.lastIndex;
+  }
+  if (lastIdx < str.length) {
+    parts.push(str.substring(lastIdx));
+  }
+  return parts.length > 0 ? parts : str;
+}
+
+function FormattedMessage({ text, isUser }) {
+  if (isUser) {
+    return <div style={{ whiteSpace: 'pre-wrap' }}>{text}</div>;
+  }
+
+  const lines = (text || '').split('\n');
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+      {lines.map((line, idx) => {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          return <div key={idx} style={{ height: '4px' }} />;
+        }
+        if (trimmed.startsWith('### ')) {
+          const headerText = trimmed.replace('### ', '');
+          return (
+            <div
+              key={idx}
+              style={{
+                fontSize: '0.94rem',
+                fontWeight: 700,
+                color: '#0F172A',
+                marginTop: idx > 0 ? '6px' : '0px',
+                marginBottom: '2px',
+                borderBottom: '1px solid #E2E8F0',
+                paddingBottom: '3px',
+              }}
+            >
+              {renderInlineFormatting(headerText)}
+            </div>
+          );
+        }
+        if (trimmed.startsWith('## ')) {
+          const headerText = trimmed.replace('## ', '');
+          return (
+            <div
+              key={idx}
+              style={{
+                fontSize: '1rem',
+                fontWeight: 750,
+                color: '#0F172A',
+                marginTop: '8px',
+                marginBottom: '2px',
+              }}
+            >
+              {renderInlineFormatting(headerText)}
+            </div>
+          );
+        }
+        if (trimmed.startsWith('- ') || trimmed.startsWith('• ') || trimmed.startsWith('* ')) {
+          const bulletText = trimmed.replace(/^[-•*]\s+/, '');
+          return (
+            <div
+              key={idx}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '6px',
+                paddingLeft: '4px',
+                fontSize: '0.84rem',
+                lineHeight: '1.45',
+              }}
+            >
+              <span style={{ color: '#1A73E8', fontWeight: 700, marginTop: '-1px' }}>•</span>
+              <div style={{ flex: 1 }}>{renderInlineFormatting(bulletText)}</div>
+            </div>
+          );
+        }
+        const numMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+        if (numMatch) {
+          return (
+            <div
+              key={idx}
+              style={{
+                display: 'flex',
+                alignItems: 'flex-start',
+                gap: '6px',
+                paddingLeft: '4px',
+                fontSize: '0.84rem',
+                lineHeight: '1.45',
+              }}
+            >
+              <span style={{ color: '#1A73E8', fontWeight: 600, minWidth: '16px' }}>{numMatch[1]}.</span>
+              <div style={{ flex: 1 }}>{renderInlineFormatting(numMatch[2])}</div>
+            </div>
+          );
+        }
+        return (
+          <div key={idx} style={{ fontSize: '0.84rem', lineHeight: '1.45' }}>
+            {renderInlineFormatting(line)}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function CopilotDrawer({ isOpen, onClose }) {
   const [query, setQuery] = useState('');
@@ -193,7 +339,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
                   whiteSpace: 'pre-wrap',
                 }}
               >
-                {m.text}
+                <FormattedMessage text={m.text} isUser={m.sender === 'user'} />
               </div>
 
               {m.sources && m.sources.length > 0 && (

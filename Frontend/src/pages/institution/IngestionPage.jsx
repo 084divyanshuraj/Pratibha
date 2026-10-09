@@ -17,6 +17,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 import { api } from '../../services/api';
 
 const CATEGORIES = [
@@ -156,17 +157,35 @@ export default function IngestionPage() {
     document.body.removeChild(link);
   };
 
+  const handleDownloadExcelSample = (catKey) => {
+    try {
+      const csvContent = generateSampleCsv(catKey, false);
+      const workbook = XLSX.read(csvContent, { type: 'string' });
+      const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${catKey}_clean_template.xlsx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      handleDownloadSample(catKey, false);
+    }
+  };
+
   const handleFileDrop = (e) => {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
       const file = e.dataTransfer.files[0];
-      if (file.name.endsWith('.csv')) {
+      if (file.name.match(/\.(csv|xlsx|xls)$/i)) {
         setUploadedFile(file);
         setImportReport(null);
         setCommitResult(null);
       } else {
-        alert('Please upload a valid .csv dataset file.');
+        alert('Please upload a valid .csv or .xlsx / .xls dataset file.');
       }
     }
   };
@@ -393,9 +412,51 @@ export default function IngestionPage() {
               </div>
             </div>
 
-            <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Info size={14} color="#3B82F6" />
-              <span><strong>Validation Constraint:</strong> {activeCategoryMeta.validationRule}</span>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '12px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Info size={14} color="#3B82F6" />
+                <span><strong>Validation Constraint:</strong> {activeCategoryMeta.validationRule}</span>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  onClick={() => handleDownloadSample(activeCategoryMeta.key, false)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#334155',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <Download size={12} />
+                  <span>Download .CSV Template</span>
+                </button>
+                <button
+                  onClick={() => handleDownloadExcelSample(activeCategoryMeta.key)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    padding: '4px 10px',
+                    borderRadius: '6px',
+                    border: '1px solid #A7F3D0',
+                    backgroundColor: '#ECFDF5',
+                    color: '#065F46',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <FileSpreadsheet size={12} />
+                  <span>Download .XLSX Excel Template</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -436,16 +497,16 @@ export default function IngestionPage() {
             </div>
 
             <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0F172A', fontWeight: 600 }}>
-              Upload {activeCategoryMeta.name} Dataset (.CSV)
+              Upload {activeCategoryMeta.name} Dataset (.CSV / .XLSX / .XLS)
             </h3>
 
-            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B', maxWidth: '420px', lineHeight: 1.4 }}>
-              Drag and drop your raw departmental CSV file here, or browse from your computer. Our streaming validator inspects every row prior to MongoDB storage.
+            <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B', maxWidth: '480px', lineHeight: 1.4 }}>
+              Drag and drop your raw departmental CSV or Excel (.xlsx) file here, or browse from your computer. Our streaming validator inspects every row prior to MongoDB storage.
             </p>
 
             <input
               type="file"
-              accept=".csv"
+              accept=".csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
                   setUploadedFile(e.target.files[0]);
@@ -471,7 +532,7 @@ export default function IngestionPage() {
                 transition: 'background-color 0.15s ease',
               }}
             >
-              Browse CSV File
+              Browse CSV or Excel File
             </label>
 
             {uploadedFile && (
