@@ -1,0 +1,386 @@
+openapi: 3.0.3
+info:
+  title: Smart Campus Analytics API
+  description: Backend REST API for Smart Campus Analytics (KPMG Challenge)
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+  - url: https://smart-campus-backend.onrender.com
+    description: Production Render service
+
+paths:
+  /health/live:
+    get:
+      summary: Liveness probe
+      description: Returns process liveness and uptime. Publicly accessible without authentication.
+      responses:
+        '200':
+          description: Process is alive and accepting connections
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: "ok"
+                      uptimeSeconds:
+                        type: integer
+                        example: 42
+                      timestamp:
+                        type: string
+                        format: date-time
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+
+  /health/ready:
+    get:
+      summary: Readiness probe
+      description: Returns dependency readiness (database, external services). Safe status without secrets.
+      responses:
+        '200':
+          description: All critical dependencies are healthy and ready
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessSuccess'
+        '503':
+          description: One or more critical dependencies are unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReadinessFailure'
+
+  /api/v1:
+    get:
+      summary: API v1 root information
+      description: Returns service metadata and API version.
+      responses:
+        '200':
+          description: API v1 status and metadata
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    type: object
+                    properties:
+                      name:
+                        type: string
+                        example: "Smart Campus Analytics API"
+                      version:
+                        type: string
+                        example: "v1"
+                      status:
+                        type: string
+                        example: "active"
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+
+  /api/v1/auth/login:
+    post:
+      summary: User Login
+      description: Verifies user credentials and returns JWT access token with profile DTO.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "faculty@example.edu"
+                password:
+                  type: string
+                  format: password
+                  example: "DemoFaculty123!"
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/LoginResult'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Invalid credentials or deactivated account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/auth/me:
+    get:
+      summary: Current Authenticated User Profile
+      description: Returns profile and permissions of the currently authenticated user.
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/UserDTO'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '401':
+          description: Missing or invalid token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/institution/users:
+    post:
+      summary: Admin User Provisioning
+      description: Allows administrator to provision new accounts with bcrypt hashed passwords.
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - displayName
+                - role
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: "newfaculty@example.edu"
+                password:
+                  type: string
+                  minLength: 8
+                  example: "StrongPass123!"
+                displayName:
+                  type: string
+                  example: "Dr. New Faculty"
+                role:
+                  type: string
+                  enum: [admin, faculty, placement_officer, student]
+                  example: "faculty"
+                studentId:
+                  type: string
+                  nullable: true
+                  example: null
+      responses:
+        '201':
+          description: User provisioned successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  data:
+                    $ref: '#/components/schemas/UserDTO'
+                  meta:
+                    $ref: '#/components/schemas/Meta'
+        '403':
+          description: Forbidden - admin role required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Meta:
+      type: object
+      required:
+        - requestId
+      properties:
+        requestId:
+          type: string
+          example: "req_f81d4fae-7dec-11d0-a765-00a0c91e6bf6"
+
+    ErrorDetail:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "email"
+        message:
+          type: string
+          example: "Must be a valid educational email"
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+        - meta
+      properties:
+        success:
+          type: boolean
+          example: false
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              example: "VALIDATION_ERROR"
+            message:
+              type: string
+              example: "Request validation failed"
+            details:
+              type: array
+              items:
+                $ref: '#/components/schemas/ErrorDetail'
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    ReadinessSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          type: object
+          properties:
+            ready:
+              type: boolean
+              example: true
+            status:
+              type: string
+              example: "ready"
+            checks:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "connected"
+                  ready:
+                    type: boolean
+                    example: true
+            timestamp:
+              type: string
+              format: date-time
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    ReadinessFailure:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        data:
+          type: object
+          properties:
+            ready:
+              type: boolean
+              example: false
+            status:
+              type: string
+              example: "not_ready"
+            checks:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "disconnected"
+                  ready:
+                    type: boolean
+                    example: false
+            timestamp:
+              type: string
+              format: date-time
+        meta:
+          $ref: '#/components/schemas/Meta'
+
+    UserDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "65f01e2b4f1b2c001f3a5e89"
+        email:
+          type: string
+          format: email
+          example: "faculty@example.edu"
+        displayName:
+          type: string
+          example: "Dr. Jane Doe"
+        role:
+          type: string
+          enum: [admin, faculty, placement_officer, student]
+          example: "faculty"
+        studentId:
+          type: string
+          nullable: true
+          example: null
+        isActive:
+          type: boolean
+          example: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    LoginResult:
+      type: object
+      properties:
+        accessToken:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        tokenType:
+          type: string
+          example: "Bearer"
+        expiresIn:
+          type: string
+          example: "7d"
+        user:
+          $ref: '#/components/schemas/UserDTO'
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
