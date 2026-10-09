@@ -1,0 +1,626 @@
+/**
+ * PRATIBHA — Login & Register Experience Styles
+ * Recreating the target design with organic wave mask, animated panel transition,
+ * floating intelligence preview card, and full responsive accessibility.
+ */
+
+.pratibha-auth-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--color-white, #ffffff);
+  position: relative;
+  overflow-x: hidden;
+  font-family: var(--font-sans, 'Inter', sans-serif);
+}
+
+/* Left Panel */
+.pratibha-auth-left {
+  flex: 0 0 45%;
+  max-width: 620px;
+  min-width: 440px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.85rem 3rem;
+  position: relative;
+  z-index: 10;
+  box-shadow: 10px 0 30px rgba(8, 43, 86, 0.05);
+}
+
+/* Header */
+.pratibha-auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.pratibha-auth-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: 0.875rem;
+}
+
+.pratibha-auth-nav-link {
+  color: var(--color-navy, #082b56);
+  text-decoration: none;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: var(--radius-xs, 4px);
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.pratibha-auth-nav-link:hover {
+  color: var(--color-blue-bright, #258bfa);
+}
+
+/* Main Form Wrapper */
+.pratibha-auth-content {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
+
+/* Eyebrow & Headings */
+.pratibha-auth-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-blue-primary, #1677d2);
+  margin-bottom: 0.35rem;
+}
+
+.pratibha-auth-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 2.15rem;
+  font-weight: 700;
+  color: var(--color-navy, #082b56);
+  line-height: 1.2;
+  margin-bottom: 0.4rem;
+}
+
+.pratibha-auth-dot {
+  color: var(--color-blue-bright, #258bfa);
+}
+
+.pratibha-auth-subtitle {
+  color: var(--color-text-secondary, #667085);
+  font-size: 0.925rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.4;
+}
+
+/* Portal Switcher Tabs */
+.pratibha-portal-tabs {
+  display: flex;
+  background-color: var(--color-bg-page, #f6f8fc);
+  border: 1px solid var(--color-border, #e4e9f0);
+  padding: 4px;
+  border-radius: var(--radius-sm, 8px);
+  gap: 6px;
+  margin-bottom: 1.35rem;
+}
+
+.pratibha-portal-tab-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  border: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--color-navy, #082b56);
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.pratibha-portal-tab-btn.active {
+  background-color: var(--color-blue-primary, #1677d2);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(22, 119, 210, 0.32);
+}
+
+.pratibha-portal-tab-btn:not(.active):hover {
+  background-color: rgba(22, 119, 210, 0.08);
+  color: var(--color-blue-primary, #1677d2);
+}
+
+/* Form Container & Staggered Transitions */
+.pratibha-form-viewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.pratibha-form-slide {
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+
+.pratibha-form-slide.entering-from-right {
+  animation: slideInRight 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.pratibha-form-slide.entering-from-left {
+  animation: slideInLeft 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Input Fields */
+.pratibha-input-group {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.pratibha-input-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-text-secondary, #667085);
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pratibha-input {
+  width: 100%;
+  padding: 0.8rem 1rem 0.8rem 2.65rem;
+  font-size: 0.92rem;
+  border: 1px solid var(--color-border, #e4e9f0);
+  border-radius: var(--radius-sm, 8px);
+  background-color: #ffffff;
+  color: var(--color-text-main, #172033);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color var(--transition-fast, 150ms ease), box-shadow var(--transition-fast, 150ms ease);
+}
+
+.pratibha-input.with-toggle {
+  padding-right: 2.85rem;
+}
+
+.pratibha-input:focus {
+  border-color: var(--color-blue-primary, #1677d2);
+  box-shadow: 0 0 0 3px rgba(22, 119, 210, 0.15);
+}
+
+.pratibha-password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--color-text-secondary, #667085);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.pratibha-password-toggle:hover {
+  color: var(--color-blue-primary, #1677d2);
+}
+
+/* Checkbox & Forgot Password Row */
+.pratibha-form-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 1.15rem;
+}
+
+.pratibha-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  color: var(--color-text-main, #172033);
+  user-select: none;
+}
+
+.pratibha-checkbox-label input[type='checkbox'] {
+  accent-color: var(--color-blue-primary, #1677d2);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.pratibha-forgot-btn {
+  background: none;
+  border: none;
+  color: var(--color-blue-primary, #1677d2);
+  font-weight: 500;
+  cursor: pointer;
+  font-size: 0.85rem;
+  padding: 0;
+  transition: color var(--transition-fast, 150ms ease);
+}
+
+.pratibha-forgot-btn:hover {
+  color: var(--color-blue-bright, #258bfa);
+  text-decoration: underline;
+}
+
+/* Primary Submit Button */
+.pratibha-submit-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: var(--color-blue-primary, #1677d2);
+  color: #ffffff;
+  padding: 0.85rem 1.25rem;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.95rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(22, 119, 210, 0.35);
+  transition: background-color var(--transition-fast, 150ms ease), transform var(--transition-fast, 150ms ease);
+}
+
+.pratibha-submit-btn:hover:not(:disabled) {
+  background-color: var(--color-blue-bright, #258bfa);
+  transform: translateY(-1px);
+}
+
+.pratibha-submit-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pratibha-submit-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* Demo Notice Box */
+.pratibha-demo-notice {
+  background-color: var(--color-blue-surface, #eaf3ff);
+  border: 1px solid var(--color-blue-surface-border, rgba(22, 119, 210, 0.2));
+  border-radius: var(--radius-sm, 8px);
+  padding: 0.85rem 1rem;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 1.35rem;
+  font-size: 0.78rem;
+  color: var(--color-navy, #082b56);
+  line-height: 1.45;
+}
+
+.pratibha-demo-notice-icon {
+  color: var(--color-blue-primary, #1677d2);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.pratibha-demo-notice-title {
+  font-weight: 700;
+  color: var(--color-navy, #082b56);
+}
+
+.pratibha-demo-notice-desc {
+  color: var(--color-text-secondary, #667085);
+  margin-top: 2px;
+}
+
+/* 1-Click Demo Personas */
+.pratibha-demo-personas {
+  margin-top: 1.35rem;
+}
+
+.pratibha-personas-title {
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: var(--color-text-secondary, #667085);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pratibha-personas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pratibha-persona-btn {
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-align: left;
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--color-border, #e4e9f0);
+  background-color: var(--color-bg-page, #f6f8fc);
+  color: var(--color-navy, #082b56);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.pratibha-persona-btn:hover {
+  background-color: #ffffff;
+  border-color: var(--color-blue-primary, #1677d2);
+  color: var(--color-blue-primary, #1677d2);
+  box-shadow: 0 2px 6px rgba(22, 119, 210, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Switch Link */
+.pratibha-switch-wrap {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--color-text-secondary, #667085);
+}
+
+.pratibha-switch-btn {
+  background: none;
+  border: none;
+  color: var(--color-blue-primary, #1677d2);
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 4px;
+  font-size: 0.85rem;
+  padding: 0;
+  text-decoration: none;
+}
+
+.pratibha-switch-btn:hover {
+  text-decoration: underline;
+  color: var(--color-blue-bright, #258bfa);
+}
+
+/* Footer Note */
+.pratibha-auth-footer {
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--color-text-muted, #94a3b8);
+  margin-top: 1.5rem;
+}
+
+/* Right Panel (Campus Photo + Floating Card) */
+.pratibha-auth-right {
+  flex: 1;
+  position: relative;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 2.25rem 2.5rem;
+  overflow: hidden;
+}
+
+/* Organic Wave SVG Divider */
+.pratibha-organic-wave {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -2px;
+  height: 100%;
+  width: 90px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Floating Student Success Intelligence Card */
+.pratibha-intelligence-card {
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 18px;
+  border: 1px solid rgba(228, 233, 240, 0.9);
+  box-shadow: 0 20px 45px -10px rgba(8, 43, 86, 0.25);
+  padding: 1.45rem 1.65rem;
+  width: 320px;
+  max-width: 100%;
+  position: relative;
+  z-index: 10;
+  animation: floatCardIn 0.8s ease-out forwards;
+}
+
+@keyframes floatCardIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.pratibha-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1.15rem;
+}
+
+.pratibha-card-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background-color: var(--color-blue-surface, #eaf3ff);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blue-primary, #1677d2);
+}
+
+.pratibha-card-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-navy, #082b56);
+  margin: 0;
+}
+
+.pratibha-card-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.95rem;
+}
+
+.pratibha-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+}
+
+.pratibha-metric-label {
+  color: var(--color-text-main, #172033);
+  font-weight: 500;
+}
+
+.pratibha-metric-value {
+  color: var(--color-navy, #082b56);
+  font-weight: 700;
+}
+
+.pratibha-progress-track {
+  width: 100%;
+  height: 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.pratibha-progress-fill-academic {
+  height: 100%;
+  width: 78%;
+  background-color: var(--color-blue-primary, #1677d2);
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+.pratibha-progress-fill-placement {
+  height: 100%;
+  width: 64%;
+  background-color: #8b5cf6;
+  border-radius: 4px;
+  transition: width 1s ease-in-out;
+}
+
+/* Modals & Dialogs */
+.pratibha-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(6, 26, 51, 0.55);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.5rem;
+}
+
+.pratibha-modal-box {
+  background-color: #ffffff;
+  border-radius: var(--radius-md, 12px);
+  padding: 1.75rem;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  animation: modalScaleIn 0.25s ease-out forwards;
+}
+
+@keyframes modalScaleIn {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .pratibha-auth-left {
+    flex: 0 0 50%;
+    min-width: 380px;
+    padding: 2rem 2.25rem;
+  }
+}
+
+@media (max-width: 860px) {
+  .pratibha-auth-container {
+    flex-direction: column;
+  }
+
+  .pratibha-auth-left {
+    flex: 1 1 auto;
+    max-width: 100%;
+    min-width: 100%;
+    padding: 2rem 1.5rem;
+    box-shadow: none;
+  }
+
+  .pratibha-auth-right {
+    display: none;
+  }
+
+  .pratibha-organic-wave {
+    display: none;
+  }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  .pratibha-form-slide,
+  .pratibha-intelligence-card,
+  .pratibha-modal-box {
+    animation: none !important;
+    transition: none !important;
+  }
+}

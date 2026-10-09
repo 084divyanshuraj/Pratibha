@@ -139,6 +139,38 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const registerWithCredentials = async (username, email, password, selectedPortal = 'student') => {
+    try {
+      const res = await api.register({ username, email, password, portal: selectedPortal });
+      const user = res?.user || {};
+      const profile = {
+        id: user.id || `USR_${Date.now()}`,
+        name: user.displayName || username || email.split('@')[0],
+        role: user.role || (selectedPortal === 'student' ? 'student' : 'faculty_mentor'),
+        portal: selectedPortal,
+        roleLabel: selectedPortal === 'student' ? 'Student' : 'Faculty Mentor',
+        email: email.trim(),
+        department: 'General Engineering',
+      };
+      setCurrentUser(profile);
+      setActivePortal(selectedPortal);
+      return profile;
+    } catch {
+      const profile = {
+        id: `DEMO-REG-${Math.floor(100 + Math.random() * 900)}`,
+        name: username || email.split('@')[0],
+        role: selectedPortal === 'student' ? 'student' : 'faculty_mentor',
+        portal: selectedPortal,
+        roleLabel: selectedPortal === 'student' ? 'Registered Student' : 'Registered Faculty',
+        email: email.trim(),
+        department: 'General Engineering',
+      };
+      setCurrentUser(profile);
+      setActivePortal(selectedPortal);
+      return profile;
+    }
+  };
+
   const logout = () => {
     setCurrentUser(null);
     sessionStorage.removeItem('pratibha_demo_user');
@@ -153,6 +185,7 @@ export function AuthProvider({ children }) {
         setActivePortal,
         loginWithDemo,
         loginWithCredentials,
+        registerWithCredentials,
         logout,
         DEMO_PROFILES,
         isAuthenticated: !!currentUser,

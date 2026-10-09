@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Register</title>
+
+  <!-- Font: Poppins -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ========== RESET & VARIABLES ========== */
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: "Poppins", sans-serif; }
+
+    :root {
+      --bg: #eef5ff;            /* page background */
+      --card: #ffffff;          /* card background (white) */
+      --neon: #00a2ff;          /* neon blue border / accent */
+      --teal-1: #061c37;        /* your navy blue */
+      --teal-2: #0c3a6b;        /* lighter navy (gradient depth) */
+      --link: #0050ff;          /* link colour on white */
+      --text: #000000;          /* text on white = black */
+      --on-dark: #ffffff;       /* text on blue/dark = white */
+      --muted: #000000;
+      --speed: 1.2s;            /* diagonal sweep duration */
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    /* ========== MAIN CARD ========== */
+    .container {
+      position: relative;
+      width: 760px;
+      height: 450px;
+      background: var(--card);
+      border: 2px solid var(--neon);
+      box-shadow:
+        0 0 12px var(--neon),
+        0 0 40px rgba(0, 162, 255, 0.5),
+        inset 0 0 25px rgba(0, 162, 255, 0.15);
+      overflow: hidden;
+    }
+
+    /* ========== DIAGONAL GRADIENT PANEL ========== */
+    .panel {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(135deg, #061c37 0%, var(--teal-1) 45%, var(--teal-2) 100%);
+      /* Login state: gradient on the RIGHT side */
+      clip-path: polygon(42% 0, 100% 0, 100% 100%, 88% 100%);
+    }
+    /* Register state: gradient on the LEFT side */
+    .container.active .panel {
+      background: linear-gradient(225deg, #061c37 0%, var(--teal-1) 45%, var(--teal-2) 100%);
+      clip-path: polygon(0 0, 66% 0, 22% 100%, 0 100%);
+    }
+
+    /* Sweep animations (panel expands to fill the card, then settles) */
+    .container.to-register .panel { animation: toRegister var(--speed) ease-in-out; }
+    .container.to-login    .panel { animation: toLogin    var(--speed) ease-in-out; }
+
+    @keyframes toRegister {
+      0%   { clip-path: polygon(42% 0, 100% 0, 100% 100%, 88% 100%); }
+      50%  { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+      100% { clip-path: polygon(0 0, 66% 0, 22% 100%, 0 100%); }
+    }
+    @keyframes toLogin {
+      0%   { clip-path: polygon(0 0, 66% 0, 22% 100%, 0 100%); }
+      50%  { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+      100% { clip-path: polygon(42% 0, 100% 0, 100% 100%, 88% 100%); }
+    }
+
+    /* ========== FORM BOXES ========== */
+    .form-box {
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 2;
+    }
+    .form-box.login    { left: 0;  padding: 0 40px 0 60px; }
+    .form-box.register { right: 0; padding: 0 60px 0 40px; }
+
+    .form-box h2 {
+      font-size: 32px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    /* ========== INPUTS (floating label + underline) ========== */
+    .input-box {
+      position: relative;
+      width: 100%;
+      height: 50px;
+      margin-top: 22px;
+    }
+    .input-box input {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      border-bottom: 2px solid #000;
+      padding-right: 28px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #000;
+      transition: border-color 0.4s;
+    }
+    .input-box label {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      font-size: 15px;
+      color: #000;
+      pointer-events: none;
+      transition: 0.4s;
+    }
+    /* label floats up when focused or filled */
+    .input-box input:focus ~ label,
+    .input-box input:valid ~ label {
+      top: -6px;
+      font-size: 13px;
+      color: var(--link);
+    }
+    .input-box input:focus,
+    .input-box input:valid { border-bottom-color: var(--neon); }
+
+    .input-box svg {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      width: 17px;
+      height: 17px;
+      fill: #000;
+      transition: 0.4s;
+    }
+    .input-box input:focus ~ svg,
+    .input-box input:valid ~ svg { fill: var(--link); }
+
+    /* ========== BUTTON ========== */
+    .btn {
+      position: relative;
+      width: 100%;
+      height: 45px;
+      margin-top: 28px;
+      border-radius: 40px;
+      border: 2px solid var(--neon);
+      background: transparent;
+      color: var(--on-dark);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      overflow: hidden;
+      z-index: 1;
+      box-shadow: 0 0 14px rgba(0, 162, 255, 0.45);
+    }
+    .btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, var(--teal-2), var(--teal-1));
+      transition: 0.5s;
+    }
+    .btn:hover::before { transform: translateY(-100%); }
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(180deg, var(--teal-1), var(--teal-2));
+    }
+
+    /* ========== SWITCH LINK ========== */
+    .switch-link {
+      font-size: 13px;
+      text-align: center;
+      margin-top: 22px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .switch-link a {
+      display: block;
+      margin-top: 2px;
+      color: var(--link);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .switch-link a:hover { text-decoration: underline; }
+
+    /* ========== WELCOME TEXT ========== */
+    .info {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      width: 50%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 2;
+    }
+    .info.login    { right: 0; text-align: right; padding: 0 40px 70px 130px; }
+    .info.register { left: 0;  text-align: left;  padding: 0 130px 70px 40px; }
+
+    .info h2 {
+      text-transform: uppercase;
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: 700;
+      color: var(--on-dark);
+      text-shadow: 2px 2px 4px rgba(0, 20, 120, 0.5);
+    }
+
+    /* ========== STAGGERED SLIDE ANIMATIONS ========== */
+    .anim {
+      transition: transform 0.7s ease, opacity 0.7s ease;
+      transition-delay: calc(0.1s * var(--D));
+    }
+
+    /* Login form + login info: visible by default */
+    .form-box.login .anim,
+    .info.login .anim { transform: translateX(0); opacity: 1; }
+
+    /* Register form + register info: hidden to the right/left by default */
+    .form-box.register .anim { transform: translateX(120%); opacity: 0; transition-delay: calc(0.1s * var(--S)); }
+    .info.register .anim     { transform: translateX(-120%); opacity: 0; transition-delay: calc(0.1s * var(--S)); }
+
+    /* When switched to register */
+    .container.active .form-box.login .anim {
+      transform: translateX(-120%); opacity: 0;
+      transition-delay: calc(0.1s * var(--S));
+    }
+    .container.active .info.login .anim {
+      transform: translateX(120%); opacity: 0;
+      transition-delay: calc(0.1s * var(--S));
+    }
+    .container.active .form-box.register .anim {
+      transform: translateX(0); opacity: 1;
+      transition-delay: calc(0.1s * var(--D));
+    }
+    .container.active .info.register .anim {
+      transform: translateX(0); opacity: 1;
+      transition-delay: calc(0.1s * var(--D));
+    }
+
+    /* Hidden form must not be clickable */
+    .form-box.register, .info.register { pointer-events: none; }
+    .container.active .form-box.register { pointer-events: auto; }
+    .container.active .form-box.login { pointer-events: none; }
+
+    /* ========== RESPONSIVE (mobile) ========== */
+    @media (max-width: 760px) {
+      .container { width: 100%; height: auto; min-height: 460px; }
+      .panel, .info { display: none; }
+
+      .form-box { position: static; width: 100%; height: auto; padding: 40px 28px !important; }
+      .form-box.register { display: none; }
+      .container.active .form-box.login { display: none; }
+      .container.active .form-box.register { display: flex; }
+
+      /* no slide on mobile, keep things simple */
+      .form-box .anim { transform: none !important; opacity: 1 !important; transition: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container" id="container">
+
+    <!-- Diagonal gradient panel -->
+    <div class="panel" id="panel"></div>
+
+    <!-- ============ LOGIN FORM ============ -->
+    <div class="form-box login">
+      <h2 class="anim" style="--D:0; --S:21;">Login</h2>
+
+      <form id="loginForm">
+        <div class="input-box anim" style="--D:1; --S:22;">
+          <input type="text" id="loginUsername" name="username" required autocomplete="username" />
+          <label for="loginUsername">Username</label>
+          <!-- user icon -->
+          <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/></svg>
+        </div>
+
+        <div class="input-box anim" style="--D:2; --S:23;">
+          <input type="password" id="loginPassword" name="password" required autocomplete="current-password" />
+          <label for="loginPassword">Password</label>
+          <!-- lock icon -->
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9z"/></svg>
+        </div>
+
+        <button type="submit" class="btn anim" style="--D:3; --S:24;">Login</button>
+
+        <div class="switch-link anim" style="--D:4; --S:25;">
+          <p>Don't have an account?</p>
+          <a href="#" class="register-link">Sign Up</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Login side welcome text -->
+    <div class="info login">
+      <h2 class="anim" style="--D:0; --S:20;">Welcome<br />Back!</h2>
+    </div>
+
+    <!-- ============ REGISTER FORM ============ -->
+    <div class="form-box register">
+      <h2 class="anim" style="--D:17; --S:0;">Register</h2>
+
+      <form id="registerForm">
+        <div class="input-box anim" style="--D:18; --S:1;">
+          <input type="text" id="regUsername" name="username" required autocomplete="username" />
+          <label for="regUsername">Username</label>
+          <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5zm0 2c-4.42 0-8 2.24-8 5v1h16v-1c0-2.76-3.58-5-8-5z"/></svg>
+        </div>
+
+        <div class="input-box anim" style="--D:19; --S:2;">
+          <input type="email" id="regEmail" name="email" required autocomplete="email" />
+          <label for="regEmail">Email</label>
+          <!-- mail icon -->
+          <svg viewBox="0 0 24 24"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 4-8 5-8-5V6l8 5 8-5z"/></svg>
+        </div>
+
+        <div class="input-box anim" style="--D:20; --S:3;">
+          <input type="password" id="regPassword" name="password" required minlength="6" autocomplete="new-password" />
+          <label for="regPassword">Password</label>
+          <svg viewBox="0 0 24 24"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2zM9 6a3 3 0 0 1 6 0v2H9z"/></svg>
+        </div>
+
+        <button type="submit" class="btn anim" style="--D:21; --S:4;">Register</button>
+
+        <div class="switch-link anim" style="--D:22; --S:5;">
+          <p>Already have an account?</p>
+          <a href="#" class="login-link">Sign In</a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Register side welcome text -->
+    <div class="info register">
+      <h2 class="anim" style="--D:17; --S:0;">Welcome!</h2>
+    </div>
+
+  </div>
+
+  <script>
+    const container   = document.getElementById("container");
+    const registerBtn = document.querySelector(".register-link");
+    const loginBtn    = document.querySelector(".login-link");
+
+    /* ---------- Toggle between Login and Register ---------- */
+    registerBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      container.classList.remove("to-login");
+      void container.offsetWidth;            // restart CSS animation
+      container.classList.add("to-register", "active");
+    });
+
+    loginBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      container.classList.remove("to-register", "active");
+      void container.offsetWidth;
+      container.classList.add("to-login");
+    });
+
+    /* ---------- LOGIN submit ----------
+       Browser ka native "Please fill out this field" tooltip
+       `required` attribute se apne aap aata hai (video jaisa). */
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        username: document.getElementById("loginUsername").value.trim(),
+        password: document.getElementById("loginPassword").value,
+      };
+
+      // TODO: yahan apni backend API call lagao
+      // const res = await fetch("/api/login", {
+      //   method: "POST",
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(data),
+      // });
+      // const result = await res.json();
+      // if (res.ok) window.location.href = "/dashboard";
+      // else alert(result.message);
+
+      console.log("Login data:", data);
+      alert("Login successful (demo) ✅");
+    });
+
+    /* ---------- REGISTER submit ---------- */
+    document.getElementById("registerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const data = {
+        username: document.getElementById("regUsername").value.trim(),
+        email:    document.getElementById("regEmail").value.trim(),
+        password: document.getElementById("regPassword").value,
+      };
+
+      // TODO: yahan apni backend API call lagao
+      // await fetch("/api/register", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(data) });
+
+      console.log("Register data:", data);
+      alert("Registration successful (demo) ✅");
+    });
+  </script>
+</body>
+</html>
