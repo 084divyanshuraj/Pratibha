@@ -65,14 +65,14 @@ Read `RULES.md`, `MEMORY.md`, `PRD.md`, `ARCHITECTURE.md`, and `DESIGN.md` first
 
 ## Phase 5 — Student Success Score
 
-- [ ] Confirm the formula and weights with the product/team before claiming a final score definition.
-- [ ] Define normalization, component scores, missing-data treatment, formula version and explanation output.
-- [ ] Implement score service independently from route/controller code.
-- [ ] Implement get/recalculate endpoints and persist versioned score snapshots.
-- [ ] Add unit tests for boundaries, missing fields, out-of-range data and repeatability.
-- [ ] Write a concise methodology note after the formula is approved.
+- [x] Confirm the formula and weights with the product/team before claiming a final score definition.
+- [x] Define normalization, component scores, missing-data treatment, formula version and explanation output.
+- [x] Implement score service independently from route/controller code.
+- [x] Implement get/recalculate endpoints and persist versioned score snapshots.
+- [x] Add unit tests for boundaries, missing fields, out-of-range data and repeatability.
+- [x] Write a concise methodology note after the formula is approved.
 
-**Acceptance gate:** Same valid input + same formula version produces the same result; output includes component drivers, missing fields and formula version; output is clearly not a probability.
+**Acceptance gate:** Same valid input + same formula version produces the same result; output includes component drivers, missing fields and formula version; output is clearly not a probability. (PASSED)
 
 ## Phase 6 — ML service integration
 

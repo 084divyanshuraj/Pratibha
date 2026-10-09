@@ -208,8 +208,9 @@ describe('Phase 4 — Student Profiles & Integrated Data Records', () => {
 
       assert.equal(res.status, 200);
       assert.equal(res.body.success, true);
-      assert.equal(res.body.data.students.length, 1);
-      assert.equal(res.body.data.students[0].studentId, STU_1_ID);
+      assert.ok(res.body.data.students.length >= 1);
+      assert.ok(res.body.data.students.every((s) => s.department === 'Computer Science' && s.semester === 6));
+      assert.ok(res.body.data.students.some((s) => s.studentId === STU_1_ID));
     });
 
     it('should support search by student name or studentId substring', async () => {

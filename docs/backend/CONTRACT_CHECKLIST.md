@@ -106,8 +106,8 @@
 - [x] `GET /api/v1/imports/:importId` — Admin; inspect import execution status and row errors
 
 ### Student Success Score
-- [ ] `GET /api/v1/students/:studentId/success-score` — Staff or owner student; deterministic score + components
-- [ ] `POST /api/v1/students/:studentId/success-score/recalculate` — Staff/internal recalculation
+- [x] `GET /api/v1/students/:studentId/success-score` — Staff or owner student; deterministic score + components
+- [x] `POST /api/v1/students/:studentId/success-score/recalculate` — Staff/internal recalculation
 
 ### ML Predictions & Integration
 - [ ] `GET /api/v1/students/:studentId/predictions` — Staff or owner student; latest risk prediction

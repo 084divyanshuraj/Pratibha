@@ -7,6 +7,10 @@ import {
   getStudentRecordsHandler,
 } from './student.controller.js';
 import {
+  getStudentScoreHandler,
+  recalculateStudentScoreHandler,
+} from '../scores/score.controller.js';
+import {
   authenticate,
   authorizeRoles,
   authorizeStudentScope,
@@ -52,6 +56,22 @@ router.get(
   authenticate,
   authorizeStudentScope('studentId'),
   getStudentRecordsHandler
+);
+
+// Staff or owner student access to Student Success Score
+router.get(
+  '/:studentId/success-score',
+  authenticate,
+  authorizeStudentScope('studentId'),
+  getStudentScoreHandler
+);
+
+// Staff-only trigger to recalculate and persist fresh Student Success Score
+router.post(
+  '/:studentId/success-score/recalculate',
+  authenticate,
+  authorizeRoles('admin', 'faculty', 'placement_officer'),
+  recalculateStudentScoreHandler
 );
 
 export default router;

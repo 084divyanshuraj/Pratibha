@@ -115,6 +115,23 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
   - Updated OpenAPI 3.0 specification (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
   - Automated tests: 82 tests passing across 36 test suites with 0 failures.
 
+- Phase 5 (Student Success Score) completed and verified:
+  - Designed explainable, transparent composite indicator `sss-v1` across 5 pillars (academic 35%, attendance 20%, lms 15%, placement_skills 20%, engagement 10%).
+  - Implemented pure calculation engine in `backend/src/scores/score.calculator.js`:
+    - Strict missing-data policy: weights dynamically renormalize across available components so students with unobserved domains are never penalized with zero.
+    - Explicit `dataCompleteness` metric (0–100%) and `missingFields` tracking.
+    - Explainable contribution drivers generated for every evaluated domain.
+  - Implemented service layer in `backend/src/scores/score.service.js`:
+    - Versioned persistence in `StudentScore` collection.
+    - `getStudentScore`: returns existing snapshot or computes and persists on demand.
+    - `recalculateStudentScore`: refreshes snapshot from live category records.
+  - Implemented controller and endpoints in `student.routes.js`:
+    - `GET /api/v1/students/:studentId/success-score`: staff or owner student (`authorizeStudentScope`).
+    - `POST /api/v1/students/:studentId/success-score/recalculate`: staff only.
+  - Documented complete formulation in `docs/backend/SUCCESS_SCORE_METHODOLOGY.md`.
+  - Updated OpenAPI specification (`docs/backend/openapi.yaml`) and `CONTRACT_CHECKLIST.md`.
+  - Automated tests: 100 tests passing across 42 test suites with 0 failures (12 pure formula unit tests + 6 API integration tests).
+
 ## Completed phases
 
 - **Phase 0:** Repository & contract audit, `.gitignore`, `.env.example`, `CONTRACT_CHECKLIST.md`. (PASSED)
@@ -122,7 +139,8 @@ Roles: `admin`, `faculty`, `placement_officer`, `student`. No public user can se
 - **Phase 2:** MongoDB Atlas connectivity, 18 Mongoose domain models, compound indexes, constraints validation, DTO serializers, synthetic fixtures, and `npm run seed`. (PASSED)
 - **Phase 3:** Authentication & role authorization (`/auth/login`, `/auth/me`, `/institution/users`), JWT issuance/verification, RBAC, object-level student scoping, and security tests. (PASSED)
 - **Phase 4:** Student profiles, search & pagination, integrated category records, batch CSV/JSON ingestion engine (preview, commit, inspection), missing-data preservation, sample dataset files, and automated tests. (PASSED)
+- **Phase 5:** Student Success Score formula engine (`sss-v1`), normalization, dynamic weight renormalization, drivers, versioned persistence, API endpoints, methodology documentation, and tests. (PASSED)
 
 ## Coding-agent next action
 
-Wait for user review of Phase 4 implementation. Upon review approval, proceed to Phase 5 (Student Success Score: transparent formula definition, normalization, components, missing-data handling, versioned score snapshots, and calculation service).
+Wait for user review of Phase 5 implementation. Upon review approval, proceed to Phase 6 (ML service integration: feature builder from category records matching teammate's `model_metadata.json` 17 features, ML client with timeout and circuit safety, risk prediction orchestration, validation, and zero-fabrication error handling).

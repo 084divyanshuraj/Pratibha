@@ -373,6 +373,58 @@ paths:
         '200':
           description: Aggregated category records and counts
 
+  /api/v1/students/{studentId}/success-score:
+    get:
+      summary: Get Student Success Score
+      description: Staff roles or owner student. Returns latest deterministic composite indicator with components, drivers, and missing fields.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: period
+          schema:
+            type: string
+            default: "current"
+      responses:
+        '200':
+          description: Student Success Score retrieved successfully
+        '403':
+          description: Forbidden - student cannot access other student scores
+        '404':
+          description: Student not found
+
+  /api/v1/students/{studentId}/success-score/recalculate:
+    post:
+      summary: Recalculate Student Success Score
+      description: Staff only (admin, faculty, placement_officer). Recalculates and persists fresh score snapshot.
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: studentId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                period:
+                  type: string
+                  default: "current"
+      responses:
+        '200':
+          description: Student Success Score recalculated and persisted
+        '403':
+          description: Forbidden - staff role required
+
   /api/v1/imports/{datasetType}/preview:
     post:
       summary: Dry-run preview import
