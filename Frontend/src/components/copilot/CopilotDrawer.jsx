@@ -181,7 +181,6 @@ export default function CopilotDrawer({ isOpen, onClose }) {
   const [loading, setLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [activeSpeakingIdx, setActiveSpeakingIdx] = useState(null);
-  const [autoSpeak, setAutoSpeak] = useState(true);
 
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
@@ -317,7 +316,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
     }
   };
 
-  const handleSend = async (textToSend = query, shouldSpeakResponse = autoSpeak) => {
+  const handleSend = async (textToSend = query) => {
     const text = textToSend.trim();
     if (!text) return;
 
@@ -343,14 +342,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
         disclaimer: response.disclaimer || 'Verified against institutional data.',
       };
 
-      setMessages((prev) => {
-        const nextList = [...prev, newCopilotMsg];
-        const newIdx = nextList.length - 1;
-        if (shouldSpeakResponse) {
-          setTimeout(() => speakMessage(copilotText, newIdx), 250);
-        }
-        return nextList;
-      });
+      setMessages((prev) => [...prev, newCopilotMsg]);
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -462,28 +454,23 @@ export default function CopilotDrawer({ isOpen, onClose }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            {/* Auto Readout Toggle */}
-            <button
-              onClick={() => setAutoSpeak(!autoSpeak)}
-              title={autoSpeak ? 'Auto Voice Readout: Enabled' : 'Auto Voice Readout: Disabled'}
+            {/* Audio Indicator */}
+            <span
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
-                backgroundColor: autoSpeak ? 'rgba(16, 185, 129, 0.2)' : 'rgba(148, 163, 184, 0.15)',
-                color: autoSpeak ? '#34D399' : '#94A3B8',
-                border: '1px solid',
-                borderColor: autoSpeak ? 'rgba(16, 185, 129, 0.4)' : 'rgba(148, 163, 184, 0.3)',
-                padding: '4px 8px',
+                backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                color: '#38BDF8',
+                padding: '3px 8px',
                 borderRadius: '6px',
                 fontSize: '0.68rem',
                 fontWeight: 600,
-                cursor: 'pointer',
               }}
             >
-              {autoSpeak ? <Volume2 size={12} /> : <VolumeX size={12} />}
-              <span>{autoSpeak ? 'Readout On' : 'Readout Off'}</span>
-            </button>
+              <Volume2 size={12} />
+              <span>Voice On Demand</span>
+            </span>
 
             {/* Reset Chat */}
             <button
@@ -535,7 +522,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
               {PROMPT_SUGGESTIONS.map((s, idx) => (
                 <button
                   key={idx}
-                  onClick={() => handleSend(s, false)}
+                  onClick={() => handleSend(s)}
                   style={{
                     backgroundColor: '#F8FAFC',
                     border: '1px solid #E2E8F0',
@@ -692,7 +679,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              handleSend(query, autoSpeak);
+              handleSend();
             }}
             style={{ display: 'flex', gap: '8px', alignItems: 'center' }}
           >
