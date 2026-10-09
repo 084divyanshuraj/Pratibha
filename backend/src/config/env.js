@@ -76,8 +76,8 @@ function loadConfig() {
     },
     logLevel: process.env.LOG_LEVEL || 'info',
     copilot: {
-      enabled: process.env.COPILOT_ENABLED === 'true',
-      provider: process.env.COPILOT_PROVIDER || 'none',
+      enabled: process.env.COPILOT_ENABLED !== 'false',
+      provider: process.env.COPILOT_PROVIDER || 'grounded-engine',
       apiKey: process.env.COPILOT_API_KEY || null,
     },
   };

@@ -3,10 +3,10 @@ import { Sparkles, X, Send, ShieldCheck, Database, ArrowRight, CornerDownLeft } 
 import { api } from '../../services/api';
 
 const PROMPT_SUGGESTIONS = [
-  'Show institutional KPI summary & average score',
-  'How many students exhibit decoupled risk divergence?',
-  'List active intervention programs in catalog',
-  'Show the 5 student segmentation archetypes',
+  'Aarav Sharma ka info do',
+  'Show decoupled divergence students',
+  'Who are the top at-risk students?',
+  'Show campus overview KPIs & average score',
 ];
 
 export default function CopilotDrawer({ isOpen, onClose }) {
@@ -14,7 +14,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
   const [messages, setMessages] = useState([
     {
       sender: 'copilot',
-      text: 'Hello! I am your Campus Analytics Copilot. I can query institutional KPIs, analyze decoupled risk divergences, and look up intervention programs. All insights are grounded directly in verified database records.',
+      text: 'Hello! I am your Campus Analytics Copilot. I can query institutional KPIs, analyze decoupled risk divergences, and look up student 360 profiles. All insights are grounded directly in verified database records.',
       sources: ['/api/v1/analytics/overview'],
       disclaimer: 'Verified against stored MongoDB records. Zero LLM hallucination.',
     },
@@ -78,7 +78,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
           position: 'fixed',
           top: 0,
           right: 0,
-          width: '420px',
+          width: '460px',
           maxWidth: '100vw',
           height: '100vh',
           backgroundColor: '#FFFFFF',
@@ -175,7 +175,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
               key={idx}
               style={{
                 alignSelf: m.sender === 'user' ? 'flex-end' : 'flex-start',
-                maxWidth: '88%',
+                maxWidth: '92%',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
@@ -186,10 +186,11 @@ export default function CopilotDrawer({ isOpen, onClose }) {
                   backgroundColor: m.sender === 'user' ? '#1A73E8' : '#F8FAFC',
                   color: m.sender === 'user' ? '#FFFFFF' : '#1E293B',
                   border: m.sender === 'user' ? 'none' : '1px solid #E2E8F0',
-                  padding: '10px 14px',
+                  padding: '12px 14px',
                   borderRadius: m.sender === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
                   fontSize: '0.84rem',
-                  lineHeight: '1.45',
+                  lineHeight: '1.5',
+                  whiteSpace: 'pre-wrap',
                 }}
               >
                 {m.text}
