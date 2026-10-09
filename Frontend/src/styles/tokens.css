@@ -1,0 +1,181 @@
+/**
+ * PRATIBHA — Design System Tokens
+ * Student Success Intelligence Platform (KPMG Challenge 4)
+ * Central design tokens: Colors, Typography, Spacing, Elevation, and Radii
+ */
+
+:root {
+  /* ==========================================================================
+     1. COLOR TOKENS
+     ========================================================================== */
+
+  /* Brand Palette */
+  --color-navy: #082B56;
+  --color-navy-deep: #061A33;
+  --color-blue-primary: #1677D2;
+  --color-blue-bright: #258BFA;
+  --color-blue-surface: #EAF3FF;
+  --color-white: #FFFFFF;
+
+  /* Interactive States */
+  --color-blue-primary-hover: #1262AF;
+  --color-blue-primary-active: #0E4F8E;
+  --color-blue-bright-hover: #1A7CE6;
+  --color-navy-hover: #0B3971;
+
+  /* Neutrals & Typography */
+  --color-text-main: #172033;
+  --color-text-secondary: #667085;
+  --color-text-muted: #94A3B8;
+  --color-text-inverse: #FFFFFF;
+  --color-text-inverse-muted: #CBD5E1;
+
+  /* Surfaces & Structural Borders */
+  --color-border: #E4E9F0;
+  --color-border-subtle: #F1F5F9;
+  --color-border-strong: #CBD5E1;
+  --color-bg-page: #F6F8FC;
+  --color-bg-card: #FFFFFF;
+  --color-bg-alt: #F8FAFC;
+
+  /* Functional Status & Risk Tokens */
+  --color-status-success: #0D9488;
+  --color-status-warning: #D97706;
+  --color-status-danger: #DC2626;
+  --color-status-neutral: #64748B;
+
+  /* Surface Tints for Badges & Alerts */
+  --color-status-success-bg: rgba(13, 148, 136, 0.10);
+  --color-status-success-border: rgba(13, 148, 136, 0.28);
+  --color-status-warning-bg: rgba(217, 119, 6, 0.10);
+  --color-status-warning-border: rgba(217, 119, 6, 0.28);
+  --color-status-danger-bg: rgba(220, 38, 38, 0.10);
+  --color-status-danger-border: rgba(220, 38, 38, 0.28);
+  --color-status-neutral-bg: rgba(100, 116, 139, 0.10);
+  --color-status-neutral-border: rgba(100, 116, 139, 0.22);
+  --color-blue-surface-border: rgba(22, 119, 210, 0.20);
+
+  /* Chart Visualizer Palette */
+  --chart-color-1: #1677D2; /* Primary Blue */
+  --chart-color-2: #0D9488; /* Emerald Teal */
+  --chart-color-3: #D97706; /* Amber */
+  --chart-color-4: #8B5CF6; /* Violet */
+  --chart-color-5: #258BFA; /* Sky Blue */
+  --chart-color-6: #DC2626; /* Crimson Risk */
+  --chart-grid-stroke: #E2E8F0;
+
+  /* ==========================================================================
+     2. TYPOGRAPHY TOKENS
+     ========================================================================== */
+
+  /* Font Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-serif: 'Playfair Display', 'Merriweather', Georgia, serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Menlo, Consolas, monospace;
+
+  /* Font Sizes */
+  --text-hero: 3.25rem;    /* 52px */
+  --text-h1: 2.00rem;      /* 32px */
+  --text-h2: 1.50rem;      /* 24px */
+  --text-h3: 1.15rem;      /* 18px */
+  --text-h4: 1.00rem;      /* 16px */
+  --text-body-lg: 1.00rem;  /* 16px */
+  --text-body: 0.875rem;    /* 14px */
+  --text-body-sm: 0.8125rem;/* 13px */
+  --text-caption: 0.75rem;  /* 12px */
+  --text-micro: 0.6875rem;  /* 11px */
+
+  /* Numerical / Metric Display */
+  --text-stat-lg: 2.25rem;  /* 36px */
+  --text-stat-md: 1.75rem;  /* 28px */
+  --text-stat-sm: 1.35rem;  /* 21.6px */
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Line Heights */
+  --leading-tight: 1.15;
+  --leading-snug: 1.30;
+  --leading-normal: 1.50;
+  --leading-relaxed: 1.65;
+
+  /* ==========================================================================
+     3. SPACING TOKENS (8pt grid with 4pt subdivisions)
+     ========================================================================== */
+
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.50rem;   /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1.00rem;   /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.50rem;   /* 24px */
+  --space-8: 2.00rem;   /* 32px */
+  --space-10: 2.50rem;  /* 40px */
+  --space-12: 3.00rem;  /* 48px */
+  --space-16: 4.00rem;  /* 64px */
+  --space-20: 5.00rem;  /* 80px */
+
+  /* Structural Dimensions */
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 72px;
+  --topbar-height: 64px;
+  --role-bar-height: 38px;
+  --container-max-width: 1440px;
+  --container-landing-max: 1200px;
+
+  /* ==========================================================================
+     4. ELEVATIONS & SHADOWS
+     ========================================================================== */
+
+  --shadow-none: none;
+  --shadow-xs: 0 1px 2px 0 rgba(16, 24, 40, 0.04);
+  --shadow-sm: 0 1px 3px 0 rgba(16, 24, 40, 0.06), 0 1px 2px -1px rgba(16, 24, 40, 0.04);
+  --shadow-card: 0 2px 4px 0 rgba(8, 43, 86, 0.04), 0 1px 2px 0 rgba(8, 43, 86, 0.03);
+  --shadow-card-hover: 0 8px 20px -4px rgba(8, 43, 86, 0.08), 0 4px 8px -2px rgba(8, 43, 86, 0.04);
+  --shadow-dropdown: 0 10px 15px -3px rgba(6, 26, 51, 0.10), 0 4px 6px -4px rgba(6, 26, 51, 0.06);
+  --shadow-modal: 0 25px 50px -12px rgba(6, 26, 51, 0.22);
+  --shadow-glow-blue: 0 0 20px rgba(37, 139, 250, 0.35);
+
+  /* ==========================================================================
+     5. BORDER RADII
+     ========================================================================== */
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ==========================================================================
+     6. TRANSITIONS & TIMING
+     ========================================================================== */
+
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+  --transition-fast: 150ms var(--ease-standard);
+  --transition-normal: 220ms var(--ease-standard);
+  --transition-smooth: 350ms var(--ease-out);
+
+  /* Focus Ring */
+  --focus-ring: 0 0 0 3px rgba(22, 119, 210, 0.25);
+  --focus-ring-danger: 0 0 0 3px rgba(220, 38, 38, 0.25);
+
+  /* Z-Index Hierarchy */
+  --z-base: 1;
+  --z-card-hover: 5;
+  --z-sticky: 10;
+  --z-header: 20;
+  --z-sidebar: 30;
+  --z-role-bar: 40;
+  --z-drawer: 50;
+  --z-modal-backdrop: 90;
+  --z-modal: 100;
+  --z-toast: 110;
+  --z-tooltip: 120;
+}
