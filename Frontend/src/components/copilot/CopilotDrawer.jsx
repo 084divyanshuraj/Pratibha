@@ -186,6 +186,13 @@ export default function CopilotDrawer({ isOpen, onClose }) {
   const recognitionRef = useRef(null);
   const messagesEndRef = useRef(null);
 
+  const stopSpeaking = () => {
+    if (typeof window !== 'undefined' && window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+    }
+    setActiveSpeakingIdx(null);
+  };
+
   // Stop speaking and listening when closed
   useEffect(() => {
     if (!isOpen) {
@@ -213,15 +220,6 @@ export default function CopilotDrawer({ isOpen, onClose }) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, loading, isListening, isOpen]);
-
-  if (!isOpen) return null;
-
-  const stopSpeaking = () => {
-    if (typeof window !== 'undefined' && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
-    setActiveSpeakingIdx(null);
-  };
 
   const speakMessage = (text, idx) => {
     if (typeof window === 'undefined' || !window.speechSynthesis) return;
@@ -379,6 +377,8 @@ export default function CopilotDrawer({ isOpen, onClose }) {
       },
     ]);
   };
+
+  if (!isOpen) return null;
 
   return (
     <>
