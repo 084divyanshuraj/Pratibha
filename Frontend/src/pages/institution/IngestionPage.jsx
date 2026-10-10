@@ -343,9 +343,6 @@ export default function IngestionPage() {
             <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
               Batch Data Upload & Integration Studio
             </h1>
-            <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.88rem', maxWidth: '800px' }}>
-              Upload departmental CSV or Excel records across all 8 student performance pillars. The system automatically verifies file formats, checks student records, and updates Student Success Scores in real-time.
-            </p>
           </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
             <button
@@ -387,26 +384,6 @@ export default function IngestionPage() {
             >
               <Download size={14} color="#1A73E8" />
               <span>Download Clean Template</span>
-            </button>
-            <button
-              onClick={() => handleDownloadSample(selectedCategory, true)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '8px 14px',
-                borderRadius: '8px',
-                border: '1px solid #FECACA',
-                backgroundColor: '#FEF2F2',
-                color: '#991B1B',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-              title="Download a test file with sample errors to test validation"
-            >
-              <AlertTriangle size={14} color="#DC2626" />
-              <span>Download Sample With Errors</span>
             </button>
           </div>
         </div>
@@ -520,46 +497,6 @@ export default function IngestionPage() {
               <div style={{ fontSize: '0.75rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <Info size={14} color="#3B82F6" />
                 <span><strong>Validation Constraint:</strong> {activeCategoryMeta.validationRule}</span>
-              </div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button
-                  onClick={() => handleDownloadSample(activeCategoryMeta.key, false)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    padding: '4px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid #CBD5E1',
-                    backgroundColor: '#FFFFFF',
-                    color: '#334155',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <Download size={12} />
-                  <span>Download .CSV Template</span>
-                </button>
-                <button
-                  onClick={() => handleDownloadExcelSample(activeCategoryMeta.key)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    padding: '4px 10px',
-                    borderRadius: '6px',
-                    border: '1px solid #A7F3D0',
-                    backgroundColor: '#ECFDF5',
-                    color: '#065F46',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <FileSpreadsheet size={12} />
-                  <span>Download .XLSX Excel Template</span>
-                </button>
               </div>
             </div>
           </div>

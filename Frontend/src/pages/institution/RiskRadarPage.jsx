@@ -226,9 +226,6 @@ export default function RiskRadarPage() {
         <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
           Decoupled Risk Intelligence Radar
         </h1>
-        <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
-          A student can have strong grades but still need interview preparation. This radar evaluates Academic Risk and Placement Risk separately so no student is overlooked.
-        </p>
       </div>
 
       {/* 2x2 Risk Quadrant Matrix */}

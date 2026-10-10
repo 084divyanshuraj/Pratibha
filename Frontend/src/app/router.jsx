@@ -30,6 +30,7 @@ export default function AppRoutes() {
     <Routes>
       {/* 1. Public Routes */}
       <Route path="/" element={<LandingPage />} />
+      <Route path="/about" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
 
       {/* 2. Institutional Intelligence Routes (Wrapped in AppLayout) */}

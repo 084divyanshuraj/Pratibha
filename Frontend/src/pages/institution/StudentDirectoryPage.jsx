@@ -106,18 +106,6 @@ export default function StudentDirectoryPage() {
                 ? 'Corporate Placement & Candidate Roster'
                 : 'Student 360° Directory'}
             </h1>
-            <span
-              style={{
-                fontSize: '0.72rem',
-                fontWeight: 600,
-                padding: '3px 8px',
-                borderRadius: '999px',
-                backgroundColor: role === 'faculty_mentor' ? '#DCFCE7' : role === 'placement_officer' ? '#DBEAFE' : '#E2E8F0',
-                color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
-              }}
-            >
-              {role === 'faculty_mentor' ? 'Faculty Mentor View' : role === 'placement_officer' ? 'Placement Officer View' : 'Provost & Administrator View'}
-            </span>
           </div>
           <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.85rem' }}>
             {role === 'faculty_mentor'
