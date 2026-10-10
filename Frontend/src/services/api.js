@@ -7,7 +7,11 @@
 
 import * as XLSX from 'xlsx';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1';
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && window.location.hostname === '127.0.0.1'
+    ? 'http://127.0.0.1:5000/api/v1'
+    : 'http://localhost:5000/api/v1');
 
 // In-memory backend connectivity tracker
 let isLiveBackendAvailable = true;

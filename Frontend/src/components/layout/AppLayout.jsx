@@ -59,9 +59,14 @@ export default function AppLayout({ children }) {
 
   useEffect(() => {
     // Check live connectivity to backend Express service
-    api.checkHealth().then((res) => {
-      setBackendLive(res?.status === 'ok');
-    });
+    api
+      .checkHealth()
+      .then((res) => {
+        setBackendLive(res?.status === 'ok');
+      })
+      .catch(() => {
+        setBackendLive(false);
+      });
   }, []);
 
   const handleLogout = () => {
