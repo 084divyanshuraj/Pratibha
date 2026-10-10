@@ -276,7 +276,7 @@ export default function LandingPage() {
               About PRATIBHA
             </h2>
             <p style={{ color: 'rgba(255, 255, 255, 0.8)', fontSize: '1.05rem', lineHeight: 1.65 }}>
-              PRATIBHA is an explainable intelligence ecosystem engineered to unify fragmented university data into transparent, actionable signals for timely remediation and career readiness.
+              PRATIBHA is an intelligent student success platform that brings together academic performance, attendance, skills, and placement preparation to provide clear, actionable guidance for students, faculty, and college leadership.
             </p>
           </div>
 
@@ -407,7 +407,7 @@ export default function LandingPage() {
                 Ethical & Explainable Metrics
               </h3>
               <p style={{ color: 'rgba(255, 255, 255, 0.72)', fontSize: '0.92rem', lineHeight: 1.6 }}>
-                Missing records are never treated as zero failure. The platform features dynamic weight redistribution, explicit factor contributions, and full data completeness transparency.
+                Missing records are never counted as zero or failure. The platform highlights what data is missing, explains contributing factors clearly, and gives an honest picture of student readiness.
               </p>
               <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.85)' }}>
                 <li style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -475,7 +475,7 @@ export default function LandingPage() {
                 { title: 'Admin (Provost)', role: 'admin', icon: '🏛️', desc: 'Campus KPI dashboard & department radar' },
                 { title: 'Faculty Mentor', role: 'faculty', icon: '👨‍🏫', desc: 'Student directory & intervention logging' },
                 { title: 'Placement Officer', role: 'placement', icon: '💼', desc: '2x2 Matrix & placement benchmarks' },
-                { title: 'Student (Aarav)', role: 'student', icon: '🎓', desc: 'Personal 360° cockpit & roadmaps' },
+                { title: 'Student (Aarav)', role: 'student', icon: '🎓', desc: 'Personal academic progress & roadmaps' },
               ].map((p) => (
                 <button
                   key={p.role}

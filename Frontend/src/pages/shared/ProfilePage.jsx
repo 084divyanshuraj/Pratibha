@@ -328,7 +328,7 @@ export default function ProfilePage() {
               Welcome to Pratibha! Complete Your Academic Profile
             </h3>
             <p className="onboarding-banner-desc">
-              Please enter your <strong>Branch / Department</strong>, <strong>Degree Program</strong>, <strong>Current Semester</strong>, and <strong>Student Roll Number</strong> below. Once saved, your personalized success radar and predictive risk analytics will activate automatically.
+              Please enter your <strong>Branch / Department</strong>, <strong>Degree Program</strong>, <strong>Current Semester</strong>, and <strong>Student Roll Number</strong> below. Once saved, your personalized success radar and academic guidance will activate automatically.
             </p>
           </div>
         </div>

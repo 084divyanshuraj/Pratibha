@@ -18,7 +18,7 @@ import { api } from '../../services/api';
 const PROMPT_SUGGESTIONS = [
   "What is Aarav Sharma's score?",
   'Who has attendance below 75%?',
-  'Show decoupled divergence students',
+  'Which students need placement support?',
   'Which students have backlogs?',
   'Show Computer Science students',
   'Who are the top performers?',
@@ -173,9 +173,9 @@ export default function CopilotDrawer({ isOpen, onClose }) {
     {
       id: 'init-1',
       sender: 'copilot',
-      text: "Hello! I am your **Campus Analytics Copilot** (Voice AI Enabled 🎙️). You can type or click the microphone to ask queries in natural English.\n\nTry asking: *\"What is Aarav Sharma's score?\"* or *\"Show decoupled divergence students\"*.",
+      text: "Hello! I am your **Campus Analytics Copilot** (Voice AI Enabled 🎙️). You can type or click the microphone to ask queries in natural English.\n\nTry asking: *\"What is Aarav Sharma's score?\"* or *\"Which students need academic or placement support?\"*.",
       sources: ['/api/v1/analytics/overview'],
-      disclaimer: 'Verified against stored MongoDB records. Zero LLM hallucination.',
+      disclaimer: 'Verified directly against campus student records.',
     },
   ]);
   const [loading, setLoading] = useState(false);
@@ -448,7 +448,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
               </div>
               <div style={{ fontSize: '0.72rem', color: '#94A3B8', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <ShieldCheck size={12} color="#10B981" />
-                <span>Grounded Decision Intelligence</span>
+                <span>Real-Time Campus Insights</span>
               </div>
             </div>
           </div>

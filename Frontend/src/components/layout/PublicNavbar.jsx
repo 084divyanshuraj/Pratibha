@@ -31,12 +31,12 @@ export default function PublicNavbar() {
         backgroundColor: 'rgba(6, 26, 51, 0.92)',
         backdropFilter: 'blur(12px)',
         borderBottom: '1px solid rgba(228, 233, 240, 0.12)',
-        padding: '0.85rem 1.5rem',
+        padding: '0.85rem 2rem',
       }}
     >
       <div
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1440px',
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
@@ -46,66 +46,77 @@ export default function PublicNavbar() {
         {/* Brand Logo */}
         <BrandLogo variant="dark" />
 
-        {/* Desktop Navigation Links */}
-        <nav
+        {/* Right Desktop Nav Group (Home, About & CTA) */}
+        <div
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '2.25rem',
+            gap: '2.5rem',
+            marginLeft: 'auto',
           }}
-          className="desktop-nav"
+          className="desktop-nav-group"
         >
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              style={{
-                color: 'rgba(255, 255, 255, 0.85)',
-                fontSize: '0.92rem',
-                fontWeight: 500,
-                textDecoration: 'none',
-                transition: 'color var(--transition-fast)',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
-
-        {/* Right CTA Button */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} className="desktop-actions">
-          <button
-            onClick={handleDashboardClick}
+          {/* Desktop Navigation Links */}
+          <nav
             style={{
-              display: 'inline-flex',
+              display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              backgroundColor: 'rgba(8, 43, 86, 0.55)',
-              color: '#FFFFFF',
-              border: '1px solid rgba(255, 255, 255, 0.35)',
-              padding: '0.55rem 1.25rem',
-              borderRadius: 'var(--radius-full)',
-              fontSize: '0.88rem',
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'all var(--transition-fast)',
+              gap: '2.25rem',
             }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = 'var(--color-blue-primary)';
-              e.currentTarget.style.borderColor = 'var(--color-blue-bright)';
-              e.currentTarget.style.boxShadow = '0 0 12px rgba(37, 139, 250, 0.4)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'rgba(8, 43, 86, 0.55)';
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
-              e.currentTarget.style.boxShadow = 'none';
-            }}
+            className="desktop-nav"
           >
-            {isAuthenticated ? 'Open Dashboard' : 'Explore Dashboard'}
-            <ArrowRight size={15} />
-          </button>
+            {navLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.href}
+                style={{
+                  color: 'rgba(255, 255, 255, 0.85)',
+                  fontSize: '0.92rem',
+                  fontWeight: 500,
+                  textDecoration: 'none',
+                  transition: 'color var(--transition-fast)',
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
+                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
+              >
+                {link.label}
+              </a>
+            ))}
+          </nav>
+
+          {/* Right CTA Button */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }} className="desktop-actions">
+            <button
+              onClick={handleDashboardClick}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: 'rgba(8, 43, 86, 0.55)',
+                color: '#FFFFFF',
+                border: '1px solid rgba(255, 255, 255, 0.35)',
+                padding: '0.55rem 1.25rem',
+                borderRadius: 'var(--radius-full)',
+                fontSize: '0.88rem',
+                fontWeight: 500,
+                cursor: 'pointer',
+                transition: 'all var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = 'var(--color-blue-primary)';
+                e.currentTarget.style.borderColor = 'var(--color-blue-bright)';
+                e.currentTarget.style.boxShadow = '0 0 12px rgba(37, 139, 250, 0.4)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = 'rgba(8, 43, 86, 0.55)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              {isAuthenticated ? 'Open Dashboard' : 'Explore Dashboard'}
+              <ArrowRight size={15} />
+            </button>
+          </div>
         </div>
 
         {/* Mobile Hamburger Toggle */}
@@ -184,7 +195,7 @@ export default function PublicNavbar() {
       {/* Embedded CSS for responsive navbar toggle */}
       <style>{`
         @media (max-width: 820px) {
-          .desktop-nav, .desktop-actions {
+          .desktop-nav-group, .desktop-nav, .desktop-actions {
             display: none !important;
           }
           .mobile-nav-toggle {

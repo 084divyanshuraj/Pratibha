@@ -8,12 +8,14 @@ import auditService from '../audit/audit.service.js';
 export async function previewImportHandler(req, res, next) {
   try {
     const { records, fileName } = extractRawRecords(req);
+    const autoProvision = req.query.autoProvision !== 'false' && req.body?.autoProvision !== 'false';
     const result = await processImport({
       datasetType: req.params.datasetType,
       rawRecords: records,
       fileName,
       uploadedBy: req.user.email || req.user.id,
       dryRun: true,
+      autoProvision,
     });
 
     res.status(200).json({
@@ -31,12 +33,14 @@ export async function previewImportHandler(req, res, next) {
 export async function commitImportHandler(req, res, next) {
   try {
     const { records, fileName } = extractRawRecords(req);
+    const autoProvision = req.query.autoProvision !== 'false' && req.body?.autoProvision !== 'false';
     const result = await processImport({
       datasetType: req.params.datasetType,
       rawRecords: records,
       fileName,
       uploadedBy: req.user.email || req.user.id,
       dryRun: false,
+      autoProvision,
     });
 
     await auditService.logAuditEvent({

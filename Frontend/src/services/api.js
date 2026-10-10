@@ -1120,7 +1120,7 @@ export const api = {
 
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetchClient(`/ingestion/${datasetType}/preview`, {
+      const res = await fetchClient(`/ingestion/${datasetType}/preview?autoProvision=true`, {
         method: 'POST',
         headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {},
         body: formData,
@@ -1201,7 +1201,7 @@ export const api = {
 
       const formData = new FormData();
       formData.append('file', file);
-      const res = await fetchClient(`/ingestion/${datasetType}`, {
+      const res = await fetchClient(`/ingestion/${datasetType}?autoProvision=true`, {
         method: 'POST',
         headers: adminToken ? { Authorization: `Bearer ${adminToken}` } : {},
         body: formData,

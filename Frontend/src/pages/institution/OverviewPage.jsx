@@ -126,10 +126,10 @@ export default function OverviewPage() {
             </div>
             <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px' }}>
               {role === 'faculty_mentor'
-                ? 'Department of Computer Science & Engineering · Mentoring Cohort Focus: Statutory Attendance (<75%) & Remedial Tutoring.'
+                ? 'Department of Computer Science & Engineering · Mentoring Focus: Low Attendance Alerts (<75%) & Tutoring Support.'
                 : role === 'placement_officer'
-                ? 'Corporate Relations & Placement Cell (TPO) · Focus: Company Eligibility Pipeline, Mock Technical Coding & Recruiter Rosters.'
-                : 'Campus Provost & Administration · Focus: Cross-Department Performance, Data Pipeline Integrity & Accreditation Reporting.'}
+                ? 'Corporate Relations & Placement Cell (TPO) · Focus: Company Eligibility, Mock Technical Tests & Recruiter Rosters.'
+                : 'Campus Provost & Administration · Focus: Campus-Wide Student Analytics, 8-Pillar Data Integration & Institutional Health.'}
             </div>
           </div>
         </div>

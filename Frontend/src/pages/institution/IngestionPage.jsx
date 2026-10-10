@@ -95,15 +95,64 @@ export default function IngestionPage() {
   const isAdmin = !currentUser || currentUser.role === 'institution_admin' || currentUser.role === 'admin';
   const role = currentUser?.role || 'institution_admin';
 
-  const [selectedCategory, setSelectedCategory] = useState('academic');
+  const [selectedCategory, setSelectedCategory] = useState('students');
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [autoSwitchedNotice, setAutoSwitchedNotice] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isCommitting, setIsCommitting] = useState(false);
   const [importReport, setImportReport] = useState(null);
   const [commitResult, setCommitResult] = useState(null);
 
-  const activeCategoryMeta = CATEGORIES.find((c) => c.key === selectedCategory) || CATEGORIES[1];
+  const activeCategoryMeta = CATEGORIES.find((c) => c.key === selectedCategory) || CATEGORIES[0];
+
+  const detectCategoryFromFile = async (file) => {
+    if (!file) return null;
+    const fileName = (file.name || '').toLowerCase();
+    if (fileName.includes('academic') || fileName.includes('exam') || fileName.includes('mark') || fileName.includes('cgpa')) return 'academic';
+    if (fileName.includes('student') || fileName.includes('roster') || fileName.includes('onboard') || fileName.includes('cohort')) return 'students';
+    if (fileName.includes('attendance') || fileName.includes('present') || fileName.includes('absent')) return 'attendance';
+    if (fileName.includes('placement') || fileName.includes('drive') || fileName.includes('tpo') || fileName.includes('interview')) return 'placement';
+    if (fileName.includes('skill') || fileName.includes('lab') || fileName.includes('coding') || fileName.includes('dsa')) return 'skills';
+    if (fileName.includes('lms') || fileName.includes('moodle') || fileName.includes('canvas')) return 'lms';
+    if (fileName.includes('engagement') || fileName.includes('club') || fileName.includes('activity')) return 'engagement';
+    if (fileName.includes('feedback') || fileName.includes('survey')) return 'feedback';
+
+    try {
+      const buffer = await file.slice(0, 4096).arrayBuffer();
+      const workbook = XLSX.read(buffer, { type: 'array' });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      const headers = (json[0] || []).map((h) => String(h).trim().toLowerCase());
+
+      if (headers.includes('marksobtained') || headers.includes('subjectcode') || headers.includes('cgpa')) return 'academic';
+      if (headers.includes('firstname') || headers.includes('lastname') || headers.includes('cohort')) return 'students';
+      if (headers.includes('classesheld') || headers.includes('classesattended') || headers.includes('attendancepercentage')) return 'attendance';
+      if (headers.includes('logincount') || headers.includes('activedays') || headers.includes('assignmentsassigned')) return 'lms';
+      if (headers.includes('assessmenttype') && headers.includes('outcomelabel')) return 'placement';
+      if (headers.includes('skillcategory') || headers.includes('skillname')) return 'skills';
+      if (headers.includes('activitytype') || headers.includes('activityname')) return 'engagement';
+      if (headers.includes('feedbacktype') || headers.includes('rating')) return 'feedback';
+    } catch {}
+    return null;
+  };
+
+  const processIncomingFile = async (file) => {
+    if (!file.name.match(/\.(csv|xlsx|xls)$/i)) {
+      alert('Please upload a valid .csv or .xlsx / .xls dataset file.');
+      return;
+    }
+    const detected = await detectCategoryFromFile(file);
+    if (detected && detected !== selectedCategory) {
+      setSelectedCategory(detected);
+      const catName = CATEGORIES.find((c) => c.key === detected)?.name || detected;
+      setAutoSwitchedNotice(`✨ Auto-aligned category to "${catName}" based on your file columns.`);
+      setTimeout(() => setAutoSwitchedNotice(null), 6000);
+    }
+    setUploadedFile(file);
+    setImportReport(null);
+    setCommitResult(null);
+  };
 
   const generateSampleCsv = (catKey, withErrors = false) => {
     switch (catKey) {
@@ -186,14 +235,7 @@ export default function IngestionPage() {
     e.preventDefault();
     setIsDragging(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const file = e.dataTransfer.files[0];
-      if (file.name.match(/\.(csv|xlsx|xls)$/i)) {
-        setUploadedFile(file);
-        setImportReport(null);
-        setCommitResult(null);
-      } else {
-        alert('Please upload a valid .csv or .xlsx / .xls dataset file.');
-      }
+      processIncomingFile(e.dataTransfer.files[0]);
     }
   };
 
@@ -294,15 +336,15 @@ export default function IngestionPage() {
       <div>
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '999px', backgroundColor: '#EBF3FE', color: '#1A73E8', fontSize: '0.76rem', fontWeight: 600, marginBottom: '8px' }}>
           <UploadCloud size={14} />
-          <span>Pathway 1: Multi-Pillar Batch Data Ingestion Studio (KPMG Challenge 4)</span>
+          <span>Data Integration Studio · 8 Student Performance Pillars (KPMG Challenge 4)</span>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
           <div>
             <h1 style={{ fontSize: '1.75rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
-              Batch Data Ingestion & Scalability Studio
+              Batch Data Upload & Integration Studio
             </h1>
             <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.88rem', maxWidth: '800px' }}>
-              Upload departmental CSV dumps across all 8 student performance pillars. Automatically executes dry-run row-level validation, relational integrity checks, and triggers real-time MongoDB Success Score recalculation.
+              Upload departmental CSV or Excel records across all 8 student performance pillars. The system automatically verifies file formats, checks student records, and updates Student Success Scores in real-time.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -321,10 +363,10 @@ export default function IngestionPage() {
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
-              title="Clear synthetic test data to perform a 100% clean custom student import"
+              title="Clear sample records to start with a fresh data upload"
             >
               <Trash2 size={14} color="#EF4444" />
-              <span>Clear for Fresh Import</span>
+              <span>Reset / Clear All Records</span>
             </button>
             <button
               onClick={() => handleDownloadSample(selectedCategory, false)}
@@ -361,10 +403,10 @@ export default function IngestionPage() {
                 fontWeight: 600,
                 cursor: 'pointer',
               }}
-              title="Download sample with intentional error rows to test the bounded row validator"
+              title="Download a test file with sample errors to test validation"
             >
               <AlertTriangle size={14} color="#DC2626" />
-              <span>Test Error Sample</span>
+              <span>Download Sample With Errors</span>
             </button>
           </div>
         </div>
@@ -384,10 +426,17 @@ export default function IngestionPage() {
               return (
                 <div
                   key={cat.key}
-                  onClick={() => {
+                  onClick={async () => {
                     setSelectedCategory(cat.key);
                     setImportReport(null);
                     setCommitResult(null);
+                    setAutoSwitchedNotice(null);
+                    if (uploadedFile) {
+                      const detected = await detectCategoryFromFile(uploadedFile);
+                      if (detected && detected !== cat.key) {
+                        setUploadedFile(null);
+                      }
+                    }
                   }}
                   style={{
                     padding: '10px 12px',
@@ -556,17 +605,37 @@ export default function IngestionPage() {
             </h3>
 
             <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748B', maxWidth: '480px', lineHeight: 1.4 }}>
-              Drag and drop your raw departmental CSV or Excel (.xlsx) file here, or browse from your computer. Our streaming validator inspects every row prior to MongoDB storage.
+              Drag and drop your departmental CSV or Excel (.xlsx) file here, or browse from your computer. The system automatically inspects every row before saving.
             </p>
+
+            {autoSwitchedNotice && (
+              <div
+                style={{
+                  padding: '8px 14px',
+                  borderRadius: '8px',
+                  backgroundColor: '#ECFDF5',
+                  border: '1px solid #A7F3D0',
+                  color: '#065F46',
+                  fontSize: '0.8rem',
+                  fontWeight: 600,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  maxWidth: '520px',
+                }}
+              >
+                <CheckCircle size={15} color="#10B981" />
+                <span>{autoSwitchedNotice}</span>
+              </div>
+            )}
 
             <input
               type="file"
               accept=".csv,.xlsx,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
               onChange={(e) => {
                 if (e.target.files && e.target.files[0]) {
-                  setUploadedFile(e.target.files[0]);
-                  setImportReport(null);
-                  setCommitResult(null);
+                  processIncomingFile(e.target.files[0]);
+                  e.target.value = '';
                 }
               }}
               style={{ display: 'none' }}
@@ -595,15 +664,16 @@ export default function IngestionPage() {
                 style={{
                   marginTop: '10px',
                   backgroundColor: '#F8FAFC',
-                  border: '1px solid #E2E8F0',
+                  border: '1px solid #CBD5E1',
                   borderRadius: '8px',
-                  padding: '8px 16px',
+                  padding: '8px 14px',
                   fontSize: '0.82rem',
                   color: '#0F172A',
                   fontWeight: 600,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '8px',
+                  gap: '10px',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
                 }}
               >
                 <FileText size={16} color="#1A73E8" />
@@ -615,18 +685,24 @@ export default function IngestionPage() {
                     setUploadedFile(null);
                     setImportReport(null);
                     setCommitResult(null);
+                    setAutoSwitchedNotice(null);
                   }}
                   style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#94A3B8',
+                    backgroundColor: '#FEE2E2',
+                    border: '1px solid #FECACA',
+                    color: '#DC2626',
                     cursor: 'pointer',
                     fontSize: '0.74rem',
-                    marginLeft: '8px',
-                    textDecoration: 'underline',
+                    fontWeight: 600,
+                    borderRadius: '4px',
+                    padding: '2px 8px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
                   }}
+                  title="Remove this file"
                 >
-                  Clear
+                  <span>Clear / Remove</span>
                 </button>
               </div>
             )}
@@ -652,7 +728,7 @@ export default function IngestionPage() {
                 }}
               >
                 {isProcessing ? <RefreshCw size={15} className="spin" /> : <Database size={15} />}
-                <span>{isProcessing ? 'Validating Dataset Rows...' : 'Run Dry-Run Preview & Validation'}</span>
+                <span>{isProcessing ? 'Checking Records for Errors...' : 'Run Dry-Run Preview & Validation'}</span>
               </button>
             )}
           </div>
@@ -663,7 +739,7 @@ export default function IngestionPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>
-                    Validation Summary Report ({importReport.importId})
+                    File Validation Summary ({importReport.importId})
                   </h4>
                   <div style={{ fontSize: '0.76rem', color: '#64748B', marginTop: '2px' }}>
                     Dataset: <strong>{importReport.datasetType}</strong> · File: <strong>{importReport.fileName}</strong>
@@ -684,7 +760,7 @@ export default function IngestionPage() {
                   }}
                 >
                   {importReport.rejectedCount === 0 ? <CheckCircle size={13} /> : <AlertTriangle size={13} />}
-                  <span>{importReport.rejectedCount === 0 ? 'All Rows Passed Validation' : 'Row Range Violations Detected'}</span>
+                  <span>{importReport.rejectedCount === 0 ? 'All Rows Verified Successfully' : 'Issues Found in Uploaded File'}</span>
                 </span>
               </div>
 
@@ -693,19 +769,19 @@ export default function IngestionPage() {
                 <div style={{ backgroundColor: '#F0FDF4', padding: '14px', borderRadius: '8px', border: '1px solid #BBF7D0' }}>
                   <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600, textTransform: 'uppercase' }}>Accepted Rows</div>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#15803D' }}>{importReport.acceptedCount}</div>
-                  <div style={{ fontSize: '0.72rem', color: '#15803D', marginTop: '2px' }}>Ready for MongoDB insert</div>
+                  <div style={{ fontSize: '0.72rem', color: '#15803D', marginTop: '2px' }}>Ready to save in database</div>
                 </div>
 
                 <div style={{ backgroundColor: importReport.rejectedCount > 0 ? '#FEF2F2' : '#F8FAFC', padding: '14px', borderRadius: '8px', border: `1px solid ${importReport.rejectedCount > 0 ? '#FECACA' : '#E2E8F0'}` }}>
                   <div style={{ fontSize: '0.7rem', color: importReport.rejectedCount > 0 ? '#991B1B' : '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>Rejected Rows</div>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: importReport.rejectedCount > 0 ? '#DC2626' : '#64748B' }}>{importReport.rejectedCount}</div>
-                  <div style={{ fontSize: '0.72rem', color: importReport.rejectedCount > 0 ? '#DC2626' : '#64748B', marginTop: '2px' }}>Boundary or relational fails</div>
+                  <div style={{ fontSize: '0.72rem', color: importReport.rejectedCount > 0 ? '#DC2626' : '#64748B', marginTop: '2px' }}>Format or value errors</div>
                 </div>
 
                 <div style={{ backgroundColor: '#F8FAFC', padding: '14px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
                   <div style={{ fontSize: '0.7rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>Total Rows Processed</div>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#0F172A' }}>{importReport.totalRows}</div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>Multi-pillar stream</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>Total student records in file</div>
                 </div>
               </div>
 
@@ -714,7 +790,7 @@ export default function IngestionPage() {
                 <div style={{ backgroundColor: '#FEF2F2', border: '1px solid #FECACA', borderRadius: '8px', padding: '14px', marginBottom: '18px' }}>
                   <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#991B1B', display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
                     <AlertCircle size={15} color="#DC2626" />
-                    <span>Bounded Row Inspector ({importReport.errors.length} Violations):</span>
+                    <span>Review Row Issues ({importReport.errors.length} errors found):</span>
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                     {importReport.errors.map((err, i) => (

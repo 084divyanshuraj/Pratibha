@@ -109,14 +109,14 @@ export default function SandboxPage() {
         </div>
         <div>
           <div style={{ fontSize: '0.74rem', fontWeight: 700, textTransform: 'uppercase', color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155' }}>
-            {role === 'faculty_mentor' ? 'Faculty Mentorship Sandbox Mode' : role === 'placement_officer' ? 'Corporate Placement Cell Bootcamp Mode' : 'Institutional Optimizer Mode'}
+            {role === 'faculty_mentor' ? 'Faculty Mentorship Planner' : role === 'placement_officer' ? 'Campus Placement Training Planner' : 'Campus Resource Allocation Planner'}
           </div>
           <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '2px' }}>
             {role === 'faculty_mentor'
-              ? 'Model remedial subject coaching, attendance recovery clinics, and peer-to-peer mentoring quotas for CSE mentees.'
+              ? 'Plan remedial coaching sessions, attendance recovery classes, and peer mentoring seats for CSE students.'
               : role === 'placement_officer'
-              ? 'Model mock interview bootcamps, resume workshops, and technical coding sprints for corporate drive shortlists.'
-              : 'Optimize cross-department capacity limits and budget allocation with zero outcome fabrication.'}
+              ? 'Plan mock interview bootcamps, resume workshops, and coding practice cohorts for campus recruitment drives.'
+              : 'Allocate coaching seats and program budgets within actual campus faculty and room capacities.'}
           </div>
         </div>
       </div>
@@ -126,17 +126,17 @@ export default function SandboxPage() {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '999px', backgroundColor: '#EBF3FE', color: '#1A73E8', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px' }}>
             <FlaskConical size={13} />
-            <span>KPMG Sandbox Simulator (Phase 8 Production Engine)</span>
+            <span>Intervention Sandbox Simulator (KPMG Challenge 4)</span>
           </div>
           <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
-            {role === 'faculty_mentor' ? 'Remedial Tutoring & Mentorship Sandbox' : role === 'placement_officer' ? 'Interview Sprints & Placement Optimizer' : 'Intervention Sandbox & Resource Optimizer'}
+            {role === 'faculty_mentor' ? 'Remedial Tutoring & Mentorship Sandbox' : role === 'placement_officer' ? 'Interview & Placement Training Sandbox' : 'Intervention Sandbox & Resource Optimizer'}
           </h1>
           <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
             {role === 'faculty_mentor'
               ? 'Plan remedial coaching and peer mentoring cohorts within actual department faculty teaching capacity.'
               : role === 'placement_officer'
               ? 'Simulate corporate bootcamp seat limits and aptitude training drives for upcoming visiting recruiters.'
-              : 'Model and allocate support programs under real faculty capacity constraints with zero outcome fabrication.'}
+              : 'Simulate and allocate student support programs under real campus seat limits and teacher availability.'}
           </p>
         </div>
 

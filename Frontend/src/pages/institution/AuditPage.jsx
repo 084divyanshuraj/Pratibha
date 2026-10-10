@@ -166,10 +166,10 @@ export default function AuditPage() {
             </div>
             <div>
               <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                Security & Privileged Audit Log
+                Security & Administrative Audit Log
               </h1>
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
-                Immutable administrative activity record, zero credential leakage, and SOC2 / NIST 800-53 audit compliance
+                Record of campus administrative actions, batch uploads, and security events.
               </p>
             </div>
           </div>
@@ -227,10 +227,10 @@ export default function AuditPage() {
           </div>
           <div>
             <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '0.88rem' }}>
-              Tamper-Proof Audit Standard Active
+              Secure & Transparent Audit Records
             </div>
             <div style={{ fontSize: '0.8rem', color: '#64748B' }}>
-              All simulation scenario approvals, batch ingestions, and user alterations are cryptographically signed. Passwords and session secrets are automatically scrubbed prior to log persistence.
+              All program approvals, student data uploads, and account changes are securely recorded. Passwords and personal session keys are never stored in logs.
             </div>
           </div>
         </div>

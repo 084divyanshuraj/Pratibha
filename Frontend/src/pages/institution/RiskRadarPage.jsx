@@ -96,18 +96,18 @@ export default function RiskRadarPage() {
                   color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
                 }}
               >
-                {role === 'faculty_mentor' ? 'Faculty Mentorship Lens' : role === 'placement_officer' ? 'Corporate Placement Lens' : 'Dean & Provost Governance'}
+                {role === 'faculty_mentor' ? 'Faculty Mentor View' : role === 'placement_officer' ? 'Placement Officer View' : 'Provost & Leadership View'}
               </span>
               <strong style={{ fontSize: '0.96rem', color: '#0F172A' }}>
-                {role === 'faculty_mentor' ? 'Academic Risk & Statutory Mentee Health' : role === 'placement_officer' ? 'Decoupled Divergence & Drive Readiness' : 'Dual-Engine Decoupled Architecture'}
+                {role === 'faculty_mentor' ? 'Academic Standing & Attendance Health' : role === 'placement_officer' ? 'Placement Readiness & Interview Support' : 'Independent Academic & Placement Evaluation'}
               </strong>
             </div>
             <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px', maxWidth: '850px' }}>
               {role === 'faculty_mentor'
-                ? 'Prof. Rajesh Kumar · Priority focus on CSE mentees with Statutory Attendance (<75%) and subject backlogs before semester evaluation.'
+                ? 'Prof. Rajesh Kumar · Priority focus on CSE mentees with low attendance (<75%) and pending subject backlogs before semester exams.'
                 : role === 'placement_officer'
-                ? 'Vikram Malhotra · Priority focus on 148 Decoupled Divergent students (High CGPA ≥ 7.5) with mock interview & technical coding deficits.'
-                : 'Dr. Sunita Rao · Dual ML models decouple academic theory performance from placement readiness to avoid misclassification.'}
+                ? 'Vikram Malhotra · Priority focus on students with strong CGPA (≥ 7.5) who need mock interview and coding preparation for visiting companies.'
+                : 'Dr. Sunita Rao · Dual AI models evaluate classroom theory and placement readiness separately so no student is overlooked.'}
             </div>
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function RiskRadarPage() {
           Decoupled Risk Intelligence Radar
         </h1>
         <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
-          Academic performance and corporate placement readiness are distinct dimensions governed by decoupled ML models.
+          A student can have strong grades but still need interview preparation. This radar evaluates Academic Risk and Placement Risk separately so no student is overlooked.
         </p>
       </div>
 
