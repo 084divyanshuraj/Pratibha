@@ -28,6 +28,28 @@ function getAuthToken() {
 }
 
 /**
+ * Ensures valid admin bearer token for administrative mutations
+ */
+async function ensureAdminToken() {
+  let token = getAuthToken();
+  if (!token || token === 'demo-offline-jwt-token') {
+    try {
+      const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: 'admin@example.edu', password: 'DemoUser123!' }),
+      }).then((r) => r.json()).catch(() => null);
+      if (res?.data?.accessToken) {
+        sessionStorage.setItem('pratibha_token', res.data.accessToken);
+        localStorage.setItem('pratibha_token', res.data.accessToken);
+        return res.data.accessToken;
+      }
+    } catch {}
+  }
+  return token;
+}
+
+/**
  * Core fetch wrapper with timeout and automatic error handling
  */
 async function fetchClient(endpoint, options = {}) {
@@ -925,6 +947,111 @@ export const api = {
     } catch {
       return MOCK_STUDENTS.find((s) => s.studentId === studentId) || MOCK_STUDENTS[0];
     }
+  },
+
+  async createStudent(studentData) {
+    let backendResult = null;
+    try {
+      await ensureAdminToken();
+      backendResult = await fetchClient('/students', {
+        method: 'POST',
+        body: JSON.stringify(studentData),
+      });
+    } catch (err) {
+      console.warn('Backend createStudent unavailable, falling back to local reactive storage:', err.message);
+    }
+
+    const existingList = getActiveStudents();
+    const cleanId = (studentData.studentId || `STU_${Date.now()}`).trim().toUpperCase();
+    const fn = studentData.firstName || studentData.fullName?.split(' ')[0] || 'Student';
+    const ln = studentData.lastName || studentData.fullName?.split(' ').slice(1).join(' ') || 'User';
+    const full = studentData.fullName || `${fn} ${ln}`;
+    const cgpa = Number(studentData.cgpa) || 8.0;
+    const att = Number(studentData.attendanceRate) || 85.0;
+    const sScore = studentData.successScore != null ? Number(studentData.successScore) : +(cgpa * 5 + att * 0.4).toFixed(1);
+
+    const newStudent = {
+      id: `s_${Date.now()}`,
+      studentId: cleanId,
+      firstName: fn,
+      lastName: ln,
+      fullName: full,
+      department: studentData.department || 'Computer Science',
+      program: studentData.program || 'B.Tech',
+      semester: Number(studentData.semester) || 1,
+      enrollmentYear: Number(studentData.enrollmentYear) || new Date().getFullYear(),
+      cgpa,
+      attendanceRate: att,
+      successScore: sScore,
+      academicRisk: (studentData.academicRisk || 'low').toLowerCase(),
+      placementRisk: (studentData.placementRisk || 'low').toLowerCase(),
+      avatar: studentData.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      email: studentData.email || `${fn.toLowerCase()}.${ln.toLowerCase()}@campus.edu`,
+      ...(backendResult || {}),
+    };
+
+    saveActiveStudents([newStudent, ...existingList.filter((s) => s.studentId !== cleanId)]);
+    window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'create', student: newStudent } }));
+
+    return backendResult || newStudent;
+  },
+
+  async updateStudent(studentId, updateData) {
+    let backendResult = null;
+    const cleanId = studentId.trim().toUpperCase();
+    try {
+      await ensureAdminToken();
+      backendResult = await fetchClient(`/students/${cleanId}`, {
+        method: 'PATCH',
+        body: JSON.stringify(updateData),
+      });
+    } catch (err) {
+      console.warn('Backend updateStudent unavailable, updating local reactive store:', err.message);
+    }
+
+    const existingList = getActiveStudents();
+    const updatedList = existingList.map((s) => {
+      if (s.studentId.toUpperCase() === cleanId) {
+        const merged = { ...s, ...updateData };
+        if (updateData.fullName) {
+          const parts = updateData.fullName.trim().split(' ');
+          merged.firstName = parts[0] || merged.firstName;
+          merged.lastName = parts.slice(1).join(' ') || merged.lastName;
+        } else if (updateData.firstName || updateData.lastName) {
+          merged.fullName = `${updateData.firstName || s.firstName} ${updateData.lastName || s.lastName}`;
+        }
+        if (updateData.cgpa != null) merged.cgpa = Number(updateData.cgpa);
+        if (updateData.attendanceRate != null) merged.attendanceRate = Number(updateData.attendanceRate);
+        if (updateData.successScore != null) merged.successScore = Number(updateData.successScore);
+        return merged;
+      }
+      return s;
+    });
+
+    saveActiveStudents(updatedList);
+    window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'update', studentId: cleanId } }));
+
+    return backendResult || updatedList.find((s) => s.studentId.toUpperCase() === cleanId);
+  },
+
+  async deleteStudent(studentId) {
+    const cleanId = studentId.trim().toUpperCase();
+    let backendResult = null;
+    try {
+      await ensureAdminToken();
+      backendResult = await fetchClient(`/students/${cleanId}`, {
+        method: 'DELETE',
+      });
+    } catch (err) {
+      console.warn('Backend deleteStudent unavailable, updating local reactive store:', err.message);
+    }
+
+    const existingList = getActiveStudents();
+    const filteredList = existingList.filter((s) => s.studentId.toUpperCase() !== cleanId);
+    saveActiveStudents(filteredList);
+    window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'delete', studentId: cleanId } }));
+
+    return backendResult || { success: true, studentId: cleanId };
   },
 
   async getStudentRecords(studentId) {

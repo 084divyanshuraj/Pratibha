@@ -3,6 +3,7 @@ import {
   createStudent,
   getStudentById,
   updateStudent,
+  deleteStudent,
   getStudentRecords,
 } from './student.service.js';
 
@@ -66,6 +67,21 @@ export async function updateStudentHandler(req, res, next) {
   }
 }
 
+export async function deleteStudentHandler(req, res, next) {
+  try {
+    const result = await deleteStudent(req.params.studentId);
+    res.status(200).json({
+      success: true,
+      data: result,
+      meta: {
+        requestId: req.id,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 export async function getStudentRecordsHandler(req, res, next) {
   try {
     const recordsData = await getStudentRecords(req.params.studentId, req.user);
@@ -86,5 +102,6 @@ export default {
   createStudentHandler,
   getStudentByIdHandler,
   updateStudentHandler,
+  deleteStudentHandler,
   getStudentRecordsHandler,
 };

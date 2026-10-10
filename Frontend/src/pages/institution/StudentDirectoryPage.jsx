@@ -15,6 +15,12 @@ import {
   Briefcase,
   Shield,
   FileSpreadsheet,
+  UserPlus,
+  Edit3,
+  Trash2,
+  X,
+  AlertCircle,
+  RefreshCw,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -32,6 +38,29 @@ export default function StudentDirectoryPage() {
   const [personaChip, setPersonaChip] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // CRUD State
+  const [showModal, setShowModal] = useState(false);
+  const [editingStudent, setEditingStudent] = useState(null);
+  const [studentToDelete, setStudentToDelete] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [toastMessage, setToastMessage] = useState('');
+
+  const [formData, setFormData] = useState({
+    studentId: '',
+    fullName: '',
+    email: '',
+    department: 'Computer Science',
+    program: 'B.Tech',
+    semester: 6,
+    enrollmentYear: 2023,
+    status: 'active',
+    cgpa: 8.2,
+    attendanceRate: 88,
+    academicRisk: 'low',
+    placementRisk: 'low',
+  });
 
   const fetchStudents = () => {
     setLoading(true);
@@ -93,6 +122,125 @@ export default function StudentDirectoryPage() {
     document.body.removeChild(link);
   };
 
+  // CRUD Handlers
+  const handleOpenAddModal = () => {
+    const maxNum = students.reduce((acc, s) => {
+      const match = s.studentId?.match(/STU_(\d+)/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        return Math.max(acc, isNaN(num) ? 0 : num);
+      }
+      return acc;
+    }, 25);
+    const nextId = `STU_${String(maxNum + 1).padStart(4, '0')}`;
+
+    setFormData({
+      studentId: nextId,
+      fullName: '',
+      email: '',
+      department: 'Computer Science',
+      program: 'B.Tech',
+      semester: 6,
+      enrollmentYear: 2023,
+      status: 'active',
+      cgpa: 8.2,
+      attendanceRate: 88,
+      academicRisk: 'low',
+      placementRisk: 'low',
+    });
+    setFormError('');
+    setEditingStudent(null);
+    setShowModal(true);
+  };
+
+  const handleOpenEditModal = (student, e) => {
+    if (e) e.stopPropagation();
+    setEditingStudent(student);
+    setFormData({
+      studentId: student.studentId,
+      fullName: student.fullName || `${student.firstName || ''} ${student.lastName || ''}`.trim(),
+      email: student.email || `${student.studentId.toLowerCase()}@campus.edu`,
+      department: student.department || 'Computer Science',
+      program: student.program || 'B.Tech',
+      semester: student.semester || 6,
+      enrollmentYear: student.enrollmentYear || 2023,
+      status: student.status || 'active',
+      cgpa: student.cgpa ?? 8.0,
+      attendanceRate: student.attendanceRate ?? 85,
+      academicRisk: student.academicRisk || 'low',
+      placementRisk: student.placementRisk || 'low',
+    });
+    setFormError('');
+    setShowModal(true);
+  };
+
+  const handleSaveStudent = async (e) => {
+    e.preventDefault();
+    setFormError('');
+
+    if (!formData.studentId?.trim()) {
+      setFormError('Student ID is required.');
+      return;
+    }
+    if (!formData.fullName?.trim()) {
+      setFormError('Full Name is required.');
+      return;
+    }
+    const cgpaNum = Number(formData.cgpa);
+    if (isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10) {
+      setFormError('CGPA must be a valid number between 0.0 and 10.0');
+      return;
+    }
+    const attNum = Number(formData.attendanceRate);
+    if (isNaN(attNum) || attNum < 0 || attNum > 100) {
+      setFormError('Attendance Rate must be a valid percentage between 0% and 100%');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      if (editingStudent) {
+        await api.updateStudent(editingStudent.studentId, {
+          ...formData,
+          cgpa: cgpaNum,
+          attendanceRate: attNum,
+        });
+        setToastMessage(`Student ${formData.studentId} updated successfully.`);
+      } else {
+        await api.createStudent({
+          ...formData,
+          cgpa: cgpaNum,
+          attendanceRate: attNum,
+        });
+        setToastMessage(`Student ${formData.studentId} created successfully.`);
+      }
+      setShowModal(false);
+      setEditingStudent(null);
+      fetchStudents();
+      setTimeout(() => setToastMessage(''), 4000);
+    } catch (err) {
+      setFormError(err.message || 'Failed to save student profile.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!studentToDelete) return;
+    setSubmitting(true);
+    try {
+      await api.deleteStudent(studentToDelete.studentId);
+      setToastMessage(`Student ${studentToDelete.studentId} removed successfully.`);
+      setStudentToDelete(null);
+      fetchStudents();
+      setTimeout(() => setToastMessage(''), 4000);
+    } catch (err) {
+      alert(`Delete failed: ${err.message}`);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Title & Stats */}
@@ -140,6 +288,28 @@ export default function StudentDirectoryPage() {
           >
             <Download size={14} />
             <span>{role === 'placement_officer' ? 'Export Recruiter Roster (CSV)' : role === 'faculty_mentor' ? 'Export Mentee Report (CSV)' : 'Export Roster (CSV)'}</span>
+          </button>
+          <button
+            onClick={handleOpenAddModal}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              backgroundColor: '#1E40AF',
+              color: '#FFFFFF',
+              border: 'none',
+              padding: '7px 14px',
+              borderRadius: '8px',
+              fontSize: '0.82rem',
+              fontWeight: 600,
+              cursor: 'pointer',
+              boxShadow: '0 1px 3px rgba(30,64,175,0.25)',
+              transition: 'background-color 150ms ease',
+            }}
+            title="Create a new student profile in directory"
+          >
+            <UserPlus size={14} />
+            <span>+ Add Student</span>
           </button>
         </div>
       </div>
@@ -506,31 +676,104 @@ export default function StudentDirectoryPage() {
 
                 {/* Action */}
                 <td style={{ padding: '12px 18px', textAlign: 'right' }}>
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedStudent(student);
-                    }}
-                    style={{
-                      backgroundColor: '#F1F5F9',
-                      border: '1px solid #E2E8F0',
-                      borderRadius: '6px',
-                      padding: '5px 10px',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: '#1A73E8',
-                      cursor: 'pointer',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                    }}
-                  >
-                    <Eye size={13} />
-                    <span>View 360°</span>
-                  </button>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }} onClick={(e) => e.stopPropagation()}>
+                    <button
+                      onClick={() => setSelectedStudent(student)}
+                      style={{
+                        backgroundColor: '#F1F5F9',
+                        border: '1px solid #E2E8F0',
+                        borderRadius: '6px',
+                        padding: '5px 9px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        color: '#1A73E8',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        transition: 'all 120ms ease',
+                      }}
+                      title="View Student 360° analytics drawer"
+                    >
+                      <Eye size={13} />
+                      <span>360°</span>
+                    </button>
+                    <button
+                      onClick={(e) => handleOpenEditModal(student, e)}
+                      style={{
+                        backgroundColor: '#F8FAFC',
+                        border: '1px solid #CBD5E1',
+                        borderRadius: '6px',
+                        padding: '5px 8px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        color: '#475569',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '3px',
+                        transition: 'all 120ms ease',
+                      }}
+                      title="Edit student profile and telemetry"
+                    >
+                      <Edit3 size={12} />
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStudentToDelete(student);
+                      }}
+                      style={{
+                        backgroundColor: '#FEF2F2',
+                        border: '1px solid #FECACA',
+                        borderRadius: '6px',
+                        padding: '5px 7px',
+                        fontSize: '0.74rem',
+                        fontWeight: 600,
+                        color: '#DC2626',
+                        cursor: 'pointer',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        transition: 'all 120ms ease',
+                      }}
+                      title="Delete student and cascade all records"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
+            {students.length === 0 && (
+              <tr>
+                <td colSpan={8} style={{ padding: '48px 24px', textAlign: 'center' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Users size={22} color="#94A3B8" />
+                    </div>
+                    <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>No student records matched your filters</div>
+                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Try clearing your search term, resetting department filter, or create a new student profile.</div>
+                    <button
+                      onClick={handleOpenAddModal}
+                      style={{
+                        marginTop: '8px',
+                        padding: '6px 14px',
+                        backgroundColor: '#1E40AF',
+                        color: '#FFFFFF',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      + Add Student Profile
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
@@ -541,6 +784,534 @@ export default function StudentDirectoryPage() {
         isOpen={!!selectedStudent}
         onClose={() => setSelectedStudent(null)}
       />
+
+      {/* Add / Edit Student Modal */}
+      {showModal && (
+        <>
+          <div
+            onClick={() => !submitting && setShowModal(false)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.5)',
+              backdropFilter: 'blur(3px)',
+              zIndex: 1100,
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              zIndex: 1101,
+              maxWidth: '680px',
+              width: '92%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                padding: '18px 24px',
+                borderBottom: '1px solid #E2E8F0',
+                backgroundColor: '#F8FAFC',
+                borderTopLeftRadius: '16px',
+                borderTopRightRadius: '16px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    backgroundColor: editingStudent ? '#EFF6FF' : '#F0FDF4',
+                    color: editingStudent ? '#1D4ED8' : '#15803D',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {editingStudent ? <Edit3 size={18} /> : <UserPlus size={18} />}
+                </div>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0F172A' }}>
+                    {editingStudent ? `Edit Student — ${editingStudent.studentId}` : 'Add New Student Profile'}
+                  </h3>
+                  <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#64748B' }}>
+                    {editingStudent
+                      ? 'Update academic metrics, telemetry, and decoupled risk flags.'
+                      : 'Enroll a new student into the active campus dataset.'}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowModal(false)}
+                disabled={submitting}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#64748B',
+                  cursor: 'pointer',
+                  padding: '4px',
+                  borderRadius: '6px',
+                }}
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body Form */}
+            <form onSubmit={handleSaveStudent} style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {formError && (
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    backgroundColor: '#FEF2F2',
+                    border: '1px solid #FECACA',
+                    color: '#B91C1C',
+                    fontSize: '0.8rem',
+                  }}
+                >
+                  <AlertCircle size={16} />
+                  <span>{formError}</span>
+                </div>
+              )}
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '14px' }}>
+                {/* Student ID */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Student ID <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    disabled={!!editingStudent}
+                    value={formData.studentId}
+                    onChange={(e) => setFormData({ ...formData, studentId: e.target.value.toUpperCase() })}
+                    placeholder="e.g. STU_0026"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      fontFamily: 'monospace',
+                      backgroundColor: editingStudent ? '#F1F5F9' : '#FFFFFF',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* Full Name */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Full Name <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    placeholder="e.g. Ananya Sen"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="ananya.sen@campus.edu"
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* Department */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Department <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <select
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                      backgroundColor: '#FFFFFF',
+                    }}
+                  >
+                    <option value="Computer Science">Computer Science</option>
+                    <option value="Information Technology">Information Technology</option>
+                    <option value="Data Science">Data Science</option>
+                    <option value="Electronics & Comm.">Electronics & Comm.</option>
+                    <option value="Mechanical">Mechanical</option>
+                  </select>
+                </div>
+
+                {/* Program */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Degree Program
+                  </label>
+                  <select
+                    value={formData.program}
+                    onChange={(e) => setFormData({ ...formData, program: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                      backgroundColor: '#FFFFFF',
+                    }}
+                  >
+                    <option value="B.Tech">B.Tech</option>
+                    <option value="M.Tech">M.Tech</option>
+                    <option value="BCA">BCA</option>
+                    <option value="MCA">MCA</option>
+                  </select>
+                </div>
+
+                {/* Semester */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Current Semester (1-8)
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="8"
+                    value={formData.semester}
+                    onChange={(e) => setFormData({ ...formData, semester: Number(e.target.value) })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* CGPA */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    CGPA (0.00 – 10.00) <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="10"
+                    required
+                    value={formData.cgpa}
+                    onChange={(e) => setFormData({ ...formData, cgpa: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* Attendance Rate */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Attendance Rate % (0 – 100) <span style={{ color: '#DC2626' }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    required
+                    value={formData.attendanceRate}
+                    onChange={(e) => setFormData({ ...formData, attendanceRate: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                {/* Academic Risk */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Academic Risk Level
+                  </label>
+                  <select
+                    value={formData.academicRisk}
+                    onChange={(e) => setFormData({ ...formData, academicRisk: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                      backgroundColor: '#FFFFFF',
+                    }}
+                  >
+                    <option value="low">Low Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="high">High Risk</option>
+                  </select>
+                </div>
+
+                {/* Placement Risk */}
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, color: '#475569', marginBottom: '5px' }}>
+                    Placement Risk Level
+                  </label>
+                  <select
+                    value={formData.placementRisk}
+                    onChange={(e) => setFormData({ ...formData, placementRisk: e.target.value })}
+                    style={{
+                      width: '100%',
+                      padding: '8px 12px',
+                      borderRadius: '8px',
+                      border: '1px solid #CBD5E1',
+                      fontSize: '0.84rem',
+                      outline: 'none',
+                      backgroundColor: '#FFFFFF',
+                    }}
+                  >
+                    <option value="low">Low Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="high">High Risk</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Modal Footer Actions */}
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  alignItems: 'center',
+                  gap: '10px',
+                  marginTop: '12px',
+                  paddingTop: '16px',
+                  borderTop: '1px solid #E2E8F0',
+                }}
+              >
+                <button
+                  type="button"
+                  disabled={submitting}
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#475569',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    backgroundColor: editingStudent ? '#2563EB' : '#15803D',
+                    color: '#FFFFFF',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: submitting ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                  }}
+                >
+                  {submitting && <RefreshCw size={14} className="animate-spin" />}
+                  <span>{editingStudent ? 'Save Changes' : 'Create Student'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {studentToDelete && (
+        <>
+          <div
+            onClick={() => !submitting && setStudentToDelete(null)}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              backgroundColor: 'rgba(15, 23, 42, 0.5)',
+              backdropFilter: 'blur(3px)',
+              zIndex: 1100,
+            }}
+          />
+          <div
+            style={{
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              backgroundColor: '#FFFFFF',
+              borderRadius: '16px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              zIndex: 1101,
+              maxWidth: '460px',
+              width: '92%',
+              padding: '24px',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
+              <div
+                style={{
+                  width: '42px',
+                  height: '42px',
+                  borderRadius: '50%',
+                  backgroundColor: '#FEE2E2',
+                  color: '#DC2626',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <AlertTriangle size={22} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <h3 style={{ margin: '0 0 6px', fontSize: '1.05rem', fontWeight: 700, color: '#0F172A' }}>
+                  Delete Student Profile?
+                </h3>
+                <p style={{ margin: 0, fontSize: '0.84rem', color: '#64748B', lineHeight: 1.5 }}>
+                  Are you sure you want to permanently delete <strong>{studentToDelete.fullName}</strong> (
+                  <span style={{ fontFamily: 'monospace' }}>{studentToDelete.studentId}</span>)?
+                  This action will cascade delete all academic scores, attendance telemetry, and risk predictions.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '22px' }}>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={() => setStudentToDelete(null)}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #CBD5E1',
+                  backgroundColor: '#FFFFFF',
+                  color: '#475569',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={submitting}
+                onClick={handleConfirmDelete}
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#DC2626',
+                  color: '#FFFFFF',
+                  fontSize: '0.82rem',
+                  fontWeight: 600,
+                  cursor: submitting ? 'not-allowed' : 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
+                {submitting && <RefreshCw size={14} className="animate-spin" />}
+                <span>Delete Permanently</span>
+              </button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Floating Toast Notification */}
+      {toastMessage && (
+        <div
+          style={{
+            position: 'fixed',
+            bottom: '24px',
+            right: '24px',
+            backgroundColor: '#0F172A',
+            color: '#FFFFFF',
+            padding: '12px 18px',
+            borderRadius: '10px',
+            boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.84rem',
+            fontWeight: 500,
+            zIndex: 1200,
+            animation: 'fadeIn 200ms ease',
+          }}
+        >
+          <CheckCircle size={16} color="#10B981" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
     </div>
   );
 }
