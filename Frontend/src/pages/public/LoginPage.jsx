@@ -28,7 +28,7 @@ const INSTITUTION_ROLES = [
     tag: 'Dean & Provost Office',
     icon: '🏛️',
     defaultEmail: 'admin@example.edu',
-    desc: 'Full institutional telemetry, multi-department analytics, batch data ETL pipeline.',
+    desc: 'Campus-wide analytics, department performance, and student data management.',
   },
   {
     key: 'faculty_mentor',
@@ -36,7 +36,7 @@ const INSTITUTION_ROLES = [
     tag: 'CSE Department',
     icon: '👨‍🏫',
     defaultEmail: 'faculty@example.edu',
-    desc: 'CSE mentees radar, statutory attendance (<75%), remedial tutoring interventions.',
+    desc: 'Assigned student guidance, attendance tracking (<75%), and tutoring support.',
   },
   {
     key: 'placement_officer',
@@ -44,7 +44,7 @@ const INSTITUTION_ROLES = [
     tag: 'Corporate & Career Cell',
     icon: '💼',
     defaultEmail: 'placement@example.edu',
-    desc: '2x2 placement readiness matrix, Tier-1 corporate drives, mock interview sprints.',
+    desc: '2x2 placement readiness matrix, campus recruitment drives, and interview prep.',
   },
 ];
 

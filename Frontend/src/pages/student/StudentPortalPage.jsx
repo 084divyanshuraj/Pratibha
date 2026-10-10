@@ -96,11 +96,11 @@ export default function StudentPortalPage() {
 
   // Score Drivers (Explainable PRD compliance)
   const [scoreDrivers] = useState([
-    { title: 'Academic Foundation', score: 84.0, weight: '35%', contribution: '+29.4', detail: 'Consistent SGPA > 8.2 across core computer science practicals and theory' },
+    { title: 'Academic Performance', score: 84.0, weight: '35%', contribution: '+29.4', detail: 'Consistent SGPA > 8.2 across core computer science practicals and theory' },
     { title: 'Classroom Attendance', score: 88.5, weight: '20%', contribution: '+17.7', detail: '88.5% aggregate attendance, well above statutory 75% limit' },
-    { title: 'Placement & Mock Tests', score: 76.0, weight: '20%', contribution: '+15.2', detail: 'Tier-1 aptitude score (82%), mock technical coding (74%)' },
-    { title: 'LMS Platform Activity', score: 82.0, weight: '15%', contribution: '+12.3', detail: '100% lab submission and quiz completion on campus LMS' },
-    { title: 'Co-curricular Engagement', score: 72.0, weight: '10%', contribution: '+3.8', detail: 'Active member in ACM Student Chapter and Hackathon Team' },
+    { title: 'Placement Readiness & Tests', score: 76.0, weight: '20%', contribution: '+15.2', detail: 'Tier-1 aptitude score (82%), mock technical coding (74%)' },
+    { title: 'Digital LMS Activity', score: 82.0, weight: '15%', contribution: '+12.3', detail: '100% lab submission and quiz completion on campus LMS' },
+    { title: 'Clubs & Extra-Curriculars', score: 72.0, weight: '10%', contribution: '+3.8', detail: 'Active member in ACM Student Chapter and Hackathon Team' },
   ]);
 
   // Attendance Courses Telemetry
@@ -383,11 +383,11 @@ export default function StudentPortalPage() {
         role="tablist"
       >
         {[
-          { id: 'overview', label: '1. Success Cockpit & Risk Radar', icon: GraduationCap },
-          { id: 'academic', label: '2. Courses & Attendance Radar', icon: BookOpen },
+          { id: 'overview', label: '1. My Success Overview & Risk Status', icon: GraduationCap },
+          { id: 'academic', label: '2. Courses & Attendance Tracking', icon: BookOpen },
           { id: 'placement', label: '3. Placement Readiness & Skills', icon: Award },
-          { id: 'interventions', label: '4. My Interventions & Mentorship', icon: Sparkles },
-          { id: 'feedback', label: '5. Student Voice & Grievances', icon: Send },
+          { id: 'interventions', label: '4. My Support Programs & Mentorship', icon: Sparkles },
+          { id: 'feedback', label: '5. Feedback & Suggestions', icon: Send },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;

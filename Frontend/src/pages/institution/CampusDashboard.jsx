@@ -164,7 +164,7 @@ export default function CampusDashboard() {
           {/* Card 3: Decoupled Academic Risk */}
           <div className="card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--color-status-danger)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>
-              <span>Academic Risk Cohort</span>
+              <span>Students in Academic Risk</span>
               <AlertTriangle size={18} style={{ color: 'var(--color-status-danger)' }} />
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-status-danger)' }}>
@@ -178,7 +178,7 @@ export default function CampusDashboard() {
           {/* Card 4: Decoupled Placement Risk */}
           <div className="card" style={{ padding: '1.5rem', borderLeft: '4px solid var(--color-status-warning)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>
-              <span>Placement Risk Cohort</span>
+              <span>Students in Placement Risk</span>
               <Briefcase size={18} style={{ color: 'var(--color-status-warning)' }} />
             </div>
             <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-status-warning)' }}>
@@ -220,7 +220,7 @@ export default function CampusDashboard() {
             Institution Portal Connected Successfully
           </h2>
           <p style={{ color: 'var(--color-text-secondary)', maxWidth: '640px', margin: '0 auto 1.5rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-            The Landing and Login portals are fully functional. In the next scheduled implementation tasks, complete interactive modules (Student Directory, Risk Deep-Dive, 2x2 Segmentation Matrix, Interventions, Reports) will be populated here.
+            Access real-time analytics across the Student Directory, Decoupled Risk Radar, Placement Readiness Matrix, and Support Programs from the main navigation menu.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <Link

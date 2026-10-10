@@ -116,15 +116,15 @@ export default function StudentDirectoryPage() {
                 color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
               }}
             >
-              {role === 'faculty_mentor' ? 'Faculty Mentor Scope' : role === 'placement_officer' ? 'TPO Recruiter Scope' : 'Dean & Provost Scope'}
+              {role === 'faculty_mentor' ? 'Faculty Mentor View' : role === 'placement_officer' ? 'Placement Officer View' : 'Provost & Administrator View'}
             </span>
           </div>
           <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.85rem' }}>
             {role === 'faculty_mentor'
-              ? 'Monitor mentee academic standing, track statutory attendance (<75%), and identify students needing remedial tutoring.'
+              ? 'Monitor mentee academic grades, track low attendance (<75%), and identify students needing tutoring support.'
               : role === 'placement_officer'
-              ? 'Filter candidates by corporate eligibility (Tier-1, Divergent), inspect mock interview scores, and export shortlists for visiting recruiters.'
-              : 'Verified institutional cohort tracking with decoupled academic and placement risk indicators.'}
+              ? 'Filter candidates by company eligibility criteria, inspect mock interview scores, and export candidate lists for visiting recruiters.'
+              : 'Track student academic progress, attendance records, and placement readiness with decoupled risk indicators.'}
           </p>
         </div>
 

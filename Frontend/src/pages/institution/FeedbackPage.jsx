@@ -119,7 +119,7 @@ export default function FeedbackPage() {
                 Campus Sentiment & Student Voice
               </h1>
               <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
-                Continuous institutional pulse, automated satisfaction telemetry, and differential privacy compliance
+                Student opinions, course ratings, and constructive campus suggestions collected anonymously.
               </p>
             </div>
           </div>
@@ -180,10 +180,10 @@ export default function FeedbackPage() {
           </div>
           <div>
             <div style={{ fontWeight: 600, color: '#166534', fontSize: '0.88rem' }}>
-              Student Confidentiality & Psychological Safety Shield Active
+              Anonymous & Confidential Student Feedback
             </div>
             <div style={{ fontSize: '0.8rem', color: '#15803D' }}>
-              Raw individual comments are withheld from administrative exports. Telemetry is mathematically aggregated to prevent punitive student identification (KPMG Challenge 4 Integrity Mandate).
+              Student names and identities are kept completely private. Feedback is shown in summaries so students can share honest opinions without hesitation.
             </div>
           </div>
         </div>
@@ -273,7 +273,7 @@ export default function FeedbackPage() {
           }}
         >
           <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
-            Sentiment Polarity
+            Overall Student Sentiment
           </div>
           <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#10B981', marginTop: '6px' }}>
             82.4% Positive
@@ -376,7 +376,7 @@ export default function FeedbackPage() {
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h2 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#0F172A', margin: 0 }}>
-              Pillar Satisfaction telemetry
+              Ratings by Category
             </h2>
             <div style={{ display: 'flex', gap: '6px' }}>
               {['ALL', 'course_feedback', 'faculty_feedback', 'student_satisfaction'].map((f) => (
@@ -475,7 +475,7 @@ export default function FeedbackPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MessageSquareHeart size={20} color="#1A73E8" />
                 <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0F172A' }}>
-                  Submit Anonymous Campus Voice
+                  Submit Student Feedback
                 </h3>
               </div>
               <button
@@ -493,7 +493,7 @@ export default function FeedbackPage() {
                   Feedback Recorded Successfully!
                 </h4>
                 <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
-                  Aggregated telemetry updated. Raw student identity protected under differential privacy rules.
+                  Your feedback has been recorded anonymously. Thank you for helping improve the campus!
                 </p>
               </div>
             ) : (
@@ -573,13 +573,13 @@ export default function FeedbackPage() {
 
                 <div>
                   <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '4px' }}>
-                    Constructive Comments (Anonymized)
+                    Comments & Suggestions (Anonymous)
                   </label>
                   <textarea
                     rows={3}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder="Provide constructive feedback regarding labs, course pacing, or placement sessions..."
+                    placeholder="Share your thoughts about classes, labs, faculty support, or campus facilities..."
                     style={{
                       width: '100%',
                       padding: '8px 10px',
@@ -592,7 +592,7 @@ export default function FeedbackPage() {
                     }}
                   />
                   <div style={{ fontSize: '0.72rem', color: '#94A3B8', marginTop: '4px' }}>
-                    Protected under Differential Privacy. No personally identifiable student data is exposed.
+                    Your identity is completely confidential. Submissions are shared anonymously.
                   </div>
                 </div>
 

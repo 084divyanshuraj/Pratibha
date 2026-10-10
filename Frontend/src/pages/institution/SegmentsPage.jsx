@@ -44,13 +44,13 @@ export default function SegmentsPage() {
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '999px', backgroundColor: '#F1F5F9', color: '#475569', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px' }}>
             <Layers size={13} />
-            <span>Deterministic Rule-Engine (ssr-v1)</span>
+            <span>Behavioral Student Groups (5 Archetypes)</span>
           </div>
           <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
             Student Segmentation Archetypes
           </h1>
           <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
-            Dynamic cohort grouping enabling actionable, persona-specific interventions without generic labeling.
+            Groups students with similar academic or placement needs so mentors and advisors can provide timely, personalized support.
           </p>
         </div>
 
@@ -72,7 +72,7 @@ export default function SegmentsPage() {
           }}
         >
           <RefreshCw size={14} className={rebuilding ? 'spin' : ''} />
-          <span>{rebuilding ? 'Rebuilding Memberships...' : 'Rebuild Segment Rules'}</span>
+          <span>{rebuilding ? 'Recalculating Groups...' : 'Recalculate Student Groups'}</span>
         </button>
       </div>
 

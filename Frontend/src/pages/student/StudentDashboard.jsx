@@ -96,7 +96,7 @@ export default function StudentDashboard() {
           <div style={{ height: '24px', width: '1px', backgroundColor: 'var(--color-border)' }} />
           <div>
             <h1 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--color-navy)', lineHeight: 1.2 }}>
-              Personal Student Success Cockpit
+              My Academic & Career Dashboard
             </h1>
             <span style={{ fontSize: '0.78rem', color: 'var(--color-text-secondary)' }}>
               Semester 6 • B.Tech Computer Science & Engineering
@@ -219,7 +219,7 @@ export default function StudentDashboard() {
             Student Experience Portal Connected
           </h2>
           <p style={{ color: 'var(--color-text-secondary)', maxWidth: '640px', margin: '0 auto 1.5rem', fontSize: '0.92rem', lineHeight: 1.6 }}>
-            The Student Portal flow is verified. Upcoming implementation phases will enrich this with personalized skill roadmaps, mentor action items, progress tracking, and feedback surveys.
+            Explore your academic scores, attendance records, skill development path, and personalized mentor recommendations.
           </p>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <Link
