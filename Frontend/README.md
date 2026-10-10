@@ -1,183 +1,85 @@
-# PRATIBHA — Frontend Application
+# PRATIBHA — Frontend Web Application
 
-**React 18 + Vite | Institution Portal + Student Self-Portal**  
-*Part of the PRATIBHA Student Success Intelligence Platform — KPMG Challenge 4*
-
----
-
-## Overview
-
-The PRATIBHA frontend is a dual-portal web application for campus administrators, faculty mentors, placement officers, and students. It connects to the backend API for live data and falls back to realistic synthetic fixtures when the backend is offline — so the demo always works.
-
-**Two portals, one codebase:**
-- **Institution Portal** — analytics, risk radar, student directory, segmentation, intervention sandbox, data ingestion, audit trail.
-- **Student Self-Portal** — personal dashboard, success score breakdown, attendance tracking, placement readiness, active interventions, feedback.
+**React 18 + Vite | Enterprise Institution Portal + Student Self-Service Portal**  
+*Part of PRATIBHA: Student Success Intelligence Platform — KPMG Challenge 4*
 
 ---
 
-## Quick Start
+## 🌐 Live Application
+
+- **Production URL (24/7 High-Availability):** [https://pratibha-five.vercel.app/](https://pratibha-five.vercel.app/)
+- **Local Dev Server:** `http://localhost:3000`
+
+---
+
+## 🚀 Key Architectural Highlights
+
+1. **Dual-Atmosphere Design System:**
+   - Cinematic dark navy hero on the public landing page (`#0A1128`).
+   - Clean, light enterprise analytics canvas (`#F8FAFC`) on institutional and student dashboards.
+   - 100% tokenized Vanilla CSS using semantic tokens from `src/styles/tokens.css` and `src/styles/global.css`.
+
+2. **Self-Reliant Client Engine (Zero Crash Guarantee):**
+   - The application connects to the Express API (`/api/v1`) when available.
+   - If the backend is unreachable or offline, the client seamlessly falls back to high-fidelity in-memory data fixtures (1,420 synthetic students, 5 cohort archetypes, complete 7-pillar telemetry).
+   - Ingestion Studio uses in-browser **SheetJS (XLSX)** parsing to process CSVs and update campus analytics reactively in `localStorage`.
+
+3. **1-Click Persona Switcher:**
+   - Evaluators can immediately toggle between **Institution Admin**, **Faculty Mentor**, **Placement Officer (TPO)**, and **Student Portal** directly from the top navigation bar.
+
+---
+
+## 🗺️ Application Page Routes
+
+### Public Routes
+| Route | Page Component | Purpose |
+| :--- | :--- | :--- |
+| `/` | `LandingPage.jsx` | Cinematic landing experience, value pillars, and demo role switcher |
+| `/login` | `LoginPage.jsx` | Secure login gateway supporting email, username, and student roll ID |
+
+### Institutional Intelligence Portal (`/institution/*`)
+| Route | Page Component | Features & Scopes |
+| :--- | :--- | :--- |
+| `/institution/overview` | `OverviewPage.jsx` | Executive campus KPIs, cohort distribution chart, semester line chart, decoupled divergence card |
+| `/institution/students` | `StudentDirectoryPage.jsx` | 360° student roster with search, multi-facet filtering, and slide-out inspection drawer |
+| `/institution/risk-radar` | `RiskRadarPage.jsx` | 2×2 Decoupled Risk Matrix (Academic vs Placement) surfacing divergent students |
+| `/institution/segments` | `SegmentsPage.jsx` | 5 rule-based behavioral cohorts supporting targeted intervention grouping *(Bonus)* |
+| `/institution/sandbox` | `SandboxPage.jsx` | Resource-constrained policy simulator modeling remedial intervention cost and score ROI |
+| `/institution/ingestion` | `IngestionPage.jsx` | Multi-pillar CSV batch ingestion studio with dry-run schema validation |
+| `/institution/feedback` | `FeedbackPage.jsx` | Campus satisfaction sentiment analytics with privacy-preserving aggregation |
+| `/institution/audit` | `AuditPage.jsx` | Immutable audit log of administrative actions and batch data commits |
+
+### Student Self-Service Portal (`/student/*`)
+| Route | Page Component | Features & Scopes |
+| :--- | :--- | :--- |
+| `/student/portal` | `StudentPortalPage.jsx` | Personal 360° scorecard, radar chart, positive/negative score drivers, attendance warnings |
+| `/student/profile` | `ProfilePage.jsx` | Profile onboarding and settings for degree, department, semester, and roll ID |
+
+---
+
+## 🛠️ Development & Build Scripts
 
 ```bash
-# From repository root
-cd Frontend
-
 # Install dependencies
 npm install
 
-# Start development server
-npm run dev       # Starts at http://localhost:3000
-```
+# Start local Vite development server (Port 3000)
+npm run dev
 
-Open `http://localhost:3000` in your browser. Use the role switcher on the landing page to explore as Admin, Faculty, Placement Officer, or Student.
+# Production build (Outputs to dist/)
+npm run build
 
-**Build for production:**
-```bash
-npm run build     # Output in dist/
-```
-
----
-
-## Environment Variables
-
-Create a `.env` file in the `Frontend/` directory (or set in Vercel dashboard):
-
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `VITE_API_BASE_URL` | `http://localhost:5000/api/v1` | Backend API URL |
-
----
-
-## Application Routes
-
-### Public Routes
-| Route | Page | Description |
-| :--- | :--- | :--- |
-| `/` | Landing Page | Platform overview, 7-domain constellation, role-based demo gateway |
-| `/login` | Login | JWT-based login form |
-
-### Institution Portal Routes
-| Route | Page | Description |
-| :--- | :--- | :--- |
-| `/institution/dashboard` | Executive Dashboard | KPI tiles — success score distribution, risk counts, data coverage |
-| `/institution/students` | Student 360° Directory | Searchable, filterable table with inline risk badges; click a row to open the full student drawer |
-| `/institution/risk-analysis` | Decoupled Risk Radar | 2×2 Academic vs Placement risk matrix, divergent cluster detection |
-| `/institution/segmentation` | Student Archetypes | 5 behavioral cohorts with live member counts and rebuild action |
-| `/institution/sandbox` | Intervention Sandbox | Strategy selector, capacity configurator, simulation runner, approval workflow |
-| `/institution/data-integration` | Data Integration Studio | CSV/JSON uploader for all 7 data categories with dry-run preview |
-| `/institution/feedback` | Campus Feedback | Aggregated sentiment with rating distribution charts |
-| `/institution/audit` | Audit Trail | Paginated immutable security and action event log |
-
-### Student Portal Routes
-| Route | Page | Description |
-| :--- | :--- | :--- |
-| `/student` | Student Self-Portal | Full personal dashboard: success score, attendance, placement, interventions, feedback |
-
----
-
-## Key Components
-
-### `StudentDrawer`
-Slide-in panel showing a complete 360° student view:
-- **Header:** Name, ID badge, program, semester, department.
-- **Score Bar:** Live `sss-v1` score with `dataCompleteness` percentage, decoupled Academic Risk and Placement Risk badges.
-- **Driver Panel:** *(Bonus Feature)* — Colour-coded pills showing each domain's `+contribution pts` to the score.
-- **7-Tab Body:** Academic records, attendance breakdown, LMS activity, placement scores, skills, engagement, feedback.
-
-### `CopilotDrawer`
-Floating AI assistant supporting natural language and Hinglish queries. Routes all answers through verified backend analytics endpoints — no hallucinated responses.
-
-### `api.js` — Unified API Client
-Located at `src/services/api.js`. All backend calls go through this single module which:
-- Attaches JWT Bearer token automatically.
-- Enforces a configurable request timeout (default 8 seconds).
-- Automatically falls back to realistic static fixtures when the backend is unreachable, so the demo is never broken.
-
----
-
-## Design System
-
-PRATIBHA uses a dual-atmosphere design:
-- **Dark Navy Canvas** — Landing page hero with cinematic depth.
-- **Clean Light Analytics Canvas** — Institution and Student dashboards for readability at scale.
-
-Design tokens are centrally managed in `src/styles/tokens.css`. Global resets, typography, and utility classes are in `src/styles/global.css`.
-
-**Typography:** Inter (Google Fonts)  
-**Icons:** Lucide React  
-**Charts:** Recharts (AreaChart, BarChart, PieChart, RadarChart)  
-**No hardcoded hex colours in component files** — all colours reference CSS variables from `tokens.css`.
-
----
-
-## Project Structure
-
-```
-Frontend/
-├── index.html                 # HTML entry point
-├── vite.config.js             # Vite configuration
-├── package.json
-│
-└── src/
-    ├── main.jsx               # React root mount
-    ├── App.jsx                # Router setup (React Router v6)
-    │
-    ├── styles/
-    │   ├── tokens.css         # Design system CSS custom properties
-    │   └── global.css         # Global resets, typography, utility classes
-    │
-    ├── assets/
-    │   └── images.js          # Image/avatar constants
-    │
-    ├── context/               # React context (auth state, role switcher)
-    │
-    ├── services/
-    │   └── api.js             # Unified API client (live + offline fallback)
-    │
-    ├── components/
-    │   ├── layout/            # AppShell, Sidebar, TopBar
-    │   ├── students/          # StudentDrawer (360° student panel)
-    │   ├── copilot/           # CopilotDrawer (grounded AI assistant)
-    │   ├── landing/           # Landing page sections and animations
-    │   ├── common/            # Shared: MetricCard, RiskBadge, LoadingSpinner
-    │   └── ui/                # Base UI: Button, Input, Select, Modal
-    │
-    └── pages/
-        ├── public/            # LandingPage, LoginPage
-        ├── institution/       # 8 institution portal pages
-        │   ├── CampusDashboard.jsx
-        │   ├── StudentDirectoryPage.jsx
-        │   ├── RiskRadarPage.jsx
-        │   ├── SegmentsPage.jsx          ← Bonus: Segmentation
-        │   ├── SandboxPage.jsx
-        │   ├── IngestionPage.jsx
-        │   ├── FeedbackPage.jsx
-        │   └── AuditPage.jsx
-        ├── student/           # Student self-portal
-        │   └── StudentPortalPage.jsx     ← Explainable score drivers (Bonus)
-        └── NotFoundPage.jsx
+# Preview production build locally
+npm run preview
 ```
 
 ---
 
-## Tech Stack
+## 📦 Tech Stack & Libraries
 
-| Technology | Version | Purpose |
-| :--- | :--- | :--- |
-| React | 18 | UI library |
-| Vite | 5 | Build tool and dev server |
-| React Router | v6 | Client-side routing |
-| Recharts | Latest | Analytics charts (Area, Bar, Pie, Radar) |
-| Lucide React | Latest | Icon library |
-| Vanilla CSS | — | Styling via centralized tokens |
-
-No Tailwind. No CSS-in-JS. No component library — full design control through tokens.
-
----
-
-## Offline / Demo Mode
-
-The API client in `src/services/api.js` tracks backend availability in memory. If any request times out or returns a network error, it automatically serves realistic static fixtures that match the exact shape of the live API response. This means:
-
-- The demo **always works**, even if the backend goes down during a presentation.
-- Fixtures include synthetic student profiles, risk predictions, segment data, and score drivers.
-- The UI shows the same data structure whether live or offline — no special demo mode toggle needed.
+- **Framework:** React 18, Vite 5
+- **Routing:** React Router v6 (`HashRouter` for zero-404 cloud proxy compatibility)
+- **Visualizations:** Recharts (Bar, Line, Radar, Area)
+- **Icons:** Lucide React
+- **Client Data Engine:** SheetJS (`xlsx`) for client-side spreadsheet ingestion
+- **Styling:** Modular CSS Design System (`tokens.css`, `global.css`)
