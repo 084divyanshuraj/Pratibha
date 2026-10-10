@@ -124,10 +124,6 @@ export default function SandboxPage() {
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '999px', backgroundColor: '#EBF3FE', color: '#1A73E8', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px' }}>
-            <FlaskConical size={13} />
-            <span>Intervention Sandbox Simulator (KPMG Challenge 4)</span>
-          </div>
           <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
             {role === 'faculty_mentor' ? 'Remedial Tutoring & Mentorship Sandbox' : role === 'placement_officer' ? 'Interview & Placement Training Sandbox' : 'Intervention Sandbox & Resource Optimizer'}
           </h1>

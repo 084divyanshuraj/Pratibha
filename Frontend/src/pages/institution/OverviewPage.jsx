@@ -124,13 +124,6 @@ export default function OverviewPage() {
                 {currentUser?.name || (role === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : role === 'placement_officer' ? 'Vikram Malhotra' : 'Dr. Sunita Rao')}
               </strong>
             </div>
-            <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px' }}>
-              {role === 'faculty_mentor'
-                ? 'Department of Computer Science & Engineering · Mentoring Focus: Low Attendance Alerts (<75%) & Tutoring Support.'
-                : role === 'placement_officer'
-                ? 'Corporate Relations & Placement Cell (TPO) · Focus: Company Eligibility, Mock Technical Tests & Recruiter Rosters.'
-                : 'Campus Provost & Administration · Focus: Campus-Wide Student Analytics, 8-Pillar Data Integration & Institutional Health.'}
-            </div>
           </div>
         </div>
 
@@ -253,13 +246,6 @@ export default function OverviewPage() {
               ? 'Corporate Relations & Placement Command Center'
               : 'Executive Campus Intelligence Overview'}
           </h1>
-          <p style={{ margin: '6px 0 0', color: '#64748B', fontSize: '0.88rem' }}>
-            {role === 'faculty_mentor'
-              ? 'Academic retention monitoring, attendance deficit detection, and remedial mentoring workflows.'
-              : role === 'placement_officer'
-              ? 'Campus recruitment readiness, 2x2 employability segmentation, and company eligibility pipelines.'
-              : 'Multi-domain student analytics powered by explainable scoring, decoupled risk predictions, and sandbox interventions.'}
-          </p>
         </div>
 
         <div style={{ display: 'flex', gap: '10px' }}>

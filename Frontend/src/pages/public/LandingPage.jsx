@@ -1,5 +1,5 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import {
   ArrowRight,
   ShieldCheck,
@@ -17,16 +17,20 @@ import {
 import PublicNavbar from '../../components/layout/PublicNavbar';
 import PublicFooter from '../../components/layout/PublicFooter';
 import DomainConstellation from '../../components/landing/DomainConstellation';
-import { useAuth } from '../../context/AuthContext';
 
 export default function LandingPage() {
-  const navigate = useNavigate();
-  const { loginWithDemo } = useAuth();
+  const location = useLocation();
 
-  const handleLaunchRole = (roleKey) => {
-    loginWithDemo(roleKey);
-    navigate(roleKey === 'student' ? '/student/dashboard' : '/institution/dashboard');
-  };
+  useEffect(() => {
+    if (location.pathname === '/about' || window.location.hash.includes('about')) {
+      const el = document.getElementById('about');
+      if (el) {
+        setTimeout(() => {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }, 80);
+      }
+    }
+  }, [location]);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--color-navy-deep)' }}>
@@ -67,56 +71,71 @@ export default function LandingPage() {
         >
           {/* Left Column: Hero Copy & Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {/* Eyebrow */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
-                color: 'rgba(255, 255, 255, 0.75)',
-                marginBottom: '1.25rem',
-              }}
-            >
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>—</span>
-              <span>STUDENT SUCCESS INTELLIGENCE</span>
-              <span style={{ color: 'var(--color-blue-bright)' }}>·</span>
-              <span>BUILT FOR CAMPUS IMPACT</span>
-              <span style={{ color: 'rgba(255,255,255,0.4)' }}>—</span>
-            </div>
+            {/* Category / Context Pill */}
+
 
             {/* Headline */}
             <h1
               style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: 'clamp(2.75rem, 5.5vw, 4.25rem)',
-                fontWeight: 700,
-                lineHeight: 1.08,
-                letterSpacing: '-0.02em',
+                fontFamily: 'var(--font-sans)',
+                fontSize: 'clamp(2.5rem, 4.8vw, 3.85rem)',
+                fontWeight: 800,
+                lineHeight: 1.12,
+                letterSpacing: '-0.03em',
                 color: '#FFFFFF',
-                marginBottom: '1.5rem',
+                marginBottom: '1.25rem',
               }}
             >
-              Every Student <br />
-              Has <span style={{ color: 'var(--color-blue-bright)' }}>Potential.</span>
+              Spot Academic Risk Early. <br />
+              <span
+                style={{
+                  background: 'linear-gradient(90deg, #38BDF8 0%, #60A5FA 50%, #93C5FD 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Guide Every Student Forward.
+              </span>
             </h1>
 
             {/* Supporting Text */}
             <p
               style={{
-                fontSize: 'clamp(1rem, 1.25vw, 1.125rem)',
+                fontSize: 'clamp(0.95rem, 1.15vw, 1.05rem)',
                 lineHeight: 1.65,
                 color: 'rgba(255, 255, 255, 0.82)',
                 maxWidth: '520px',
-                marginBottom: '2.5rem',
+                marginBottom: '1.75rem',
                 fontWeight: 400,
               }}
             >
-              Unify academic performance, attendance, learning activity, engagement, skills, feedback and placement readiness into clear insights that help every student move forward.
+              Connect fragmented attendance logs, LMS engagement, and exam grades into a transparent readiness rating. Helping faculty mentors intervene with personalized support before students fall behind.
             </p>
+
+            {/* Human-Crafted Value Signals */}
+            <div
+              style={{
+                display: 'flex',
+                gap: '1.75rem',
+                marginBottom: '2.25rem',
+                paddingTop: '1rem',
+                borderTop: '1px solid rgba(255, 255, 255, 0.12)',
+                flexWrap: 'wrap',
+              }}
+            >
+              <div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#38BDF8', letterSpacing: '-0.02em' }}>7 Domains</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', marginTop: '2px' }}>Unified in Real-Time</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#4ADE80', letterSpacing: '-0.02em' }}>Decoupled ML</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', marginTop: '2px' }}>Independent Risk Radars</div>
+              </div>
+              <div>
+                <div style={{ fontSize: '1.2rem', fontWeight: 800, color: '#FBBF24', letterSpacing: '-0.02em' }}>Explainable</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.65)', marginTop: '2px' }}>Clear Contributing Drivers</div>
+              </div>
+            </div>
 
             {/* Action Buttons */}
             <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '1.5rem' }}>
@@ -128,12 +147,11 @@ export default function LandingPage() {
                   gap: '10px',
                   backgroundColor: 'var(--color-blue-primary)',
                   color: '#FFFFFF',
-                  padding: '0.9rem 1.85rem',
+                  padding: '0.85rem 1.75rem',
                   borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.95rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
+                  fontSize: '0.92rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.02em',
                   textDecoration: 'none',
                   boxShadow: '0 4px 14px rgba(22, 119, 210, 0.45)',
                   transition: 'all var(--transition-fast)',
@@ -150,21 +168,29 @@ export default function LandingPage() {
                 }}
               >
                 <span>Explore the Platform</span>
-                <ArrowRight size={18} />
+                <ArrowRight size={17} />
               </Link>
 
-              <a
-                href="#about"
+              <button
+                type="button"
+                onClick={() => {
+                  const el = document.getElementById('about');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
                 style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
                   color: 'rgba(255, 255, 255, 0.9)',
-                  fontSize: '0.95rem',
+                  fontSize: '0.92rem',
                   fontWeight: 500,
-                  textDecoration: 'none',
                   borderBottom: '1px solid var(--color-blue-bright)',
                   paddingBottom: '2px',
+                  paddingLeft: 0,
+                  paddingRight: 0,
                   transition: 'color var(--transition-fast)',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
@@ -172,7 +198,7 @@ export default function LandingPage() {
               >
                 <span>About PRATIBHA</span>
                 <ArrowRight size={15} style={{ color: 'var(--color-blue-bright)' }} />
-              </a>
+              </button>
             </div>
           </div>
 
@@ -186,42 +212,10 @@ export default function LandingPage() {
               minHeight: '440px',
             }}
           >
-            {/* Architectural Building Inscription Badge */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                right: '1rem',
-                backgroundColor: 'rgba(6, 26, 51, 0.75)',
-                border: '1px solid rgba(228, 233, 240, 0.2)',
-                borderRadius: 'var(--radius-sm)',
-                padding: '6px 12px',
-                fontSize: '0.68rem',
-                letterSpacing: '0.12em',
-                fontWeight: 600,
-                color: 'rgba(255, 255, 255, 0.75)',
-                textTransform: 'uppercase',
-                backdropFilter: 'blur(6px)',
-                zIndex: 5,
-              }}
-            >
-              LEARN • GROW • INNOVATE • BELONG
-            </div>
-
             {/* Interactive 7-Domain Constellation */}
             <DomainConstellation />
 
-            {/* Interactive hint */}
-            <div
-              style={{
-                marginTop: '1rem',
-                textAlign: 'center',
-                fontSize: '0.78rem',
-                color: 'rgba(255, 255, 255, 0.6)',
-              }}
-            >
-              Hover over any domain node to explore its indicators and weight contribution
-            </div>
+
           </div>
         </div>
 
@@ -286,7 +280,7 @@ export default function LandingPage() {
               display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
               gap: '2rem',
-              marginBottom: '3.5rem',
+              marginBottom: 0,
             }}
           >
             {/* Card 1: 7-Domain Unification */}
@@ -419,97 +413,6 @@ export default function LandingPage() {
                   <span>Human-in-the-loop intervention logging</span>
                 </li>
               </ul>
-            </div>
-          </div>
-
-          {/* Persona & Portal Quick Access Strip */}
-          <div
-            style={{
-              backgroundColor: 'rgba(8, 43, 86, 0.55)',
-              border: '1px solid rgba(0, 162, 255, 0.3)',
-              borderRadius: 'var(--radius-lg)',
-              padding: '2.5rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1.75rem',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-              <div>
-                <span style={{ fontSize: '0.76rem', color: 'var(--color-blue-bright)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>
-                  READY TO EXPLORE
-                </span>
-                <h3 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#FFFFFF', marginTop: '4px' }}>
-                  Access Dedicated Portals or Test Demo Personas
-                </h3>
-              </div>
-              <Link
-                to="/login"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: 'var(--color-blue-primary)',
-                  color: '#FFFFFF',
-                  padding: '0.75rem 1.5rem',
-                  borderRadius: 'var(--radius-sm)',
-                  fontSize: '0.9rem',
-                  fontWeight: 600,
-                  textDecoration: 'none',
-                  boxShadow: '0 4px 12px rgba(22, 119, 210, 0.4)',
-                }}
-              >
-                <span>Go to Login / Sign In</span>
-                <ArrowRight size={16} />
-              </Link>
-            </div>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-                gap: '1rem',
-              }}
-            >
-              {[
-                { title: 'Admin (Provost)', role: 'admin', icon: '🏛️', desc: 'Campus KPI dashboard & department radar' },
-                { title: 'Faculty Mentor', role: 'faculty', icon: '👨‍🏫', desc: 'Student directory & intervention logging' },
-                { title: 'Placement Officer', role: 'placement', icon: '💼', desc: '2x2 Matrix & placement benchmarks' },
-                { title: 'Student (Aarav)', role: 'student', icon: '🎓', desc: 'Personal academic progress & roadmaps' },
-              ].map((p) => (
-                <button
-                  key={p.role}
-                  type="button"
-                  onClick={() => handleLaunchRole(p.role)}
-                  style={{
-                    backgroundColor: 'rgba(6, 26, 51, 0.65)',
-                    border: '1px solid rgba(228, 233, 240, 0.15)',
-                    borderRadius: 'var(--radius-md)',
-                    padding: '1.25rem',
-                    textAlign: 'left',
-                    cursor: 'pointer',
-                    color: '#FFFFFF',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '6px',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'var(--color-blue-bright)';
-                    e.currentTarget.style.backgroundColor = 'rgba(0, 162, 255, 0.12)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(228, 233, 240, 0.15)';
-                    e.currentTarget.style.backgroundColor = 'rgba(6, 26, 51, 0.65)';
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.1rem' }}>{p.icon}</span>
-                    <strong style={{ fontSize: '0.92rem' }}>{p.title}</strong>
-                  </div>
-                  <span style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>{p.desc}</span>
-                </button>
-              ))}
             </div>
           </div>
         </div>

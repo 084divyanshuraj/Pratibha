@@ -395,6 +395,24 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* Fix: Prevent Chrome, Edge & Safari autofill/paste from turning background white */
+.cyber-input-box input:-webkit-autofill,
+.cyber-input-box input:-webkit-autofill:hover,
+.cyber-input-box input:-webkit-autofill:focus,
+.cyber-input-box input:-webkit-autofill:active {
+  -webkit-text-fill-color: #ffffff !important;
+  color: #ffffff !important;
+  -webkit-box-shadow: 0 0 0 1000px #070d18 inset !important;
+  box-shadow: 0 0 0 1000px #070d18 inset !important;
+  transition: background-color 5000000s ease-in-out 0s !important;
+  caret-color: #ffffff !important;
+}
+
+.cyber-input-box input:autofill {
+  background-color: #070d18 !important;
+  color: #ffffff !important;
+}
+
 .cyber-input-box label {
   position: absolute;
   top: 50%;
@@ -406,9 +424,11 @@
   transition: all 0.3s ease;
 }
 
-/* Label floats up when focused or input has text */
+/* Label floats up when focused, has text, or autofilled/pasted */
 .cyber-input-box input:focus ~ label,
-.cyber-input-box input:not(:placeholder-shown) ~ label {
+.cyber-input-box input:not(:placeholder-shown) ~ label,
+.cyber-input-box input:-webkit-autofill ~ label,
+.cyber-input-box input:autofill ~ label {
   top: -4px;
   font-size: 0.72rem;
   color: #00d4ff;

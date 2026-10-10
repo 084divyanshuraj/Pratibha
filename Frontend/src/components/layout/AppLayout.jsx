@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import {
   BarChart3,
   Users,
@@ -47,7 +47,7 @@ const STUDENT_NAV_ITEMS = [
 ];
 
 export default function AppLayout({ children }) {
-  const { currentUser, logout, loginWithDemo } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -66,17 +66,6 @@ export default function AppLayout({ children }) {
   const handleLogout = () => {
     logout();
     navigate('/');
-  };
-
-  const handlePersonaChange = async (selectedKey) => {
-    await loginWithDemo(selectedKey);
-    if (selectedKey === 'student') {
-      navigate('/student/portal');
-    } else {
-      if (isStudent || location.pathname.startsWith('/student')) {
-        navigate('/institution/overview');
-      }
-    }
   };
 
   const getNavItems = () => {
@@ -119,7 +108,7 @@ export default function AppLayout({ children }) {
           backgroundColor: '#0F172A',
           color: '#FFFFFF',
           padding: '0 1.5rem',
-          height: '50px',
+          height: '54px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -128,29 +117,34 @@ export default function AppLayout({ children }) {
           zIndex: 100,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div
+        {/* Left: Brand Logo & System Live Status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+          <Link
+            to={isStudent ? '/student/portal' : '/institution/overview'}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '12px',
+              textDecoration: 'none',
+              cursor: 'pointer',
+            }}
+            title="PRATIBHA Dashboard Home"
+          >
+            <img
+              src="/assets/images/pratibha_logo.png"
+              alt="PRATIBHA"
               style={{
-                width: '26px',
-                height: '26px',
-                borderRadius: '6px',
-                backgroundColor: isStudent ? '#0284C7' : '#1A73E8',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: '0.85rem',
-                color: '#FFFFFF',
+                height: '32px',
+                width: 'auto',
+                objectFit: 'contain',
+                display: 'block',
+                filter: 'drop-shadow(0 0 10px rgba(0, 162, 255, 0.45)) drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
+                transition: 'transform 0.2s ease',
               }}
-            >
-              P
-            </div>
-            <strong style={{ fontSize: '0.95rem', letterSpacing: '-0.2px' }}>PRATIBHA</strong>
-            <span style={{ fontSize: '0.72rem', color: '#94A3B8', paddingLeft: '4px', borderLeft: '1px solid #334155' }}>
-              {isStudent ? 'Student Self-Service Intelligence' : 'Student Success Intelligence Platform'}
-            </span>
-          </div>
+              onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+              onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+            />
+          </Link>
 
           {/* Backend Live Indicator */}
           <div
@@ -158,7 +152,7 @@ export default function AppLayout({ children }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '3px 8px',
+              padding: '3px 9px',
               borderRadius: '999px',
               backgroundColor: backendLive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
               border: `1px solid ${backendLive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
@@ -172,48 +166,15 @@ export default function AppLayout({ children }) {
           </div>
         </div>
 
-        {/* Interactive Persona Switcher */}
+        {/* User Status & Sign Out */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '0.74rem', color: '#94A3B8', fontWeight: 600 }}>Persona:</span>
-            <select
-              value={
-                isStudent
-                  ? 'student'
-                  : currentUser?.role === 'faculty_mentor'
-                  ? 'faculty'
-                  : currentUser?.role === 'placement_officer'
-                  ? 'placement'
-                  : 'admin'
-              }
-              onChange={(e) => handlePersonaChange(e.target.value)}
-              style={{
-                backgroundColor: '#1E293B',
-                color: '#38BDF8',
-                border: '1px solid rgba(56, 189, 248, 0.4)',
-                borderRadius: '6px',
-                padding: '4px 10px',
-                fontSize: '0.76rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-              title="Switch demo persona to test role-specific workflows"
-            >
-              <option value="admin">🏛️ Dr. Sunita Rao · Admin (Dean & Provost)</option>
-              <option value="faculty">👨‍🏫 Prof. Rajesh Kumar · Faculty Mentor (CSE)</option>
-              <option value="placement">💼 Vikram Malhotra · Placement Officer (TPO)</option>
-              <option value="student">🎓 Aarav Sharma · Student Portal</option>
-            </select>
-          </div>
-
           {/* Current Persona Badge */}
           <span
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '4px 10px',
+              padding: '4px 11px',
               borderRadius: '999px',
               backgroundColor: isStudent
                 ? 'rgba(56, 189, 248, 0.15)'
@@ -231,7 +192,7 @@ export default function AppLayout({ children }) {
                   ? 'rgba(59, 130, 246, 0.3)'
                   : 'rgba(245, 158, 11, 0.3)'
               }`,
-              fontSize: '0.72rem',
+              fontSize: '0.74rem',
               color: isStudent
                 ? '#38BDF8'
                 : currentUser?.role === 'faculty_mentor'
@@ -247,13 +208,13 @@ export default function AppLayout({ children }) {
             <span style={{ color: '#E2E8F0', fontWeight: 500 }}>{currentUser?.roleLabel}</span>
           </span>
 
-          {/* Quick Profile Navigation Button */}
+          {/* Sign Out Button */}
           <button
-            onClick={() => navigate(isStudent ? '/student/profile' : '/institution/profile')}
+            onClick={handleLogout}
             style={{
-              background: 'rgba(255, 255, 255, 0.08)',
-              border: '1px solid rgba(255, 255, 255, 0.16)',
-              color: '#F8FAFC',
+              background: 'none',
+              border: '1px solid #334155',
+              color: '#CBD5E1',
               borderRadius: '6px',
               padding: '4px 11px',
               cursor: 'pointer',
@@ -262,35 +223,17 @@ export default function AppLayout({ children }) {
               gap: '6px',
               fontSize: '0.78rem',
               fontWeight: 500,
-              transition: 'all 0.2s ease',
+              transition: 'all 0.15s ease',
             }}
-            title="View & Edit My Profile"
-          >
-            {currentUser?.avatar ? (
-              <img
-                src={currentUser.avatar}
-                alt="Avatar"
-                style={{ width: '16px', height: '16px', borderRadius: '50%', objectFit: 'cover' }}
-              />
-            ) : (
-              <User size={13} color="#38BDF8" />
-            )}
-            <span>My Profile</span>
-          </button>
-
-          <button
-            onClick={handleLogout}
-            style={{
-              background: 'none',
-              border: '1px solid #334155',
-              color: '#CBD5E1',
-              borderRadius: '6px',
-              padding: '4px 10px',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              fontSize: '0.78rem',
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'rgba(239, 68, 68, 0.5)';
+              e.currentTarget.style.color = '#FCA5A5';
+              e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = '#334155';
+              e.currentTarget.style.color = '#CBD5E1';
+              e.currentTarget.style.backgroundColor = 'transparent';
             }}
             title="Log out"
           >
@@ -301,7 +244,7 @@ export default function AppLayout({ children }) {
       </header>
 
       {/* 2. MAIN APPLICATION WORKSPACE */}
-      <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 50px)' }}>
+      <div style={{ display: 'flex', flex: 1, minHeight: 'calc(100vh - 54px)' }}>
         {/* SIDEBAR NAVIGATION */}
         <aside
           className="app-sidebar"

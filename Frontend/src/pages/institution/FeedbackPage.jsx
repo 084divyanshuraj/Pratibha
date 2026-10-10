@@ -118,9 +118,6 @@ export default function FeedbackPage() {
               <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
                 Campus Sentiment & Student Voice
               </h1>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748B' }}>
-                Student opinions, course ratings, and constructive campus suggestions collected anonymously.
-              </p>
             </div>
           </div>
         </div>

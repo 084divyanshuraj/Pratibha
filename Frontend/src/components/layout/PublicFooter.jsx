@@ -1,160 +1,308 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import BrandLogo from '../common/BrandLogo';
-import { Shield, Sparkles, BookOpen, ExternalLink } from 'lucide-react';
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Clock,
+  X,
+  ShieldCheck,
+  FileText,
+  ExternalLink,
+} from 'lucide-react';
 
 export default function PublicFooter() {
+  const [activeModal, setActiveModal] = useState(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (target, e) => {
+    if (target === 'about') {
+      if (e) e.preventDefault();
+      if (location.pathname === '/' || location.pathname === '/about') {
+        const el = document.getElementById('about');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        navigate('/about');
+      }
+    } else if (target === 'home') {
+      if (e) e.preventDefault();
+      if (location.pathname === '/' || location.pathname === '/about') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        navigate('/');
+      }
+    }
+  };
+
+  const modalContent = {
+    privacy: {
+      title: 'Privacy Policy',
+      subtitle: 'Student Data Protection & Compliance',
+      content: [
+        'All student records, performance metrics, and cohort evaluations displayed within PRATIBHA adhere to institutional privacy standards and synthetic data governance.',
+        'Qualitative student feedback is anonymized and aggregated to preserve student privacy and ensure honest communication.',
+        'Institutional data is protected with role-based access control (RBAC), ensuring students, faculty, and administrators access only authorized intelligence.',
+      ],
+    },
+    terms: {
+      title: 'Terms of Service',
+      subtitle: 'Platform Usage & Advisory Framework',
+      content: [
+        'PRATIBHA provides explainable readiness ratings and early alert indicators designed to assist academic mentors, counselors, and administrative leaders.',
+        'System alerts serve as decision-support guidance; all student interventions and advisory actions require human-in-the-loop review and approval.',
+        'Authorized users must uphold institutional confidentiality and access only records relevant to their designated educational roles.',
+      ],
+    },
+  };
+
   return (
     <footer
       style={{
-        backgroundColor: 'var(--color-navy-deep)',
+        backgroundColor: '#051329',
         color: 'rgba(255, 255, 255, 0.75)',
-        borderTop: '1px solid rgba(228, 233, 240, 0.1)',
-        padding: '3.5rem 1.5rem 2rem',
+        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        padding: '3.5rem 2rem 2rem',
         marginTop: 'auto',
       }}
     >
       <div
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '2.5rem',
-          marginBottom: '2.5rem',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gap: '3rem',
+          paddingBottom: '3rem',
         }}
       >
-        {/* Column 1: Brand & Identity */}
-        <div>
-          <BrandLogo variant="dark" showTagline={true} />
+        {/* Column 1: Brand & Purpose */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+          <div>
+            <BrandLogo variant="dark" />
+          </div>
           <p
             style={{
-              marginTop: '1rem',
               fontSize: '0.88rem',
-              lineHeight: 1.6,
+              lineHeight: 1.65,
               color: 'rgba(255, 255, 255, 0.65)',
-              maxWidth: '340px',
+              margin: 0,
+              maxWidth: '360px',
             }}
           >
-            From Student Data to Student Success. Unifying academic, attendance, LMS, skills, and placement indicators into explainable intelligence for higher education institutions.
+            Empowering higher education institutions with real-time student analytics,
+            explainable early-warning indicators, and personalized career success pathways.
           </p>
           <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '6px',
-              marginTop: '1.25rem',
-              padding: '4px 10px',
-              borderRadius: 'var(--radius-full)',
-              backgroundColor: 'rgba(22, 119, 210, 0.18)',
-              border: '1px solid rgba(37, 139, 250, 0.3)',
-              fontSize: '0.72rem',
-              color: 'var(--color-blue-bright)',
+              gap: '8px',
+              padding: '6px 12px',
+              borderRadius: '999px',
+              backgroundColor: 'rgba(16, 185, 129, 0.1)',
+              border: '1px solid rgba(16, 185, 129, 0.25)',
+              fontSize: '0.75rem',
+              color: '#34D399',
               fontWeight: 500,
+              width: 'fit-content',
             }}
           >
-            <Sparkles size={12} />
-            <span>KPMG Challenge 4 Independent Prototype</span>
+            <span
+              style={{
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                backgroundColor: '#10B981',
+                boxShadow: '0 0 6px #10B981',
+              }}
+            />
+            <span>Systems Operational</span>
           </div>
         </div>
 
-        {/* Column 2: Platform Capabilities */}
+        {/* Column 2: Quick Links */}
         <div>
           <h4
             style={{
               color: '#FFFFFF',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              marginBottom: '1rem',
-              letterSpacing: '0.02em',
+              fontSize: '0.9rem',
+              fontWeight: 700,
+              marginBottom: '1.25rem',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
             }}
           >
-            7 Data Domains
+            Quick Links
           </h4>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.86rem' }}>
-            <li>1. Academic Performance & CGPA</li>
-            <li>2. Attendance & Subject Consistency</li>
-            <li>3. LMS Engagement & Activity</li>
-            <li>4. Co-curricular & Event Participation</li>
-            <li>5. Placement Readiness & Coding Tests</li>
-            <li>6. Technical & Soft Skills Ledger</li>
-            <li>7. Institutional & Faculty Feedback</li>
+          <ul
+            style={{
+              listStyle: 'none',
+              padding: 0,
+              margin: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '0.75rem',
+              fontSize: '0.88rem',
+            }}
+          >
+            <li>
+              <a
+                href="/"
+                onClick={(e) => handleNavClick('home', e)}
+                style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                  display: 'inline-block',
+                }}
+                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="#about"
+                onClick={(e) => handleNavClick('about', e)}
+                style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                  display: 'inline-block',
+                }}
+                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+              >
+                About Platform
+              </a>
+            </li>
+            <li>
+              <Link
+                to="/student/portal"
+                style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                  display: 'inline-block',
+                }}
+                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+              >
+                Student Portal
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/login"
+                style={{
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  textDecoration: 'none',
+                  transition: 'color 0.2s',
+                  display: 'inline-block',
+                }}
+                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+              >
+                Institutional Login
+              </Link>
+            </li>
           </ul>
         </div>
 
-        {/* Column 3: Portals & Access */}
+        {/* Column 3: Contact & Support */}
         <div>
           <h4
             style={{
               color: '#FFFFFF',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              marginBottom: '1rem',
-              letterSpacing: '0.02em',
+              fontSize: '0.9rem',
+              fontWeight: 700,
+              marginBottom: '1.25rem',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
             }}
           >
-            Access Portals
+            Contact & Support
           </h4>
-          <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '0.65rem', fontSize: '0.86rem' }}>
-            <li>
-              <Link to="/login" style={{ color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none' }}>
-                Institution Portal (Admin & Faculty) →
-              </Link>
-            </li>
-            <li>
-              <Link to="/login" style={{ color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none' }}>
-                Training & Placement Officer View →
-              </Link>
-            </li>
-            <li>
-              <Link to="/login" style={{ color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none' }}>
-                Student Experience Portal →
-              </Link>
-            </li>
-            <li>
-              <Link to="/login" style={{ color: 'var(--color-blue-bright)', textDecoration: 'none' }}>
-                1-Click Demo Personas Gateway
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        {/* Column 4: Integrity & Compliance */}
-        <div>
-          <h4
-            style={{
-              color: '#FFFFFF',
-              fontSize: '0.95rem',
-              fontWeight: 600,
-              marginBottom: '1rem',
-              letterSpacing: '0.02em',
-            }}
-          >
-            Responsible AI & Integrity
-          </h4>
-          <p style={{ fontSize: '0.82rem', lineHeight: 1.55, color: 'rgba(255,255,255,0.6)' }}>
-            PRATIBHA computes explainable readiness scores with dynamic compensation for missing data. It does not output black-box predictions or actuarial probabilities.
-          </p>
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              marginTop: '1rem',
-              fontSize: '0.78rem',
-              color: 'rgba(255,255,255,0.5)',
+              flexDirection: 'column',
+              gap: '1rem',
+              fontSize: '0.88rem',
             }}
           >
-            <Shield size={14} />
-            <span>Fictional synthetic demo records only.</span>
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+              <Mail size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Email Support</div>
+                <a
+                  href="mailto:support@pratibha.edu"
+                  style={{
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+                  onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.85)')}
+                >
+                  support@pratibha.edu
+                </a>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+              <Phone size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Helpline / Toll-free</div>
+                <a
+                  href="tel:+9118002004567"
+                  style={{
+                    color: 'rgba(255, 255, 255, 0.85)',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    transition: 'color 0.2s',
+                  }}
+                  onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+                  onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.85)')}
+                >
+                  +91 1800 200 4567
+                </a>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+              <MapPin size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Campus Office</div>
+                <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  Academic Innovation Center, Block 4, Institutional Area
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+              <Clock size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Working Hours</div>
+                <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                  Monday – Friday, 9:00 AM – 6:00 PM IST
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Bar */}
+      {/* Bottom Bar: Copyright & Legal */}
       <div
         style={{
-          maxWidth: '1280px',
+          maxWidth: '1200px',
           margin: '0 auto',
           paddingTop: '1.5rem',
           borderTop: '1px solid rgba(255, 255, 255, 0.08)',
@@ -163,19 +311,167 @@ export default function PublicFooter() {
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '1rem',
-          fontSize: '0.78rem',
-          color: 'rgba(255, 255, 255, 0.5)',
+          fontSize: '0.8rem',
+          color: 'rgba(255, 255, 255, 0.55)',
         }}
       >
         <div>
-          © {new Date().getFullYear()} PRATIBHA Platform. All rights reserved. Built for KPMG Challenge 4.
+          © {new Date().getFullYear()} PRATIBHA. All rights reserved.
         </div>
-        <div style={{ display: 'flex', gap: '1.5rem' }}>
-          <span>Privacy Notice (Synthetic Data)</span>
-          <span>Explainability Framework</span>
-          <span>Terms of Demonstration</span>
+
+        <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
+          <button
+            type="button"
+            onClick={() => setActiveModal('privacy')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '0.8rem',
+              cursor: 'pointer',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+            onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.6)')}
+          >
+            Privacy Policy
+          </button>
+          <span style={{ color: 'rgba(255, 255, 255, 0.2)' }}>•</span>
+          <button
+            type="button"
+            onClick={() => setActiveModal('terms')}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: 0,
+              color: 'rgba(255, 255, 255, 0.6)',
+              fontSize: '0.8rem',
+              cursor: 'pointer',
+              transition: 'color 0.2s',
+            }}
+            onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
+            onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.6)')}
+          >
+            Terms of Service
+          </button>
         </div>
       </div>
+
+      {/* Modal Dialog for Privacy Policy / Terms */}
+      {activeModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(2, 6, 15, 0.8)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+            padding: '1.5rem',
+          }}
+          onClick={() => setActiveModal(null)}
+        >
+          <div
+            style={{
+              backgroundColor: '#0A172E',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: '14px',
+              padding: '2rem',
+              maxWidth: '520px',
+              width: '100%',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.12)',
+              color: '#FFFFFF',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '1.25rem',
+              }}
+            >
+              <div>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    textTransform: 'uppercase',
+                    color: '#38BDF8',
+                    letterSpacing: '0.06em',
+                  }}
+                >
+                  {modalContent[activeModal].subtitle}
+                </span>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '4px 0 0', color: '#FFFFFF' }}>
+                  {modalContent[activeModal].title}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveModal(null)}
+                style={{
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  border: '1px solid rgba(255, 255, 255, 0.15)',
+                  color: '#94A3B8',
+                  borderRadius: '6px',
+                  padding: '6px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginBottom: '1.5rem' }}>
+              {modalContent[activeModal].content.map((paragraph, idx) => (
+                <div
+                  key={idx}
+                  style={{
+                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
+                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    borderRadius: '8px',
+                    padding: '0.85rem 1rem',
+                    fontSize: '0.85rem',
+                    color: '#CBD5E1',
+                    lineHeight: 1.55,
+                  }}
+                >
+                  {paragraph}
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setActiveModal(null)}
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                backgroundColor: 'var(--color-blue-primary)',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '0.88rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+                transition: 'background-color 0.2s',
+              }}
+              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-blue-bright)')}
+              onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-blue-primary)')}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </footer>
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ArrowRight, Menu, X } from 'lucide-react';
 import BrandLogo from '../common/BrandLogo';
 import { useAuth } from '../../context/AuthContext';
@@ -8,6 +8,7 @@ export default function PublicNavbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { currentUser, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleDashboardClick = () => {
     if (isAuthenticated && currentUser) {
@@ -17,10 +18,26 @@ export default function PublicNavbar() {
     }
   };
 
-  const navLinks = [
-    { label: 'Home', href: '#' },
-    { label: 'About', href: '#about' },
-  ];
+  const handleNavClick = (linkKey, e) => {
+    if (e) e.preventDefault();
+    setMobileMenuOpen(false);
+    if (linkKey === 'home') {
+      if (location.pathname === '/' || location.pathname === '/about') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        navigate('/');
+      }
+    } else if (linkKey === 'about') {
+      if (location.pathname === '/' || location.pathname === '/about') {
+        const el = document.getElementById('about');
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' });
+        }
+      } else {
+        navigate('/about');
+      }
+    }
+  };
 
   return (
     <header
@@ -65,23 +82,43 @@ export default function PublicNavbar() {
             }}
             className="desktop-nav"
           >
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                style={{
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  fontSize: '0.92rem',
-                  fontWeight: 500,
-                  textDecoration: 'none',
-                  transition: 'color var(--transition-fast)',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
-                onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
-              >
-                {link.label}
-              </a>
-            ))}
+            <button
+              type="button"
+              onClick={(e) => handleNavClick('home', e)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'rgba(255, 255, 255, 0.85)',
+                fontSize: '0.92rem',
+                fontWeight: 500,
+                padding: 0,
+                transition: 'color var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
+            >
+              Home
+            </button>
+
+            <button
+              type="button"
+              onClick={(e) => handleNavClick('about', e)}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                color: 'rgba(255, 255, 255, 0.85)',
+                fontSize: '0.92rem',
+                fontWeight: 500,
+                padding: 0,
+                transition: 'color var(--transition-fast)',
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
+            >
+              About
+            </button>
           </nav>
 
           {/* Right CTA Button */}
@@ -149,22 +186,38 @@ export default function PublicNavbar() {
             gap: '1rem',
           }}
         >
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              onClick={() => setMobileMenuOpen(false)}
-              style={{
-                color: '#FFFFFF',
-                fontSize: '1rem',
-                fontWeight: 500,
-                textDecoration: 'none',
-                padding: '0.5rem 0',
-              }}
-            >
-              {link.label}
-            </a>
-          ))}
+          <button
+            type="button"
+            onClick={(e) => handleNavClick('home', e)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#FFFFFF',
+              fontSize: '1rem',
+              fontWeight: 500,
+              padding: '0.5rem 0',
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+          >
+            Home
+          </button>
+          <button
+            type="button"
+            onClick={(e) => handleNavClick('about', e)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#FFFFFF',
+              fontSize: '1rem',
+              fontWeight: 500,
+              padding: '0.5rem 0',
+              textAlign: 'left',
+              cursor: 'pointer',
+            }}
+          >
+            About
+          </button>
           <button
             onClick={() => {
               setMobileMenuOpen(false);
