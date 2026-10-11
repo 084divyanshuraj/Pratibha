@@ -199,16 +199,16 @@ export default function SandboxPage() {
       </div>
 
       {/* Title & Action Bar */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
             {role === 'faculty_mentor'
               ? 'Remedial Tutoring & Mentorship Sandbox'
               : role === 'placement_officer'
               ? 'Interview & Placement Training Sandbox'
               : 'Intervention Sandbox & Resource Optimizer'}
           </h1>
-          <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
+          <p style={{ margin: '3px 0 0', color: '#64748B', fontSize: '0.84rem' }}>
             {role === 'faculty_mentor'
               ? 'Plan remedial coaching and peer mentoring cohorts within actual department faculty teaching capacity.'
               : role === 'placement_officer'
@@ -226,38 +226,44 @@ export default function SandboxPage() {
                 color: '#334155',
                 border: '1px solid #CBD5E1',
                 borderRadius: '8px',
-                padding: '9px 15px',
+                padding: '8px 15px',
                 fontWeight: 600,
-                fontSize: '0.84rem',
+                fontSize: '0.82rem',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+                transition: 'background-color 0.15s ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
             >
-              <Download size={16} color="#475569" />
+              <Download size={15} color="#475569" />
               <span>Export CSV</span>
             </button>
             {!approvedState && (
               <button
                 onClick={handleApprove}
                 style={{
-                  backgroundColor: '#10B981',
+                  backgroundColor: '#0D9488',
                   color: '#FFFFFF',
                   border: 'none',
                   borderRadius: '8px',
-                  padding: '10px 18px',
+                  padding: '9px 18px',
                   fontWeight: 600,
-                  fontSize: '0.84rem',
+                  fontSize: '0.82rem',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
+                  boxShadow: '0 2px 4px rgba(13, 148, 136, 0.25)',
+                  transition: 'background-color 0.15s ease',
                 }}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F766E')}
+                onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0D9488')}
               >
-                <CheckCircle2 size={16} />
+                <CheckCircle2 size={15} />
                 <span>Approve & Assign Interventions</span>
               </button>
             )}
@@ -281,19 +287,22 @@ export default function SandboxPage() {
         </div>
       )}
 
-      {/* Simulator Workspace Grid */}
+      {/* Simulator Workspace Grid (Symmetrical 2-Column with Sticky Controls) */}
       <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '20px', alignItems: 'start' }}>
-        {/* Left Column: Parameter Controls (Clean White Card Architecture) */}
+        {/* Left Column: Parameter Controls (Sticky & Perfectly Sized) */}
         <div
           style={{
             backgroundColor: '#FFFFFF',
-            padding: '22px',
+            padding: '1.25rem',
             borderRadius: '12px',
             border: '1px solid #E2E8F0',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1.25rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+            gap: '1.2rem',
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+            position: 'sticky',
+            top: '1.25rem',
+            alignSelf: 'start',
           }}
         >
           {/* Header styled with code-block indicator */}
@@ -307,8 +316,8 @@ export default function SandboxPage() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Sliders size={16} color="#1A73E8" />
-              <span style={{ fontSize: '0.96rem', fontWeight: 700, color: '#0F172A' }}>
+              <Sliders size={16} color="#1677D2" />
+              <span style={{ fontSize: '0.94rem', fontWeight: 700, color: '#082B56' }}>
                 Scenario Parameters
               </span>
             </div>
@@ -329,7 +338,7 @@ export default function SandboxPage() {
 
           {/* Strategy Selector */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '0.76rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>
               Allocation Strategy:
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -351,22 +360,22 @@ export default function SandboxPage() {
                     style={{
                       padding: '8px 12px',
                       borderRadius: '8px',
-                      border: `1px solid ${isSelected ? '#1A73E8' : '#E2E8F0'}`,
-                      backgroundColor: isSelected ? '#EBF3FE' : '#FFFFFF',
+                      border: `1px solid ${isSelected ? '#1677D2' : '#E2E8F0'}`,
+                      backgroundColor: isSelected ? '#EAF3FF' : '#FFFFFF',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                     }}
                   >
                     <div
                       style={{
-                        fontSize: '0.82rem',
+                        fontSize: '0.80rem',
                         fontWeight: 600,
-                        color: isSelected ? '#1A73E8' : '#1E293B',
+                        color: isSelected ? '#1677D2' : '#1E293B',
                       }}
                     >
                       {strat.label}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>{strat.desc}</div>
+                    <div style={{ fontSize: '0.70rem', color: '#64748B', marginTop: '2px' }}>{strat.desc}</div>
                   </div>
                 );
               })}
@@ -375,7 +384,7 @@ export default function SandboxPage() {
 
           {/* Intervention Program */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '0.76rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>
               Intervention Program:
             </label>
             <select
@@ -383,10 +392,10 @@ export default function SandboxPage() {
               onChange={(e) => setSelectedIntervention(e.target.value)}
               style={{
                 width: '100%',
-                padding: '9px 12px',
-                borderRadius: '6px',
+                padding: '8px 12px',
+                borderRadius: '8px',
                 border: '1px solid #CBD5E1',
-                fontSize: '0.84rem',
+                fontSize: '0.82rem',
                 outline: 'none',
                 backgroundColor: '#FFFFFF',
                 color: '#0F172A',
@@ -402,8 +411,8 @@ export default function SandboxPage() {
           {/* Capacity Constraint Slider */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569' }}>Seat Capacity Limit:</label>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1A73E8' }}>{capacitySeats} Seats</span>
+              <label style={{ fontSize: '0.76rem', fontWeight: 600, color: '#475569' }}>Seat Capacity Limit:</label>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1677D2' }}>{capacitySeats} Seats</span>
             </div>
             <input
               type="range"
@@ -412,7 +421,7 @@ export default function SandboxPage() {
               step="5"
               value={capacitySeats}
               onChange={(e) => setCapacitySeats(Number(e.target.value))}
-              style={{ width: '100%', cursor: 'pointer', accentColor: '#1A73E8' }}
+              style={{ width: '100%', cursor: 'pointer', accentColor: '#1677D2' }}
             />
             <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: '2px' }}>
               Limits total concurrent intervention enrollments
@@ -424,117 +433,160 @@ export default function SandboxPage() {
             onClick={handleRunSimulation}
             disabled={simulating}
             style={{
-              backgroundColor: '#1A73E8',
+              backgroundColor: '#1677D2',
               color: '#FFFFFF',
               border: 'none',
               borderRadius: '8px',
-              padding: '11px',
+              padding: '10px',
               fontWeight: 600,
-              fontSize: '0.88rem',
+              fontSize: '0.86rem',
               cursor: simulating ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)',
+              boxShadow: '0 2px 4px rgba(22, 119, 210, 0.25)',
               transition: 'background-color 0.15s ease',
             }}
+            onMouseEnter={(e) => { if (!simulating) e.currentTarget.style.backgroundColor = '#1262AF'; }}
+            onMouseLeave={(e) => { if (!simulating) e.currentTarget.style.backgroundColor = '#1677D2'; }}
           >
             <Play size={15} fill="#FFFFFF" />
             <span>{simulating ? 'Computing Allocation...' : 'Run Simulation'}</span>
           </button>
         </div>
 
-        {/* Right Column: Simulation Output & Allocation Lists */}
+        {/* Right Column: Simulation Output & Allocation Lists (Symmetric Height & Alignment) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {!simulationResult ? (
-            /* Empty State */
+            /* Empty State Symmetrically Balanced to Left Column */
             <div
               style={{
                 backgroundColor: '#FFFFFF',
                 borderRadius: '12px',
                 border: '1px solid #E2E8F0',
-                padding: '48px 24px',
-                textAlign: 'center',
+                padding: '3rem 2rem',
+                minHeight: '520px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                gap: '12px',
+                justifyContent: 'center',
+                textAlign: 'center',
+                gap: '16px',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
               }}
             >
               <div
                 style={{
-                  width: '56px',
-                  height: '56px',
+                  width: '64px',
+                  height: '64px',
                   borderRadius: '50%',
-                  backgroundColor: '#F1F5F9',
+                  backgroundColor: '#EAF3FF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  border: '1px solid #D0E4FF',
                 }}
               >
-                <FlaskConical size={26} color="#94A3B8" />
+                <FlaskConical size={30} color="#1677D2" />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0F172A' }}>Intervention Simulation Ready</h3>
-              <p style={{ margin: 0, fontSize: '0.84rem', color: '#64748B', maxWidth: '420px', lineHeight: '1.5' }}>
-                Configure capacity limits and strategy on the left, then click <strong>Run Simulation</strong> to compute
-                deterministic student assignments with explainable selection/exclusion rationales.
-              </p>
+              <div>
+                <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 700, color: '#082B56' }}>
+                  Intervention Simulation Ready
+                </h3>
+                <p style={{ margin: '6px 0 0', fontSize: '0.84rem', color: '#64748B', maxWidth: '440px', lineHeight: '1.5' }}>
+                  Configure capacity limits and allocation strategy on the left panel, then click <strong>Run Simulation</strong> to compute deterministic student assignments with explainable selection/exclusion rationales.
+                </p>
+              </div>
+
+              {/* Symmetrical 3-Step Flow Diagram */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', maxWidth: '520px', width: '100%', marginTop: '12px' }}>
+                <div style={{ padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'left' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1677D2', textTransform: 'uppercase' }}>Step 1</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#1E293B', marginTop: '2px' }}>Set Constraints</div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748B', marginTop: '2px' }}>Seats & Strategy</div>
+                </div>
+                <div style={{ padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'left' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1677D2', textTransform: 'uppercase' }}>Step 2</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#1E293B', marginTop: '2px' }}>Run Optimizer</div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748B', marginTop: '2px' }}>AI Multi-Objective</div>
+                </div>
+                <div style={{ padding: '10px 12px', backgroundColor: '#F8FAFC', borderRadius: '8px', border: '1px solid #E2E8F0', textAlign: 'left' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 700, color: '#1677D2', textTransform: 'uppercase' }}>Step 3</div>
+                  <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#1E293B', marginTop: '2px' }}>Audit & Assign</div>
+                  <div style={{ fontSize: '0.68rem', color: '#64748B', marginTop: '2px' }}>Verify Rationale</div>
+                </div>
+              </div>
             </div>
           ) : (
             /* Results Presentation */
             <>
-              {/* Summary Metrics (Original clean white cards from Image 1) */}
+              {/* Summary Metrics (Symmetric, Equal Height Cards) */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 <div
                   style={{
                     backgroundColor: '#FFFFFF',
-                    padding: '16px',
+                    padding: '14px 16px',
                     borderRadius: '10px',
                     border: '1px solid #E2E8F0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '105px',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
                   }}
                 >
-                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Selected for Program
                   </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10B981', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 700, color: '#059669', marginTop: '4px' }}>
                     {simulationResult.allocationResults?.length || 0} Students
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Strictly within {capacitySeats} seat cap</div>
+                  <div style={{ fontSize: '0.70rem', color: '#64748B' }}>Strictly within {capacitySeats} seat cap</div>
                 </div>
 
                 <div
                   style={{
                     backgroundColor: '#FFFFFF',
-                    padding: '16px',
+                    padding: '14px 16px',
                     borderRadius: '10px',
                     border: '1px solid #E2E8F0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '105px',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
                   }}
                 >
-                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
-                    Excluded Due to Capacity
+                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Excluded by Capacity
                   </div>
-                  <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#F59E0B', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.45rem', fontWeight: 700, color: '#D97706', marginTop: '4px' }}>
                     {simulationResult.excludedResults?.length || 0} Students
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Queued for next cohort cycle</div>
+                  <div style={{ fontSize: '0.70rem', color: '#64748B' }}>Queued for next cohort cycle</div>
                 </div>
 
                 <div
                   style={{
                     backgroundColor: '#FFFFFF',
-                    padding: '16px',
+                    padding: '14px 16px',
                     borderRadius: '10px',
                     border: '1px solid #E2E8F0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '105px',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
                   }}
                 >
-                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
-                    AI Optimizer Gain (Model 4)
+                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Optimizer Efficiency
                   </div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1A73E8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.25rem', fontWeight: 700, color: '#1677D2', marginTop: '4px' }}>
                     {simulationResult.resourceSummary?.optimizerEfficiencyGain || '+23.4% Reach'}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.70rem', color: '#059669', fontWeight: 600 }}>
                     {simulationResult.resourceSummary?.predictedCohortUplift || '+13.2% avg uplift'}
                   </div>
                 </div>
@@ -542,25 +594,30 @@ export default function SandboxPage() {
                 <div
                   style={{
                     backgroundColor: '#FFFFFF',
-                    padding: '16px',
+                    padding: '14px 16px',
                     borderRadius: '10px',
                     border: '1px solid #E2E8F0',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    minHeight: '105px',
+                    boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
                   }}
                 >
-                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                     Human Approval State
                   </div>
                   <div
                     style={{
-                      fontSize: '1.15rem',
+                      fontSize: '1.1rem',
                       fontWeight: 700,
-                      color: approvedState ? '#10B981' : '#D97706',
-                      marginTop: '6px',
+                      color: approvedState ? '#059669' : '#D97706',
+                      marginTop: '4px',
                     }}
                   >
-                    {approvedState ? 'APPROVED & ASSIGNED' : 'SIMULATED (PENDING)'}
+                    {approvedState ? 'APPROVED' : 'PENDING REVIEW'}
                   </div>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Requires provost authorization</div>
+                  <div style={{ fontSize: '0.70rem', color: '#64748B' }}>Requires provost authorization</div>
                 </div>
               </div>
 

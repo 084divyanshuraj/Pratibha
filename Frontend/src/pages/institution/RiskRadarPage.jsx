@@ -219,38 +219,43 @@ export default function RiskRadarPage() {
 
       {/* Title */}
       <div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '999px', backgroundColor: '#EEF2FF', color: '#6366F1', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '999px', backgroundColor: '#EAF3FF', color: '#1677D2', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px', border: '1px solid #BFDBFE' }}>
           <Target size={13} />
           <span>Independent Dual-Engine Architecture</span>
         </div>
-        <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
           Decoupled Risk Intelligence Radar
         </h1>
+        <p style={{ margin: '3px 0 0', color: '#64748B', fontSize: '0.84rem' }}>
+          Academic theory risk and career placement risk computed as independent decoupled ML vectors.
+        </p>
       </div>
 
-      {/* 2x2 Risk Quadrant Matrix */}
+      {/* 2x2 Risk Quadrant Matrix (Symmetric White Cards with Color Accents) */}
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#0F172A' }}>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#082B56' }}>
             Academic vs Placement Risk Matrix
           </h3>
-          <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+          <span style={{ fontSize: '0.76rem', color: '#64748B' }}>
             Total Population: <strong>{totalPop.toLocaleString()}</strong> Enrolled Students
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
           {/* Quadrant 1: Decoupled Divergence (High CGPA + High Placement Risk) */}
           <div
             style={{
-              backgroundColor: '#FFFBEB',
-              border: '2px solid #F59E0B',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderLeft: '4px solid #D97706',
               borderRadius: '12px',
-              padding: '20px',
+              padding: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              boxShadow: '0 2px 4px rgba(245, 158, 11, 0.08)',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              minHeight: '210px',
             }}
           >
             <div>
@@ -258,14 +263,14 @@ export default function RiskRadarPage() {
                 <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Decoupled Divergence Cluster
                 </span>
-                <span style={{ backgroundColor: '#FEF3C7', color: '#B45309', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem' }}>
+                <span style={{ backgroundColor: '#FEF3C7', color: '#B45309', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
                   Action Needed
                 </span>
               </div>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#92400E', marginTop: '10px' }}>
-                {divCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({divPct}%)</span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#082B56', marginTop: '10px' }}>
+                {divCount.toLocaleString()} Students <span style={{ fontSize: '0.86rem', fontWeight: 500, color: '#D97706' }}>({divPct}%)</span>
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#78350F', marginTop: '6px', lineHeight: '1.45' }}>
+              <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '6px', lineHeight: '1.45' }}>
                 <strong>CGPA ≥ 7.5 but High Placement Risk.</strong> Students with strong academic records experiencing aptitude, communication, or mock interview hurdles.
               </div>
             </div>
@@ -286,9 +291,12 @@ export default function RiskRadarPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
+                transition: 'background-color 150ms ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#B45309')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#D97706')}
             >
-              <span>Inspect Divergent Cohort (148)</span>
+              <span>Inspect Divergent Cohort ({divCount})</span>
               <ArrowRight size={13} />
             </button>
           </div>
@@ -296,28 +304,31 @@ export default function RiskRadarPage() {
           {/* Quadrant 2: Double Risk (High Academic + High Placement Risk) */}
           <div
             style={{
-              backgroundColor: '#FEF2F2',
-              border: '1px solid #FECACA',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderLeft: '4px solid #DC2626',
               borderRadius: '12px',
-              padding: '20px',
+              padding: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              minHeight: '210px',
             }}
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#DC2626', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Comprehensive Double Risk
                 </span>
-                <span style={{ backgroundColor: '#FEE2E2', color: '#DC2626', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem' }}>
+                <span style={{ backgroundColor: '#FEE2E2', color: '#DC2626', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
                   Critical Priority
                 </span>
               </div>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#991B1B', marginTop: '10px' }}>
-                {doubleRiskCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({doubleRiskPct}%)</span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#082B56', marginTop: '10px' }}>
+                {doubleRiskCount.toLocaleString()} Students <span style={{ fontSize: '0.86rem', fontWeight: 500, color: '#DC2626' }}>({doubleRiskPct}%)</span>
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#7F1D1D', marginTop: '6px', lineHeight: '1.45' }}>
+              <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '6px', lineHeight: '1.45' }}>
                 <strong>High Academic Risk + High Placement Risk.</strong> Requires paired remedial subject coaching and student wellness counseling.
               </div>
             </div>
@@ -338,7 +349,10 @@ export default function RiskRadarPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
+                transition: 'background-color 150ms ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#B91C1C')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#DC2626')}
             >
               <span>Enroll in Remedial Sandbox</span>
               <ArrowRight size={13} />
@@ -348,28 +362,31 @@ export default function RiskRadarPage() {
           {/* Quadrant 3: Star Performers (Low Risk on Both) */}
           <div
             style={{
-              backgroundColor: '#F0FDF4',
-              border: '1px solid #BBF7D0',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderLeft: '4px solid #0D9488',
               borderRadius: '12px',
-              padding: '20px',
+              padding: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              minHeight: '210px',
             }}
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#16A34A', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#0D9488', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Career & Academic Achievers
                 </span>
-                <span style={{ backgroundColor: '#DCFCE7', color: '#16A34A', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.74rem' }}>
-                  Secure
+                <span style={{ backgroundColor: '#CCFBF1', color: '#0F766E', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
+                  Secure Cohort
                 </span>
               </div>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#14532D', marginTop: '10px' }}>
-                {achieversCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({achieversPct}%)</span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#082B56', marginTop: '10px' }}>
+                {achieversCount.toLocaleString()} Students <span style={{ fontSize: '0.86rem', fontWeight: 500, color: '#0D9488' }}>({achieversPct}%)</span>
               </div>
-              <div style={{ fontSize: '0.82rem', color: '#166534', marginTop: '6px', lineHeight: '1.45' }}>
+              <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '6px', lineHeight: '1.45' }}>
                 <strong>Low Academic Risk + Low Placement Risk.</strong> Candidates for leadership honours, peer mentoring, and corporate fellowship tracks.
               </div>
             </div>
@@ -379,7 +396,7 @@ export default function RiskRadarPage() {
               style={{
                 marginTop: '16px',
                 alignSelf: 'flex-start',
-                backgroundColor: '#16A34A',
+                backgroundColor: '#0D9488',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '6px',
@@ -390,7 +407,10 @@ export default function RiskRadarPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
+                transition: 'background-color 150ms ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F766E')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0D9488')}
             >
               <span>View Tier-1 Ready Roster</span>
               <ArrowRight size={13} />
@@ -400,23 +420,29 @@ export default function RiskRadarPage() {
           {/* Quadrant 4: Academic Shortfall Only */}
           <div
             style={{
-              backgroundColor: '#F8FAFC',
+              backgroundColor: '#FFFFFF',
               border: '1px solid #E2E8F0',
+              borderLeft: '4px solid #1677D2',
               borderRadius: '12px',
-              padding: '20px',
+              padding: '1.25rem',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+              minHeight: '210px',
             }}
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#475569', textTransform: 'uppercase' }}>
+                <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#1677D2', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Academic Backlogs Only
                 </span>
+                <span style={{ backgroundColor: '#EAF3FF', color: '#1677D2', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
+                  Theory Remedial
+                </span>
               </div>
-              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#1E293B', marginTop: '10px' }}>
-                {backlogsOnlyCount.toLocaleString()} Students <span style={{ fontSize: '0.88rem', fontWeight: 500 }}>({backlogsOnlyPct}%)</span>
+              <div style={{ fontSize: '1.85rem', fontWeight: 800, color: '#082B56', marginTop: '10px' }}>
+                {backlogsOnlyCount.toLocaleString()} Students <span style={{ fontSize: '0.86rem', fontWeight: 500, color: '#1677D2' }}>({backlogsOnlyPct}%)</span>
               </div>
               <div style={{ fontSize: '0.82rem', color: '#475569', marginTop: '6px', lineHeight: '1.45' }}>
                 <strong>High Academic Risk with Good Aptitude.</strong> Students performing well in coding competitions but struggling with formal theory exams.
@@ -428,7 +454,7 @@ export default function RiskRadarPage() {
               style={{
                 marginTop: '16px',
                 alignSelf: 'flex-start',
-                backgroundColor: '#475569',
+                backgroundColor: '#1677D2',
                 color: '#FFFFFF',
                 border: 'none',
                 borderRadius: '6px',
@@ -439,9 +465,12 @@ export default function RiskRadarPage() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
+                transition: 'background-color 150ms ease',
               }}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
             >
-              <span>Review Theory Backlog Mentees</span>
+              <span>Inspect Academic Alerts</span>
               <ArrowRight size={13} />
             </button>
           </div>
