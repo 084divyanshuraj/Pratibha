@@ -1623,12 +1623,14 @@ export const api = {
    */
   async queryCopilot(queryText) {
     try {
+      await ensureAdminToken();
       const res = await fetchClient('/copilot/query', {
         method: 'POST',
         body: JSON.stringify({ query: queryText }),
       });
       return res;
     } catch (err) {
+      const activeStudents = getActiveStudents();
       const clean = (queryText || '').toLowerCase().trim();
       const norm = clean
         .replace(/\barav\b/g, 'aarav')
@@ -1665,15 +1667,15 @@ You can ask me:
 
       // 2. Specific Student Search by Name or ID
       const idMatch = clean.match(/\b(stu[_-]?\d{1,4})\b/i);
-      const matchedStudent = MOCK_STUDENTS.find((s) => {
+      const matchedStudent = activeStudents.find((s) => {
         if (idMatch && s.studentId.toLowerCase().replace('_', '') === idMatch[1].replace(/[_-]/, '')) return true;
-        const fn = s.firstName.toLowerCase();
-        const ln = s.lastName.toLowerCase();
-        const full = s.fullName.toLowerCase();
+        const fn = s.firstName?.toLowerCase() || '';
+        const ln = s.lastName?.toLowerCase() || '';
+        const full = s.fullName?.toLowerCase() || `${fn} ${ln}`.trim();
         return (
           norm.includes(full) ||
-          (norm.includes(fn) && fn.length >= 3) ||
-          (norm.includes(ln) && ln.length >= 3) ||
+          (fn && norm.includes(fn) && fn.length >= 3) ||
+          (ln && norm.includes(ln) && ln.length >= 3) ||
           norm.includes(s.studentId.toLowerCase())
         );
       });
@@ -1833,7 +1835,7 @@ Please verify the name or student ID (e.g., \`Aarav Sharma\`, \`STU_0001\`). You
         norm.includes('defaulter') ||
         (norm.includes('attendance') && (norm.includes('shortfall') || norm.includes('kam') || norm.includes('low') || norm.includes('below') || norm.includes('75')))
       ) {
-        const defaulters = MOCK_STUDENTS.filter((s) => s.attendanceRate < 75);
+        const defaulters = activeStudents.filter((s) => s.attendanceRate < 75);
         const listText = defaulters
           .map((s, i) => `${i + 1}. **${s.fullName}** (\`${s.studentId}\`) — **${s.attendanceRate}%** (${s.department})`)
           .join('\n');
@@ -1857,7 +1859,7 @@ ${listText}
 
       // 4. Decoupled Risk Divergence (High CGPA + High Placement Risk)
       if (norm.includes('decoupled') || norm.includes('divergence') || norm.includes('high cgpa low placement') || norm.includes('divergent') || norm.includes('mock interview')) {
-        const divergentStudents = MOCK_STUDENTS.filter((s) => s.cgpa >= 7.5 && s.placementRisk === 'high');
+        const divergentStudents = activeStudents.filter((s) => s.cgpa >= 7.5 && s.placementRisk === 'high');
         const listText = divergentStudents
           .map((s, i) => `${i + 1}. **${s.fullName}** (\`${s.studentId}\`) — CGPA: **${s.cgpa}**, Placement Risk: **HIGH** (${s.department})`)
           .join('\n');
@@ -1882,7 +1884,7 @@ ${listText}
 
       // 5. Active Backlogs / Academic Remedial
       if (norm.includes('backlog') || norm.includes('backlogs') || norm.includes('failing') || norm.includes('remedial') || (norm.includes('academic') && norm.includes('risk') && !norm.includes('placement'))) {
-        const academicAtRisk = MOCK_STUDENTS.filter((s) => s.academicRisk === 'high' || s.cgpa < 6.5);
+        const academicAtRisk = activeStudents.filter((s) => s.academicRisk === 'high' || s.cgpa < 6.5);
         const listText = academicAtRisk
           .map((s, i) => `${i + 1}. **${s.fullName}** (\`${s.studentId}\`) — CGPA: **${s.cgpa}**, Success Score: **${s.successScore}** (${s.department})`)
           .join('\n');
@@ -1912,7 +1914,7 @@ ${listText}
         norm.includes('mechanical') ? 'Mechanical' : null;
 
       if (deptFilter && !norm.includes('overview') && !norm.includes('kpi')) {
-        const deptStudents = MOCK_STUDENTS.filter((s) => s.department.toLowerCase().includes(deptFilter.toLowerCase().slice(0, 5)));
+        const deptStudents = activeStudents.filter((s) => s.department.toLowerCase().includes(deptFilter.toLowerCase().slice(0, 5)));
         const avgCgpa = (deptStudents.reduce((acc, s) => acc + s.cgpa, 0) / deptStudents.length).toFixed(1);
         const listText = deptStudents
           .map((s, i) => `${i + 1}. **${s.fullName}** (\`${s.studentId}\`) — CGPA: ${s.cgpa}, Success Score: ${s.successScore} (Sem ${s.semester})`)
@@ -1938,7 +1940,7 @@ ${listText}
 
       // 7. Top Achievers
       if (norm.includes('top student') || norm.includes('topper') || norm.includes('toppers') || norm.includes('achiever') || norm.includes('best student') || norm.includes('high performer')) {
-        const topStudents = MOCK_STUDENTS.filter((s) => s.successScore >= 80).sort((a, b) => b.successScore - a.successScore);
+        const topStudents = activeStudents.filter((s) => s.successScore >= 80).sort((a, b) => b.successScore - a.successScore);
         const listText = topStudents
           .map((s, i) => `${i + 1}. **${s.fullName}** (\`${s.studentId}\`) — Success Score: **${s.successScore}**, CGPA: **${s.cgpa}** (${s.department})`)
           .join('\n');
@@ -1962,7 +1964,7 @@ ${listText}
 
       // 8. At-Risk Listing
       if (norm.includes('at risk') || norm.includes('struggling') || norm.includes('need intervention') || norm.includes('critical') || norm.includes('help chahiye')) {
-        const atRiskStudents = MOCK_STUDENTS.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
+        const atRiskStudents = activeStudents.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
         const listText = atRiskStudents
           .map((s, i) => `${i + 1}. **${s.fullName}** (\`${s.studentId}\`) — Academic Risk: **${s.academicRisk.toUpperCase()}**, Placement Risk: **${s.placementRisk.toUpperCase()}** (${s.department})`)
           .join('\n');
