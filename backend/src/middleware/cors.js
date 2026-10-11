@@ -12,6 +12,11 @@ export function corsMiddleware() {
         return callback(null, true);
       }
 
+      // Allow any local dev origin in development
+      if (!config.isProd && (/^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin))) {
+        return callback(null, true);
+      }
+
       if (config.cors.allowedOrigins.includes(origin)) {
         return callback(null, true);
       }

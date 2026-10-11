@@ -4,6 +4,7 @@ import {
   createStudentHandler,
   getStudentByIdHandler,
   updateStudentHandler,
+  deleteStudentHandler,
   getStudentRecordsHandler,
 } from './student.controller.js';
 import {
@@ -52,6 +53,14 @@ router.patch(
   authenticate,
   authorizeRoles('admin', 'faculty'),
   updateStudentHandler
+);
+
+// Admin delete student profile & cascade records
+router.delete(
+  '/:studentId',
+  authenticate,
+  authorizeRoles('admin'),
+  deleteStudentHandler
 );
 
 // Staff or owner student access to aggregated 7-category records

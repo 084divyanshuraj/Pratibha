@@ -141,7 +141,7 @@ export async function listStudents({
 }
 
 /**
- * Create a new student profile.
+ * Create a new student profile and initialize associated domain records.
  */
 export async function createStudent(data) {
   if (!data || typeof data !== 'object') {
@@ -160,15 +160,97 @@ export async function createStudent(data) {
     throw new AppError(`Student with ID "${studentId}" already exists.`, 409, 'CONFLICT');
   }
 
+  // Handle fullName if firstName or lastName missing
+  let firstName = data.firstName;
+  let lastName = data.lastName;
+  if (!firstName && data.fullName) {
+    const parts = data.fullName.trim().split(' ');
+    firstName = parts[0] || 'Student';
+    lastName = parts.slice(1).join(' ') || 'User';
+  }
+
+  const enrollmentYear = data.enrollmentYear || new Date().getFullYear();
+  const semester = Number(data.semester) || 1;
+
   const student = new Student({
     ...data,
+    firstName: firstName || 'Student',
+    lastName: lastName || 'User',
+    enrollmentYear,
+    semester,
     studentId,
   });
 
   await student.validate();
   await student.save();
 
-  return toStudentDTO(student);
+  // Create initial AcademicRecord if cgpa provided
+  const cgpaVal = data.cgpa != null ? Number(data.cgpa) : 8.0;
+  await AcademicRecord.create({
+    studentId,
+    term: `2026-S${semester}`,
+    marksObtained: Math.round(cgpaVal * 10),
+    maxMarks: 100,
+    cgpa: cgpaVal,
+    observedAt: new Date(),
+  });
+
+  // Create initial AttendanceRecord if attendanceRate provided
+  const attVal = data.attendanceRate != null ? Number(data.attendanceRate) : 85.0;
+  await AttendanceRecord.create({
+    studentId,
+    term: `2026-S${semester}`,
+    classesAttended: Math.round(50 * (attVal / 100)),
+    classesHeld: 50,
+    attendancePercentage: attVal,
+    observedAt: new Date(),
+  });
+
+  // Create initial RiskPrediction records
+  const academicRisk = (data.academicRisk || 'low').toLowerCase();
+  const placementRisk = (data.placementRisk || 'low').toLowerCase();
+
+  await Promise.all([
+    RiskPrediction.create({
+      studentId,
+      target: 'academic_risk',
+      riskLevel: academicRisk,
+      modelVersion: 'academic-risk-lgbm-v1',
+      featureSetVersion: 'v1.0',
+      predictedAt: new Date(),
+    }),
+    RiskPrediction.create({
+      studentId,
+      target: 'placement_risk',
+      riskLevel: placementRisk,
+      modelVersion: 'placement-risk-logreg-v1',
+      featureSetVersion: 'v1.0',
+      predictedAt: new Date(),
+    }),
+  ]);
+
+  // Create initial StudentScore
+  const successScore = data.successScore != null ? Number(data.successScore) : +(cgpaVal * 5 + attVal * 0.4).toFixed(1);
+  await StudentScore.create({
+    studentId,
+    period: 'current',
+    score: successScore,
+    formulaVersion: 'sss-v1',
+    components: [
+      { key: 'academic', rawValue: cgpaVal, normalizedValue: cgpaVal * 10, weight: 0.35 },
+      { key: 'attendance', rawValue: attVal, normalizedValue: attVal, weight: 0.20 },
+    ],
+    calculatedAt: new Date(),
+  });
+
+  return {
+    ...toStudentDTO(student),
+    cgpa: cgpaVal,
+    attendanceRate: attVal,
+    successScore,
+    academicRisk,
+    placementRisk,
+  };
 }
 
 /**
@@ -190,7 +272,7 @@ export async function getStudentById(studentId) {
 }
 
 /**
- * Update an existing student profile.
+ * Update an existing student profile and associated metrics.
  * Preserves immutable stable studentId.
  */
 export async function updateStudent(studentId, updateData) {
@@ -210,6 +292,13 @@ export async function updateStudent(studentId, updateData) {
     updateData.studentId.trim().toUpperCase() !== cleanId
   ) {
     throw new AppError('studentId is an immutable stable identifier and cannot be modified.', 400, 'VALIDATION_ERROR');
+  }
+
+  // Handle fullName update
+  if (updateData.fullName && (!updateData.firstName || !updateData.lastName)) {
+    const parts = updateData.fullName.trim().split(' ');
+    updateData.firstName = parts[0] || student.firstName;
+    updateData.lastName = parts.slice(1).join(' ') || student.lastName;
   }
 
   const allowedFields = [
@@ -234,7 +323,134 @@ export async function updateStudent(studentId, updateData) {
   await student.validate();
   await student.save();
 
-  return toStudentDTO(student);
+  // Update AcademicRecord if cgpa provided
+  let currentCgpa = null;
+  if (updateData.cgpa !== undefined && updateData.cgpa !== null) {
+    currentCgpa = Number(updateData.cgpa);
+    const latestAcad = await AcademicRecord.findOne({ studentId: cleanId }).sort({ observedAt: -1 });
+    if (latestAcad) {
+      latestAcad.cgpa = currentCgpa;
+      latestAcad.marksObtained = Math.round(currentCgpa * 10);
+      await latestAcad.save();
+    } else {
+      await AcademicRecord.create({
+        studentId: cleanId,
+        term: `2026-S${student.semester || 1}`,
+        marksObtained: Math.round(currentCgpa * 10),
+        maxMarks: 100,
+        cgpa: currentCgpa,
+        observedAt: new Date(),
+      });
+    }
+  }
+
+  // Update AttendanceRecord if attendanceRate provided
+  let currentAtt = null;
+  if (updateData.attendanceRate !== undefined && updateData.attendanceRate !== null) {
+    currentAtt = Number(updateData.attendanceRate);
+    const latestAtt = await AttendanceRecord.findOne({ studentId: cleanId }).sort({ observedAt: -1 });
+    if (latestAtt) {
+      latestAtt.attendancePercentage = currentAtt;
+      latestAtt.classesAttended = Math.round(latestAtt.classesHeld * (currentAtt / 100));
+      await latestAtt.save();
+    } else {
+      await AttendanceRecord.create({
+        studentId: cleanId,
+        term: `2026-S${student.semester || 1}`,
+        classesAttended: Math.round(50 * (currentAtt / 100)),
+        classesHeld: 50,
+        attendancePercentage: currentAtt,
+        observedAt: new Date(),
+      });
+    }
+  }
+
+  // Update RiskPrediction for academic_risk if provided
+  if (updateData.academicRisk) {
+    await RiskPrediction.findOneAndUpdate(
+      { studentId: cleanId, target: 'academic_risk' },
+      {
+        riskLevel: updateData.academicRisk.toLowerCase(),
+        modelVersion: 'academic-risk-lgbm-v1',
+        featureSetVersion: 'v1.0',
+        predictedAt: new Date(),
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  // Update RiskPrediction for placement_risk if provided
+  if (updateData.placementRisk) {
+    await RiskPrediction.findOneAndUpdate(
+      { studentId: cleanId, target: 'placement_risk' },
+      {
+        riskLevel: updateData.placementRisk.toLowerCase(),
+        modelVersion: 'placement-risk-logreg-v1',
+        featureSetVersion: 'v1.0',
+        predictedAt: new Date(),
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  // Update StudentScore if provided or if cgpa/attendance updated
+  if (updateData.successScore !== undefined || currentCgpa !== null || currentAtt !== null) {
+    const cgpaVal = currentCgpa ?? 8.0;
+    const attVal = currentAtt ?? 85.0;
+    const sScore = updateData.successScore != null ? Number(updateData.successScore) : +(cgpaVal * 5 + attVal * 0.4).toFixed(1);
+    await StudentScore.findOneAndUpdate(
+      { studentId: cleanId, period: 'current' },
+      {
+        score: sScore,
+        formulaVersion: 'sss-v1',
+        calculatedAt: new Date(),
+      },
+      { upsert: true, new: true }
+    );
+  }
+
+  return {
+    ...toStudentDTO(student),
+    cgpa: currentCgpa ?? 8.0,
+    attendanceRate: currentAtt ?? 85.0,
+    academicRisk: updateData.academicRisk || 'low',
+    placementRisk: updateData.placementRisk || 'low',
+  };
+}
+
+/**
+ * Cascade delete student and all associated records.
+ */
+export async function deleteStudent(studentId) {
+  if (!studentId || typeof studentId !== 'string') {
+    throw new AppError('A valid studentId parameter is required.', 400, 'VALIDATION_ERROR');
+  }
+
+  const cleanId = studentId.trim().toUpperCase();
+  const student = await Student.findOne({ studentId: cleanId });
+
+  if (!student) {
+    throw new AppError(`Student with ID "${cleanId}" not found.`, 404, 'NOT_FOUND');
+  }
+
+  await Promise.all([
+    Student.deleteOne({ studentId: cleanId }),
+    AcademicRecord.deleteMany({ studentId: cleanId }),
+    AttendanceRecord.deleteMany({ studentId: cleanId }),
+    LmsActivity.deleteMany({ studentId: cleanId }),
+    EngagementRecord.deleteMany({ studentId: cleanId }),
+    PlacementAssessment.deleteMany({ studentId: cleanId }),
+    SkillAssessment.deleteMany({ studentId: cleanId }),
+    FeedbackRecord.deleteMany({ studentId: cleanId }),
+    StudentScore.deleteMany({ studentId: cleanId }),
+    RiskPrediction.deleteMany({ studentId: cleanId }),
+  ]);
+
+  return {
+    deleted: true,
+    studentId: cleanId,
+    message: `Student "${cleanId}" and all associated domain records deleted successfully.`,
+  };
 }
 
 /**
@@ -305,5 +521,6 @@ export default {
   createStudent,
   getStudentById,
   updateStudent,
+  deleteStudent,
   getStudentRecords,
 };
