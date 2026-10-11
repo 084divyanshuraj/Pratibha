@@ -74,6 +74,10 @@ export default function StudentPortalPage() {
     dataCompleteness: 100,
   });
 
+  const [predictionsData, setPredictionsData] = useState(null);
+  const [scoreData, setScoreData] = useState(null);
+  const [loadingLive, setLoadingLive] = useState(false);
+
   useEffect(() => {
     if (currentUser) {
       setStudent((prev) => ({
@@ -92,16 +96,62 @@ export default function StudentPortalPage() {
         email: currentUser.email || prev.email,
       }));
     }
+
+    const studentIdToFetch = currentUser?.studentId || 'STU_0001';
+    setLoadingLive(true);
+    Promise.all([
+      api.getStudentSuccessScore(studentIdToFetch),
+      api.getStudentPredictions(studentIdToFetch),
+      api.getStudents({ search: studentIdToFetch }),
+    ])
+      .then(([scoreRes, predRes, studentsRes]) => {
+        setScoreData(scoreRes);
+        setPredictionsData(predRes);
+        const match = studentsRes?.students?.find(
+          (s) => s.studentId === studentIdToFetch || s.email === currentUser?.email
+        ) || studentsRes?.students?.[0];
+
+        if (match) {
+          setStudent((prev) => ({
+            ...prev,
+            cgpa: match.cgpa ?? prev.cgpa,
+            attendanceRate: match.attendanceRate ?? prev.attendanceRate,
+            successScore: match.successScore ?? prev.successScore,
+            academicRisk: match.academicRisk ?? prev.academicRisk,
+            placementRisk: match.placementRisk ?? prev.placementRisk,
+            dataCompleteness: match.dataCompleteness ?? 100,
+          }));
+        } else if (scoreRes?.score) {
+          setStudent((prev) => ({
+            ...prev,
+            successScore: scoreRes.score,
+            dataCompleteness: scoreRes.data_completeness_pct ?? 100,
+          }));
+        }
+      })
+      .catch((err) => console.warn('StudentPortal live fetch error:', err))
+      .finally(() => setLoadingLive(false));
   }, [currentUser]);
 
   // Score Drivers (Explainable PRD compliance)
-  const [scoreDrivers] = useState([
-    { title: 'Academic Performance', score: 84.0, weight: '35%', contribution: '+29.4', detail: 'Consistent SGPA > 8.2 across core computer science practicals and theory' },
-    { title: 'Classroom Attendance', score: 88.5, weight: '20%', contribution: '+17.7', detail: '88.5% aggregate attendance, well above statutory 75% limit' },
-    { title: 'Placement Readiness & Tests', score: 76.0, weight: '20%', contribution: '+15.2', detail: 'Tier-1 aptitude score (82%), mock technical coding (74%)' },
-    { title: 'Digital LMS Activity', score: 82.0, weight: '15%', contribution: '+12.3', detail: '100% lab submission and quiz completion on campus LMS' },
-    { title: 'Clubs & Extra-Curriculars', score: 72.0, weight: '10%', contribution: '+3.8', detail: 'Active member in ACM Student Chapter and Hackathon Team' },
-  ]);
+  const scoreDrivers = useMemo(() => {
+    if (scoreData?.drivers && scoreData.drivers.length > 0) {
+      return scoreData.drivers.map((d) => ({
+        title: d.name,
+        score: d.contribution ? Math.min(100, Math.round(d.contribution * 3.2)) : 80,
+        weight: '25%',
+        contribution: `+${d.contribution}`,
+        detail: `Deterministic attribution from sss-v1 normalized domain feature weights`,
+      }));
+    }
+    return [
+      { title: 'Academic Performance', score: Math.round(student.cgpa * 10), weight: '35%', contribution: '+29.4', detail: 'Consistent SGPA progression across core semester courses' },
+      { title: 'Classroom Attendance', score: Math.round(student.attendanceRate), weight: '20%', contribution: '+17.7', detail: `${student.attendanceRate}% aggregate attendance, compared with 75% limit` },
+      { title: 'Placement Readiness & Tests', score: 76.0, weight: '20%', contribution: '+15.2', detail: 'Aptitude percentile and mock technical coding assessments' },
+      { title: 'Digital LMS Activity', score: 82.0, weight: '15%', contribution: '+12.3', detail: 'Regular assignment submissions and digital portal engagements' },
+      { title: 'Clubs & Extra-Curriculars', score: 72.0, weight: '10%', contribution: '+3.8', detail: 'Student chapter participation and hackathon entries' },
+    ];
+  }, [scoreData, student.cgpa, student.attendanceRate]);
 
   // Attendance Courses Telemetry
   const [attendanceCourses] = useState([
@@ -567,46 +617,206 @@ export default function StudentPortalPage() {
             </div>
           </div>
 
-          {/* Quick Action Banner */}
+          {/* Model 1 & Model 2 Predictive Intelligence Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+            {/* Model 1: Dropout & Debarment Survival Engine (Cox-PH-v1.2) */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #FECACA',
+                borderRadius: '12px',
+                padding: '1.25rem',
+                boxShadow: '0 1px 3px rgba(220, 38, 38, 0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <ShieldAlert size={18} color="#DC2626" />
+                    <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#991B1B' }}>
+                      Model 1: Debarment & Dropout Forecast
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontFamily: 'monospace',
+                      fontWeight: 600,
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      backgroundColor: '#FEE2E2',
+                      color: '#991B1B',
+                    }}
+                  >
+                    Cox-PH-v1.2
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '12px' }}>
+                  Time-to-event survival modeling evaluates semester credit loss & attendance debarment horizon.
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+                  <div style={{ backgroundColor: '#FEF2F2', padding: '8px 10px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '0.66rem', color: '#6B7280' }}>Hazard Multiplier</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#991B1B', marginTop: '2px' }}>
+                      {predictionsData?.targets?.dropout_forecast?.hazardMultiplier || '1.0x'}
+                    </div>
+                  </div>
+                  <div style={{ backgroundColor: '#F0FDF4', padding: '8px 10px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '0.66rem', color: '#6B7280' }}>Survival Rate</div>
+                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
+                      {predictionsData?.targets?.dropout_forecast?.survivalRatePct || 94}%
+                    </div>
+                  </div>
+                  <div style={{ backgroundColor: '#FFFBEB', padding: '8px 10px', borderRadius: '6px' }}>
+                    <div style={{ fontSize: '0.66rem', color: '#6B7280' }}>Debarment Risk</div>
+                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#B45309', marginTop: '4px' }}>
+                      {predictionsData?.targets?.dropout_forecast?.projectedDebarmentWeek || 'Safe / None'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ marginTop: '12px', fontSize: '0.72rem', color: '#4B5563', borderTop: '1px solid #F3F4F6', paddingTop: '8px' }}>
+                • <strong>Status:</strong> {student.attendanceRate < 75 ? '⚠️ Attendance shortfall alert (< 75%). Biometric regularity required.' : '✓ Regular attendance maintains full exam eligibility.'}
+              </div>
+            </div>
+
+            {/* Model 2: Causal Uplift Recommender (CausalForest-v2.1) */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #BBF7D0',
+                borderRadius: '12px',
+                padding: '1.25rem',
+                boxShadow: '0 1px 3px rgba(22, 163, 74, 0.05)',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Sparkles size={18} color="#16A34A" />
+                    <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}>
+                      Model 2: Personalized Causal Uplift
+                    </span>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: '0.66rem',
+                      fontFamily: 'monospace',
+                      fontWeight: 600,
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      backgroundColor: '#DCFCE7',
+                      color: '#15803D',
+                    }}
+                  >
+                    CausalForest-v2.1
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '8px' }}>
+                  Optimal counterfactual treatment effect identified for maximum metric boost.
+                </div>
+
+                <div style={{ backgroundColor: '#F0FDF4', padding: '10px', borderRadius: '8px', border: '1px solid #BBF7D0' }}>
+                  <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#166534', textTransform: 'uppercase' }}>
+                    Recommended Action:
+                  </div>
+                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>
+                    {predictionsData?.targets?.causal_uplift?.optimalIntervention || 'Technical Mock Interview & Behavioral Bootcamp'}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.76rem' }}>
+                    <span style={{ color: '#16A34A', fontWeight: 700 }}>
+                      Predicted Uplift: +{predictionsData?.targets?.causal_uplift?.predictedUpliftPct || 18.2}%
+                    </span>
+                    <span style={{ color: '#64748B' }}>
+                      Horizon: {predictionsData?.targets?.causal_uplift?.estimatedRecoveryWeeks || 3} Wks
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => handleTabChange('interventions')}
+                style={{
+                  marginTop: '12px',
+                  backgroundColor: '#16A34A',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '6px',
+                  padding: '7px 12px',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  textAlign: 'center',
+                }}
+              >
+                Enroll in Recommended Program ➔
+              </button>
+            </div>
+          </div>
+
+          {/* Model 3: Student Voice & Sentiment / Burnout NLP Radar */}
           <div
             style={{
-              backgroundColor: '#EFF6FF',
+              backgroundColor: '#FFFFFF',
               border: '1px solid #BFDBFE',
-              borderRadius: '10px',
-              padding: '1.25rem 1.5rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '1rem',
+              borderRadius: '12px',
+              padding: '1.25rem',
+              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.05)',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <Zap size={24} color="#1D4ED8" />
-              <div>
-                <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#1E3A8A' }}>
-                  Recommended Action: Technical Mock Interview Bootcamp
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <MessageSquare size={18} color="#2563EB" />
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1E40AF' }}>
+                  Model 3: Student Voice & Burnout NLP Radar (RoBERTa-EdSentiment-v1)
+                </span>
+              </div>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 700,
+                  padding: '2px 8px',
+                  borderRadius: '4px',
+                  backgroundColor: (predictionsData?.targets?.sentiment_nlp?.burnoutRiskPct || 20) > 50 ? '#FEE2E2' : '#DCFCE7',
+                  color: (predictionsData?.targets?.sentiment_nlp?.burnoutRiskPct || 20) > 50 ? '#991B1B' : '#15803D',
+                }}
+              >
+                Burnout Risk: {predictionsData?.targets?.sentiment_nlp?.burnoutRiskPct || 18}%
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
+              <div style={{ backgroundColor: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '0.66rem', color: '#64748B' }}>Sentiment State</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>
+                  {predictionsData?.targets?.sentiment_nlp?.sentimentLabel || 'Engaged / Resilient Scholar'}
                 </div>
-                <div style={{ fontSize: '0.82rem', color: '#1E40AF', marginTop: '2px' }}>
-                  Next session begins Monday at 10:00 AM in Lab 302. Attending this will boost your placement score to 84.
+              </div>
+              <div style={{ backgroundColor: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '0.66rem', color: '#64748B' }}>Fatigue & Pacing</div>
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#059669', marginTop: '2px' }}>
+                  {predictionsData?.targets?.sentiment_nlp?.aspects?.burnoutFatigue || 'Low'} Fatigue • {predictionsData?.targets?.sentiment_nlp?.aspects?.academicRigorPace || 'Balanced'}
+                </div>
+              </div>
+              <div style={{ backgroundColor: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                <div style={{ fontSize: '0.66rem', color: '#64748B' }}>Thematic Tags</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
+                  {(predictionsData?.targets?.sentiment_nlp?.detectedThemes || ['#PlacementConfidence', '#ProactiveLearner']).map((t, idx) => (
+                    <span key={idx} style={{ fontSize: '0.66rem', fontWeight: 600, color: '#1D4ED8', backgroundColor: '#EFF6FF', padding: '1px 5px', borderRadius: '3px' }}>
+                      {t}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
-            <button
-              onClick={() => handleTabChange('interventions')}
-              style={{
-                backgroundColor: '#1D4ED8',
-                color: '#FFFFFF',
-                border: 'none',
-                borderRadius: '6px',
-                padding: '8px 16px',
-                fontSize: '0.82rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
-            >
-              View My Interventions ➔
-            </button>
           </div>
         </div>
       )}
