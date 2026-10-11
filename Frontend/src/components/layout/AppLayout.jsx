@@ -455,26 +455,6 @@ export default function AppLayout({ children }) {
                 <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '3px' }}>
                   {currentUser?.email || (isStudent ? 'student@example.edu' : 'admin@example.edu')}
                 </div>
-                <div
-                  style={{
-                    fontSize: '0.70rem',
-                    color: backendLive ? '#059669' : '#D97706',
-                    marginTop: '5px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '5px',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: '6px',
-                      height: '6px',
-                      borderRadius: '50%',
-                      backgroundColor: backendLive ? '#10B981' : '#F59E0B',
-                    }}
-                  />
-                  <span>{backendLive ? 'API Service Connected (port 5000)' : 'Synthetic Mode Active'}</span>
-                </div>
               </div>
 
               {/* View Profile */}
@@ -722,7 +702,7 @@ export default function AppLayout({ children }) {
                   backgroundColor: backendLive ? '#10B981' : '#F59E0B',
                 }}
               />
-              <span>{backendLive ? 'Live API (Port 5000)' : 'Synthetic Mode'}</span>
+              <span>{backendLive ? 'Live Service' : 'Synthetic Mode'}</span>
             </div>
 
             {/* Current Role Badge */}
