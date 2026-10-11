@@ -84,7 +84,7 @@ const STUDENT_NAV_SECTIONS = [
 ];
 
 export default function AppLayout({ children }) {
-  const { currentUser, logout, loginWithDemo } = useAuth();
+  const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -97,6 +97,18 @@ export default function AppLayout({ children }) {
   const profileMenuRef = useRef(null);
 
   const isStudent = currentUser?.portal === 'student' || currentUser?.role === 'student' || location.pathname.startsWith('/student');
+
+  // Enforce portal isolation: each persona stays strictly within their authenticated portal
+  useEffect(() => {
+    if (currentUser) {
+      const userIsStudent = currentUser.portal === 'student' || currentUser.role === 'student';
+      if (userIsStudent && location.pathname.startsWith('/institution')) {
+        navigate('/student/portal', { replace: true });
+      } else if (!userIsStudent && location.pathname.startsWith('/student')) {
+        navigate('/institution/overview', { replace: true });
+      }
+    }
+  }, [currentUser, location.pathname, navigate]);
 
   useEffect(() => {
     // Check live connectivity to backend Express service
@@ -125,16 +137,6 @@ export default function AppLayout({ children }) {
     setIsProfileMenuOpen(false);
     logout();
     navigate('/');
-  };
-
-  const handleRoleSwitch = async (roleKey) => {
-    setIsProfileMenuOpen(false);
-    await loginWithDemo(roleKey);
-    if (roleKey === 'student') {
-      navigate('/student/portal');
-    } else {
-      navigate('/institution/overview');
-    }
   };
 
 
@@ -430,12 +432,47 @@ export default function AppLayout({ children }) {
             >
               {/* User Email & Role Info */}
               <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', marginBottom: '4px' }}>
-                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0F172A' }}>{displayName}</div>
-                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                  <span style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0F172A', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                    {displayName}
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.64rem',
+                      fontWeight: 600,
+                      color: '#1677D2',
+                      backgroundColor: '#EAF3FF',
+                      border: '1px solid #D0E3F8',
+                      padding: '1px 7px',
+                      borderRadius: '999px',
+                      whiteSpace: 'nowrap',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {currentUser?.role === 'institution_admin' ? 'Admin' : currentUser?.role === 'faculty_mentor' ? 'Faculty' : currentUser?.role === 'placement_officer' ? 'Placement' : (isStudent ? 'Student' : 'Admin')}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '3px' }}>
                   {currentUser?.email || (isStudent ? 'student@example.edu' : 'admin@example.edu')}
                 </div>
-                <div style={{ fontSize: '0.70rem', color: '#059669', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981' }} />
+                <div
+                  style={{
+                    fontSize: '0.70rem',
+                    color: backendLive ? '#059669' : '#D97706',
+                    marginTop: '5px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '5px',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: '6px',
+                      height: '6px',
+                      borderRadius: '50%',
+                      backgroundColor: backendLive ? '#10B981' : '#F59E0B',
+                    }}
+                  />
                   <span>{backendLive ? 'API Service Connected (port 5000)' : 'Synthetic Mode Active'}</span>
                 </div>
               </div>
@@ -451,15 +488,17 @@ export default function AppLayout({ children }) {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '8px',
-                  padding: '7px 10px',
+                  padding: '8px 10px',
                   borderRadius: '6px',
                   border: 'none',
                   backgroundColor: 'transparent',
                   color: '#334155',
                   fontSize: '0.80rem',
+                  fontWeight: 500,
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'background-color 0.15s ease',
+                  marginTop: '2px',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F1F5F9')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
@@ -467,78 +506,6 @@ export default function AppLayout({ children }) {
                 <User size={14} color="#64748B" />
                 <span>My Profile & Details</span>
               </button>
-
-              {/* Persona Switching Header */}
-              <div style={{ padding: '6px 10px 2px', fontSize: '0.68rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
-                Switch Persona
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
-                <button
-                  type="button"
-                  onClick={() => handleRoleSwitch('admin')}
-                  style={{
-                    padding: '5px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #E2E8F0',
-                    backgroundColor: currentUser?.role === 'institution_admin' ? '#EBF3FE' : '#F8FAFC',
-                    color: currentUser?.role === 'institution_admin' ? '#1677D2' : '#334155',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Admin
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleRoleSwitch('faculty')}
-                  style={{
-                    padding: '5px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #E2E8F0',
-                    backgroundColor: currentUser?.role === 'faculty_mentor' ? '#EBF3FE' : '#F8FAFC',
-                    color: currentUser?.role === 'faculty_mentor' ? '#1677D2' : '#334155',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Faculty
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleRoleSwitch('placement')}
-                  style={{
-                    padding: '5px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #E2E8F0',
-                    backgroundColor: currentUser?.role === 'placement_officer' ? '#EBF3FE' : '#F8FAFC',
-                    color: currentUser?.role === 'placement_officer' ? '#1677D2' : '#334155',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Placement
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleRoleSwitch('student')}
-                  style={{
-                    padding: '5px 8px',
-                    borderRadius: '6px',
-                    border: '1px solid #E2E8F0',
-                    backgroundColor: isStudent ? '#EBF3FE' : '#F8FAFC',
-                    color: isStudent ? '#1677D2' : '#334155',
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
-                >
-                  Student
-                </button>
-              </div>
 
               {/* Log out option */}
               <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '4px', paddingTop: '4px' }}>
@@ -549,12 +516,13 @@ export default function AppLayout({ children }) {
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '7px 10px',
+                    padding: '8px 10px',
                     borderRadius: '6px',
                     border: 'none',
                     backgroundColor: 'transparent',
                     color: '#EF4444',
                     fontSize: '0.80rem',
+                    fontWeight: 500,
                     cursor: 'pointer',
                     width: '100%',
                     textAlign: 'left',

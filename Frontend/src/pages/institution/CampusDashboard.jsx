@@ -46,23 +46,6 @@ export default function CampusDashboard() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
-            onClick={() => {
-              loginWithDemo('student');
-              navigate('/student/dashboard');
-            }}
-            style={{
-              background: 'none',
-              border: '1px solid rgba(255,255,255,0.3)',
-              color: '#FFFFFF',
-              borderRadius: '4px',
-              padding: '3px 8px',
-              cursor: 'pointer',
-              fontSize: '0.76rem',
-            }}
-          >
-            Switch to Student View ↗
-          </button>
-          <button
             onClick={handleLogout}
             style={{
               background: 'none',
@@ -236,21 +219,6 @@ export default function CampusDashboard() {
               }}
             >
               Return to Landing Page
-            </Link>
-            <Link
-              to="/login"
-              style={{
-                backgroundColor: '#FFFFFF',
-                border: '1px solid var(--color-border)',
-                color: 'var(--color-navy)',
-                padding: '0.65rem 1.25rem',
-                borderRadius: 'var(--radius-sm)',
-                textDecoration: 'none',
-                fontWeight: 600,
-                fontSize: '0.88rem',
-              }}
-            >
-              Switch Demo Persona
             </Link>
           </div>
         </div>
