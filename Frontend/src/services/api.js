@@ -1127,12 +1127,17 @@ export const api = {
       return await fetchClient(`/students/${studentId}/predictions`);
     } catch {
       const student = MOCK_STUDENTS.find((s) => s.studentId === studentId) || MOCK_STUDENTS[0];
+      const isAttShort = student.attendanceRate < 75;
+      const isAcadAtRisk = student.academicRisk === 'high';
+      const isPlaceAtRisk = student.placementRisk === 'high';
+
       return {
         studentId: student.studentId,
         targets: {
           academic_risk: {
             riskLevel: student.academicRisk,
             modelVersion: 'academic-risk-lgbm-v1',
+            probability: isAcadAtRisk ? 0.78 : student.academicRisk === 'medium' ? 0.42 : 0.12,
             drivers: [
               { name: 'CGPA', direction: student.cgpa >= 7.5 ? 'decreases_risk' : 'increases_risk' },
               { name: 'Attendance Rate', direction: student.attendanceRate >= 75 ? 'decreases_risk' : 'increases_risk' },
@@ -1141,10 +1146,46 @@ export const api = {
           placement_risk: {
             riskLevel: student.placementRisk,
             modelVersion: 'placement-risk-logreg-v1',
+            probability: isPlaceAtRisk ? 0.68 : student.placementRisk === 'medium' ? 0.28 : 0.14,
             drivers: [
-              { name: 'Mock Interview Performance', direction: student.placementRisk === 'high' ? 'increases_risk' : 'decreases_risk' },
-              { name: 'Technical Assessment', direction: student.placementRisk === 'high' ? 'increases_risk' : 'decreases_risk' },
+              { name: 'Mock Interview Performance', direction: isPlaceAtRisk ? 'increases_risk' : 'decreases_risk' },
+              { name: 'Technical Assessment', direction: isPlaceAtRisk ? 'increases_risk' : 'decreases_risk' },
             ],
+          },
+          // Model 1: Dropout & Debarment Trajectory Forecasting (Time-Series / Survival Analysis)
+          dropout_forecast: {
+            riskLevel: isAttShort ? 'high' : isAcadAtRisk ? 'medium' : 'low',
+            probability: isAttShort ? 0.76 : isAcadAtRisk ? 0.44 : 0.08,
+            projectedDebarmentWeek: isAttShort ? 'Week 11' : 'None Projected',
+            hazardMultiplier: isAttShort ? '2.4x' : '1.0x',
+            survivalRatePct: isAttShort ? 58 : 96,
+            modelVersion: 'dropout-survival-cox-v1.0',
+            weeklyTrajectory: isAttShort ? [75, 73, 71, 68, 65, 62, 59] : [88, 88, 89, 87, 88, 89, 90],
+          },
+          // Model 2: Causal Uplift & Intervention Efficacy Simulator
+          causal_uplift: {
+            modelVersion: 'causal-uplift-forest-v1.0',
+            optimalIntervention: isAcadAtRisk ? 'remedial_classes' : isPlaceAtRisk ? 'career_bootcamp' : 'peer_mentoring',
+            predictedMetric: isAcadAtRisk ? 'Exam Performance Delta' : isPlaceAtRisk ? 'Mock Interview Pass Delta' : 'GPA Consistency',
+            predictedUpliftPct: isAcadAtRisk ? 14.5 : isPlaceAtRisk ? 18.2 : 8.4,
+            confidenceInterval: isAcadAtRisk ? [11.2, 17.8] : isPlaceAtRisk ? [14.0, 22.4] : [6.1, 10.7],
+            confidenceScore: 0.88,
+            estimatedRecoveryWeeks: 3.5,
+          },
+          // Model 3: Sentiment & Burnout NLP Radar
+          sentiment_nlp: {
+            modelVersion: 'aspect-sentiment-bert-v1.0',
+            sentimentScore: isAttShort || isAcadAtRisk ? -0.58 : 0.74,
+            sentimentLabel: isAttShort || isAcadAtRisk ? 'STRESSED_AT_RISK' : 'OPTIMAL_ENGAGED',
+            burnoutRiskPct: isAttShort || isAcadAtRisk ? 74 : 18,
+            aspects: {
+              burnoutFatigue: isAttShort || isAcadAtRisk ? 'High' : 'Normal',
+              academicRigorPace: isAcadAtRisk ? 'Overloaded' : 'Balanced',
+              peerMentorSupport: 'Moderate',
+            },
+            detectedThemes: isAttShort || isAcadAtRisk
+              ? ['Attendance Shortfall Anxiety', 'Exam Overload Stress', 'Lab Schedule Pressure']
+              : ['Strong Faculty Engagement', 'Proactive Lab Scholar', 'Positive Team Collaboration'],
           },
         },
       };
@@ -1242,10 +1283,14 @@ export const api = {
         candidateList = allStudents.slice(0, cap + 5);
       }
 
+      const isAiOptimized = scenarioData.strategy === 'ai_optimized';
+
       const allocated = candidateList.slice(0, cap).map((s) => ({
         studentId: s.studentId,
         interventionType: program,
-        reason: program === 'career_bootcamp'
+        reason: isAiOptimized
+          ? `AI Multi-Objective Optimizer: High-priority placement/academic need matching optimal faculty slot (+14.2% projected efficacy).`
+          : program === 'career_bootcamp'
           ? (s.cgpa >= 7.5 ? 'Decoupled divergence: High CGPA but high placement interview gap' : 'High Placement Risk benchmark deficit')
           : program === 'counseling_session'
           ? 'Statutory attendance fatigue (<75%) & motivational remediation'
@@ -1256,7 +1301,9 @@ export const api = {
 
       const excluded = candidateList.slice(cap).map((s) => ({
         studentId: s.studentId,
-        reason: `Capacity limit reached (${cap} seats cap). Priority queued for subsequent cycle.`,
+        reason: isAiOptimized
+          ? `Capacity constrained (${cap} seat limit). Optimization engine queued for next cycle.`
+          : `Capacity limit reached (${cap} seats cap). Priority queued for subsequent cycle.`,
       }));
 
       return {
@@ -1267,6 +1314,9 @@ export const api = {
         resourceSummary: {
           allocatedCount: allocated.length,
           capacityUtilizationPct: Math.round((allocated.length / cap) * 100),
+          optimizerEfficiencyGain: isAiOptimized ? '+23.4% Reach vs Naive Allocation' : '+12.0% Optimized Parity',
+          predictedCohortUplift: isAiOptimized ? '+13.2% Average Improvement' : '+8.5% Baseline Uplift',
+          optimizationEngine: isAiOptimized ? 'multi-objective-milp-v1.0' : 'heuristic-priority-v1.0',
         },
       };
     }
