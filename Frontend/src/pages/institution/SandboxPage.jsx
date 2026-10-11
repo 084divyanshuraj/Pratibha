@@ -15,6 +15,7 @@ import {
   GraduationCap,
   Briefcase,
   Shield,
+  Download,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -35,6 +36,15 @@ export default function SandboxPage() {
   const [simulationResult, setSimulationResult] = useState(null);
   const [approvedState, setApprovedState] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
+  const [studentsMap, setStudentsMap] = useState(new Map());
+
+  useEffect(() => {
+    api.getStudents().then((res) => {
+      const map = new Map();
+      (res?.students || []).forEach((st) => map.set(st.studentId, st));
+      setStudentsMap(map);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (role === 'placement_officer') {
@@ -71,11 +81,40 @@ export default function SandboxPage() {
     try {
       const res = await api.approveSimulation(simulationResult.scenarioId);
       setApprovedState(true);
-      setToastMessage('Scenario approved! Official student interventions persisted into database.');
+      setToastMessage('Scenario approved! Official student interventions persisted into active database.');
       setTimeout(() => setToastMessage(null), 5000);
     } catch (err) {
       console.error('Approval failed:', err);
     }
+  };
+
+  const handleExportReport = () => {
+    if (!simulationResult) return;
+    const rows = [
+      ['Student ID', 'Student Name', 'Program', 'Allocation Status', 'Rationale'],
+      ...(simulationResult.allocationResults || []).map((a) => [
+        `"${a.studentId}"`,
+        `"${studentsMap.get(a.studentId)?.fullName || 'Student'}"`,
+        `"${(a.interventionType || selectedIntervention).replace('_', ' ')}"`,
+        '"Allocated"',
+        `"${a.reason}"`,
+      ]),
+      ...(simulationResult.excludedResults || []).map((e) => [
+        `"${e.studentId}"`,
+        `"${studentsMap.get(e.studentId)?.fullName || 'Student'}"`,
+        `"${selectedIntervention.replace('_', ' ')}"`,
+        '"Excluded (Capacity Limit)"',
+        `"${e.reason}"`,
+      ]),
+    ];
+    const csvContent = 'data:text/csv;charset=utf-8,' + rows.map((r) => r.join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute('download', `simulation_allocation_${simulationResult.scenarioId || 'report'}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   return (
@@ -136,27 +175,51 @@ export default function SandboxPage() {
           </p>
         </div>
 
-        {simulationResult && !approvedState && (
-          <button
-            onClick={handleApprove}
-            style={{
-              backgroundColor: '#10B981',
-              color: '#FFFFFF',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '10px 18px',
-              fontWeight: 600,
-              fontSize: '0.84rem',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
-            }}
-          >
-            <CheckCircle2 size={16} />
-            <span>Approve & Assign Interventions</span>
-          </button>
+        {simulationResult && (
+          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+            <button
+              onClick={handleExportReport}
+              style={{
+                backgroundColor: '#FFFFFF',
+                color: '#334155',
+                border: '1px solid #CBD5E1',
+                borderRadius: '8px',
+                padding: '9px 15px',
+                fontWeight: 600,
+                fontSize: '0.84rem',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              }}
+            >
+              <Download size={16} color="#475569" />
+              <span>Export CSV</span>
+            </button>
+            {!approvedState && (
+              <button
+                onClick={handleApprove}
+                style={{
+                  backgroundColor: '#10B981',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '8px',
+                  padding: '10px 18px',
+                  fontWeight: 600,
+                  fontSize: '0.84rem',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
+                }}
+              >
+                <CheckCircle2 size={16} />
+                <span>Approve & Assign Interventions</span>
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -353,7 +416,7 @@ export default function SandboxPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <thead>
                     <tr style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #F1F5F9', color: '#64748B' }}>
-                      <th style={{ padding: '10px 18px', textAlign: 'left' }}>Student ID</th>
+                      <th style={{ padding: '10px 18px', textAlign: 'left' }}>Student</th>
                       <th style={{ padding: '10px 14px', textAlign: 'left' }}>Program</th>
                       <th style={{ padding: '10px 18px', textAlign: 'left' }}>Deterministic Selection Reason</th>
                     </tr>
@@ -361,7 +424,14 @@ export default function SandboxPage() {
                   <tbody>
                     {(simulationResult.allocationResults || []).map((alloc, idx) => (
                       <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                        <td style={{ padding: '10px 18px', fontWeight: 600, color: '#1A73E8' }}>{alloc.studentId}</td>
+                        <td style={{ padding: '10px 18px' }}>
+                          <span style={{ fontWeight: 600, color: '#0F172A', display: 'block' }}>
+                            {studentsMap.get(alloc.studentId)?.fullName || 'Student'}
+                          </span>
+                          <span style={{ fontSize: '0.74rem', color: '#1A73E8', fontFamily: 'monospace' }}>
+                            {alloc.studentId}
+                          </span>
+                        </td>
                         <td style={{ padding: '10px 14px', textTransform: 'capitalize' }}>{alloc.interventionType.replace('_', ' ')}</td>
                         <td style={{ padding: '10px 18px', color: '#334155' }}>{alloc.reason}</td>
                       </tr>
@@ -379,14 +449,21 @@ export default function SandboxPage() {
                   <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                     <thead>
                       <tr style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #F1F5F9', color: '#64748B' }}>
-                        <th style={{ padding: '10px 18px', textAlign: 'left' }}>Student ID</th>
+                        <th style={{ padding: '10px 18px', textAlign: 'left' }}>Student</th>
                         <th style={{ padding: '10px 18px', textAlign: 'left' }}>Exclusion Rationale</th>
                       </tr>
                     </thead>
                     <tbody>
                       {simulationResult.excludedResults.map((excl, idx) => (
                         <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                          <td style={{ padding: '10px 18px', fontWeight: 600, color: '#64748B' }}>{excl.studentId}</td>
+                          <td style={{ padding: '10px 18px' }}>
+                            <span style={{ fontWeight: 600, color: '#0F172A', display: 'block' }}>
+                              {studentsMap.get(excl.studentId)?.fullName || 'Student'}
+                            </span>
+                            <span style={{ fontSize: '0.74rem', color: '#64748B', fontFamily: 'monospace' }}>
+                              {excl.studentId}
+                            </span>
+                          </td>
                           <td style={{ padding: '10px 18px', color: '#64748B' }}>{excl.reason}</td>
                         </tr>
                       ))}

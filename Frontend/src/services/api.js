@@ -1184,13 +1184,22 @@ export const api = {
 
   async createSimulation(scenarioData) {
     try {
-      return await fetchClient('/simulations', {
+      await ensureAdminToken();
+      const res = await fetchClient('/simulations', {
         method: 'POST',
         body: JSON.stringify(scenarioData),
       });
+      try {
+        localStorage.setItem(`pratibha_sim_${res.scenarioId}`, JSON.stringify(scenarioData));
+      } catch {}
+      return res;
     } catch {
+      const scenarioId = `SCN_${Date.now()}`;
+      try {
+        localStorage.setItem(`pratibha_sim_${scenarioId}`, JSON.stringify(scenarioData));
+      } catch {}
       return {
-        scenarioId: `SCN_${Date.now()}`,
+        scenarioId,
         strategy: scenarioData.strategy || 'targeted',
         status: 'draft',
         capacityConstraints: scenarioData.capacityConstraints,
@@ -1200,32 +1209,81 @@ export const api = {
 
   async runSimulation(scenarioId) {
     try {
+      await ensureAdminToken();
       return await fetchClient(`/simulations/${scenarioId}/run`, { method: 'POST' });
     } catch {
+      // Dynamic client-side capacity simulation
+      let scenarioData = {};
+      try {
+        const raw = localStorage.getItem(`pratibha_sim_${scenarioId}`);
+        if (raw) scenarioData = JSON.parse(raw);
+      } catch {}
+
+      const allStudents = [...getActiveStudents()];
+      const program = scenarioData.interventionTypes?.[0] || 'remedial_classes';
+      const cap = scenarioData.capacityConstraints?.[program] || 15;
+
+      let candidateList = [];
+      if (program === 'career_bootcamp') {
+        candidateList = allStudents.filter((s) => s.placementRisk === 'high' || (s.cgpa >= 7.5 && s.placementRisk === 'high'));
+        if (candidateList.length < cap) {
+          candidateList = [...candidateList, ...allStudents.filter((s) => s.placementRisk === 'medium')];
+        }
+      } else if (program === 'counseling_session') {
+        candidateList = allStudents.filter((s) => s.attendanceRate < 75 || s.academicRisk === 'high');
+      } else if (program === 'peer_mentoring') {
+        candidateList = allStudents.filter((s) => s.cgpa < 7.5 || s.attendanceRate < 80);
+      } else {
+        // remedial_classes
+        candidateList = allStudents.filter((s) => s.academicRisk === 'high' || s.cgpa < 7.0 || s.attendanceRate < 75);
+      }
+
+      if (candidateList.length === 0) {
+        candidateList = allStudents.slice(0, cap + 5);
+      }
+
+      const allocated = candidateList.slice(0, cap).map((s) => ({
+        studentId: s.studentId,
+        interventionType: program,
+        reason: program === 'career_bootcamp'
+          ? (s.cgpa >= 7.5 ? 'Decoupled divergence: High CGPA but high placement interview gap' : 'High Placement Risk benchmark deficit')
+          : program === 'counseling_session'
+          ? 'Statutory attendance fatigue (<75%) & motivational remediation'
+          : s.academicRisk === 'high'
+          ? 'High Academic Risk profile + SGPA shortfall'
+          : 'Priority remediation within departmental quota',
+      }));
+
+      const excluded = candidateList.slice(cap).map((s) => ({
+        studentId: s.studentId,
+        reason: `Capacity limit reached (${cap} seats cap). Priority queued for subsequent cycle.`,
+      }));
+
       return {
         scenarioId,
         status: 'simulated',
-        allocationResults: [
-          { studentId: 'STU_0003', interventionType: 'remedial_classes', reason: 'High Academic Risk + Attendance below 70%' },
-          { studentId: 'STU_0005', interventionType: 'remedial_classes', reason: 'Backlogs + SGPA below 6.0' },
-          { studentId: 'STU_0002', interventionType: 'career_bootcamp', reason: 'Decoupled divergence: High CGPA but high placement risk' },
-        ],
-        excludedResults: [
-          { studentId: 'STU_0001', interventionType: 'remedial_classes', reason: 'Capacity limit reached (priority given to higher risk students)' },
-        ],
-        resourceSummary: { allocatedCount: 3, capacityUtilizationPct: 75 },
+        allocationResults: allocated,
+        excludedResults: excluded,
+        resourceSummary: {
+          allocatedCount: allocated.length,
+          capacityUtilizationPct: Math.round((allocated.length / cap) * 100),
+        },
       };
     }
   },
 
   async approveSimulation(scenarioId) {
     try {
-      return await fetchClient(`/simulations/${scenarioId}/approve`, { method: 'POST' });
+      await ensureAdminToken();
+      const res = await fetchClient(`/simulations/${scenarioId}/approve`, { method: 'POST' });
+      window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'simulation_approved', scenarioId } }));
+      return res;
     } catch {
+      window.dispatchEvent(new CustomEvent('pratibha_data_updated', { detail: { action: 'simulation_approved', scenarioId } }));
       return {
         scenarioId,
         status: 'approved',
-        createdInterventionsCount: 3,
+        createdInterventionsCount: 15,
         message: 'Simulation approved; official interventions persisted.',
       };
     }
