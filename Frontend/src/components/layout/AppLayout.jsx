@@ -90,12 +90,9 @@ export default function AppLayout({ children }) {
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
+  const [isCopilotHovered, setIsCopilotHovered] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [backendLive, setBackendLive] = useState(false);
-
-  // ChatGPT Bottom Prompt Bar State
-  const [bottomPrompt, setBottomPrompt] = useState('');
-  const [isThinkingActive, setIsThinkingActive] = useState(false);
 
   const profileMenuRef = useRef(null);
 
@@ -140,12 +137,7 @@ export default function AppLayout({ children }) {
     }
   };
 
-  const handleBottomPromptSubmit = (e) => {
-    if (e) e.preventDefault();
-    if (!bottomPrompt.trim()) return;
-    setIsCopilotOpen(true);
-    setBottomPrompt('');
-  };
+
 
   // Resolve user display name & initials
   const displayName = currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Demo Administrator');
@@ -743,7 +735,7 @@ export default function AppLayout({ children }) {
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '1.5rem 2rem 6.5rem',
+            padding: '1.5rem 2rem 2.5rem',
             maxWidth: '1440px',
             width: '100%',
             margin: '0 auto',
@@ -752,170 +744,171 @@ export default function AppLayout({ children }) {
         >
           {children}
         </main>
-
-        {/* =========================================================================
-            CHATGPT-STYLE BOTTOM PROMPT BAR (CLEAN LIGHT PALETTE)
-            ========================================================================= */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '16px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: 'min(820px, calc(100% - 32px))',
-            zIndex: 60,
-          }}
-        >
-          <form
-            onSubmit={handleBottomPromptSubmit}
-            style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #CBD5E1',
-              borderRadius: '26px',
-              padding: '6px 12px 6px 14px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.1)',
-              transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
-            }}
-            onFocus={(e) => {
-              e.currentTarget.style.borderColor = '#1A73E8';
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(26, 115, 232, 0.18)';
-            }}
-            onBlur={(e) => {
-              e.currentTarget.style.borderColor = '#CBD5E1';
-              e.currentTarget.style.boxShadow = '0 10px 30px rgba(15, 23, 42, 0.1)';
-            }}
-          >
-            {/* "+" Action / Attachment Button */}
-            <button
-              type="button"
-              onClick={() => setIsCopilotOpen(true)}
-              title="Add data or prompt presets"
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                border: 'none',
-                backgroundColor: '#F1F5F9',
-                color: '#475569',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                flexShrink: 0,
-                transition: 'background-color 0.15s ease',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#E2E8F0')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#F1F5F9')}
-            >
-              <Plus size={16} />
-            </button>
-
-            {/* Prompt Input Field */}
-            <input
-              type="text"
-              value={bottomPrompt}
-              onChange={(e) => setBottomPrompt(e.target.value)}
-              placeholder={isStudent ? 'Ask PRATIBHA Student Copilot or query course stats...' : 'Ask PRATIBHA Copilot or run simulation query...'}
-              style={{
-                flex: 1,
-                backgroundColor: 'transparent',
-                border: 'none',
-                outline: 'none',
-                color: '#0F172A',
-                fontSize: '0.92rem',
-                fontFamily: 'inherit',
-              }}
-            />
-
-            {/* "Think" Toggle Button */}
-            <button
-              type="button"
-              onClick={() => setIsThinkingActive(!isThinkingActive)}
-              title="Deep Cognitive Analysis Mode"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '5px',
-                padding: '4px 10px',
-                borderRadius: '999px',
-                border: isThinkingActive ? '1px solid #1A73E8' : '1px solid #BFDBFE',
-                backgroundColor: isThinkingActive ? '#EBF3FE' : '#EFF6FF',
-                color: isThinkingActive ? '#1A73E8' : '#1D4ED8',
-                fontSize: '0.74rem',
-                fontWeight: 600,
-                cursor: 'pointer',
-                flexShrink: 0,
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <BrainCircuit size={13} color={isThinkingActive ? '#1A73E8' : '#2563EB'} />
-              <span>Think</span>
-            </button>
-
-            {/* Voice AI Mic Trigger */}
-            <button
-              type="button"
-              onClick={() => setIsCopilotOpen(true)}
-              title="Voice AI Input"
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                border: 'none',
-                backgroundColor: 'transparent',
-                color: '#64748B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                flexShrink: 0,
-                transition: 'all 0.15s ease',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#1A73E8';
-                e.currentTarget.style.backgroundColor = '#EBF3FE';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#64748B';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-            >
-              <Mic size={17} />
-            </button>
-
-            {/* Submit Arrow Button */}
-            <button
-              type="submit"
-              disabled={!bottomPrompt.trim()}
-              title="Send Prompt"
-              style={{
-                width: '32px',
-                height: '32px',
-                borderRadius: '50%',
-                border: 'none',
-                backgroundColor: bottomPrompt.trim() ? '#1A73E8' : '#E2E8F0',
-                color: bottomPrompt.trim() ? '#FFFFFF' : '#94A3B8',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: bottomPrompt.trim() ? 'pointer' : 'default',
-                flexShrink: 0,
-                transition: 'all 0.15s ease',
-              }}
-            >
-              <ArrowUp size={16} strokeWidth={2.5} />
-            </button>
-          </form>
-        </div>
       </div>
 
-      {/* =========================================================================
-          3. PRATIBHA COPILOT DRAWER
-          ========================================================================= */}
+      {/* FLOATING COPILOT TRIGGER BUTTON (EXPANDABLE CIRCLE WITH CUTE ANIMAL MASCOT) */}
+      <button
+        type="button"
+        onClick={() => setIsCopilotOpen(true)}
+        onMouseEnter={() => setIsCopilotHovered(true)}
+        onMouseLeave={() => setIsCopilotHovered(false)}
+        aria-label={isStudent ? 'Ask Student Copilot' : 'Ask Campus Copilot'}
+        title={isStudent ? 'Ask Student Copilot' : 'Ask Campus Copilot'}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '28px',
+          backgroundColor: '#0F172A',
+          color: '#FFFFFF',
+          border: isCopilotHovered ? '1.5px solid rgba(56, 189, 248, 0.65)' : '1.5px solid rgba(56, 189, 248, 0.35)',
+          borderRadius: '999px',
+          height: '56px',
+          minWidth: '56px',
+          maxWidth: isCopilotHovered ? '320px' : '56px',
+          padding: isCopilotHovered ? '8px 18px 8px 9px' : '8px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: isCopilotHovered ? '10px' : '0px',
+          cursor: 'pointer',
+          boxShadow: isCopilotHovered
+            ? '0 12px 32px rgba(15, 23, 42, 0.6), 0 0 24px rgba(56, 189, 248, 0.4)'
+            : '0 8px 24px rgba(15, 23, 42, 0.45), 0 0 16px rgba(56, 189, 248, 0.25)',
+          transition: 'all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)',
+          zIndex: 80,
+          overflow: 'hidden',
+        }}
+      >
+        <CuteCopilotAvatar size={38} isHovered={isCopilotHovered} />
+
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            maxWidth: isCopilotHovered ? '240px' : '0px',
+            opacity: isCopilotHovered ? 1 : 0,
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            transition: 'max-width 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.22s ease',
+            pointerEvents: isCopilotHovered ? 'auto' : 'none',
+          }}
+        >
+          <span style={{ fontSize: '0.86rem', fontWeight: 600, color: '#F8FAFC' }}>
+            {isStudent ? 'Ask Student Copilot' : 'Ask Campus Copilot'}
+          </span>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '4px',
+              backgroundColor: 'rgba(56, 189, 248, 0.16)',
+              color: '#38BDF8',
+              padding: '3px 8px',
+              borderRadius: '999px',
+              fontSize: '0.68rem',
+              fontWeight: 700,
+              letterSpacing: '0.02em',
+            }}
+          >
+            <Mic size={10} /> Voice AI
+          </span>
+        </div>
+      </button>
+
+      {/* PRATIBHA COPILOT DRAWER */}
       <CopilotDrawer isOpen={isCopilotOpen} onClose={() => setIsCopilotOpen(false)} />
+    </div>
+  );
+}
+
+/**
+ * CuteCopilotAvatar — Friendly, adorable animal mascot (Panda with academic cap)
+ * Shows a sweet animated expression, sparkling eyes, rosy cheeks, and live status dot.
+ */
+function CuteCopilotAvatar({ size = 38, isHovered = false }) {
+  return (
+    <div
+      style={{
+        width: `${size}px`,
+        height: `${size}px`,
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexShrink: 0,
+        transform: isHovered ? 'scale(1.08)' : 'scale(1)',
+        transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      }}
+    >
+      <svg
+        width={size}
+        height={size}
+        viewBox="0 0 36 36"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        style={{
+          filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))',
+          overflow: 'visible',
+        }}
+      >
+        {/* Left Ear */}
+        <circle cx="8.5" cy="8.5" r="5" fill="#1E293B" stroke="#38BDF8" strokeWidth="1" />
+        <circle cx="8.5" cy="8.5" r="2.6" fill="#F472B6" />
+
+        {/* Right Ear */}
+        <circle cx="27.5" cy="8.5" r="5" fill="#1E293B" stroke="#38BDF8" strokeWidth="1" />
+        <circle cx="27.5" cy="8.5" r="2.6" fill="#F472B6" />
+
+        {/* Head */}
+        <circle cx="18" cy="19" r="13.2" fill="#FFFFFF" stroke="#38BDF8" strokeWidth="1.1" />
+
+        {/* Panda Eye Patches */}
+        <ellipse cx="12.8" cy="18" rx="3.6" ry="4.2" transform="rotate(-15 12.8 18)" fill="#1E293B" />
+        <ellipse cx="23.2" cy="18" rx="3.6" ry="4.2" transform="rotate(15 23.2 18)" fill="#1E293B" />
+
+        {/* Sparkly Pupils with Highlights */}
+        <circle cx="13" cy="17.2" r="1.5" fill="#FFFFFF" />
+        <circle cx="14.2" cy="18.8" r="0.7" fill="#38BDF8" />
+        <circle cx="23" cy="17.2" r="1.5" fill="#FFFFFF" />
+        <circle cx="24.2" cy="18.8" r="0.7" fill="#38BDF8" />
+
+        {/* Rosy Blush Cheeks */}
+        <ellipse cx="8.5" cy="22.2" rx="2.3" ry="1.3" fill="#FB7185" opacity="0.85" />
+        <ellipse cx="27.5" cy="22.2" rx="2.3" ry="1.3" fill="#FB7185" opacity="0.85" />
+
+        {/* Cute Little Nose */}
+        <ellipse cx="18" cy="20.5" rx="1.5" ry="1" fill="#0F172A" />
+
+        {/* Sweet Smile */}
+        <path
+          d="M16.5 22.3 Q18 23.7 19.5 22.3"
+          stroke="#0F172A"
+          strokeWidth="1.2"
+          strokeLinecap="round"
+          fill="none"
+        />
+
+        {/* Cute Graduation Mortarboard Cap */}
+        <polygon points="18,3 25,6.6 18,10.2 11,6.6" fill="#0284C7" stroke="#38BDF8" strokeWidth="0.8" />
+        <polygon points="15.5,9.2 20.5,9.2 19.5,11.8 16.5,11.8" fill="#0369A1" />
+        <path d="M18 6.6 Q22 7.6 23.8 10.6" stroke="#FBBF24" strokeWidth="0.9" strokeLinecap="round" fill="none" />
+        <circle cx="23.8" cy="11.2" r="0.7" fill="#FBBF24" />
+      </svg>
+
+      {/* Live Online Pulse Dot */}
+      <span
+        style={{
+          position: 'absolute',
+          bottom: '0px',
+          right: '0px',
+          width: '9px',
+          height: '9px',
+          borderRadius: '50%',
+          backgroundColor: '#10B981',
+          border: '2px solid #0F172A',
+          boxShadow: '0 0 6px #10B981',
+        }}
+      />
     </div>
   );
 }
