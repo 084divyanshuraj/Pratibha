@@ -227,7 +227,7 @@ export default function AppLayout({ children }) {
       }}
     >
       {/* =========================================================================
-          1. CHATGPT ARCHITECTURE WITH ORIGINAL PRATIBHA BLUE SIDEBAR (#1A73E8)
+          1. CHATGPT ARCHITECTURE WITH PRATIBHA DEEP BRAND NAVY SIDEBAR (#082B56)
           ========================================================================= */}
       <aside
         style={{
@@ -235,15 +235,15 @@ export default function AppLayout({ children }) {
           minWidth: isSidebarCollapsed ? '0px' : '260px',
           transition: 'width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)',
           height: '100vh',
-          backgroundColor: '#1A73E8',
-          borderRight: isSidebarCollapsed ? 'none' : '1px solid #1669D6',
+          backgroundColor: '#082B56',
+          borderRight: isSidebarCollapsed ? 'none' : '1px solid #061F3E',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           overflow: 'hidden',
           zIndex: 40,
           position: 'relative',
-          boxShadow: '2px 0 10px rgba(26, 115, 232, 0.15)',
+          boxShadow: '2px 0 12px rgba(8, 43, 86, 0.12)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 76px)', overflow: 'hidden' }}>
@@ -267,7 +267,7 @@ export default function AppLayout({ children }) {
                   width: 'auto',
                   objectFit: 'contain',
                   display: 'block',
-                  filter: 'drop-shadow(0 0 10px rgba(0, 162, 255, 0.45)) drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
+                  filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.3))',
                   transition: 'transform 0.2s ease',
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
@@ -283,7 +283,7 @@ export default function AppLayout({ children }) {
               style={{
                 background: 'transparent',
                 border: 'none',
-                color: 'rgba(255, 255, 255, 0.85)',
+                color: 'rgba(255, 255, 255, 0.75)',
                 cursor: 'pointer',
                 padding: '5px',
                 borderRadius: '6px',
@@ -294,10 +294,10 @@ export default function AppLayout({ children }) {
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.color = '#FFFFFF';
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.18)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)';
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.75)';
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
@@ -317,15 +317,15 @@ export default function AppLayout({ children }) {
             }}
           >
             {navSections.map((section, idx) => (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 <div
                   style={{
                     padding: '4px 10px 4px',
-                    fontSize: '0.70rem',
+                    fontSize: '0.68rem',
                     fontWeight: 700,
-                    color: 'rgba(255, 255, 255, 0.78)',
+                    color: 'rgba(255, 255, 255, 0.45)',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
+                    letterSpacing: '0.08em',
                   }}
                 >
                   {section.title}
@@ -346,31 +346,32 @@ export default function AppLayout({ children }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '9px 12px',
+                        padding: '8px 12px',
                         borderRadius: '8px',
                         textDecoration: 'none',
-                        color: isActive ? '#1A73E8' : 'rgba(255, 255, 255, 0.9)',
-                        backgroundColor: isActive ? '#FFFFFF' : 'transparent',
-                        fontSize: '0.85rem',
-                        fontWeight: isActive ? 700 : 500,
-                        boxShadow: isActive ? '0 3px 10px rgba(0, 0, 0, 0.14)' : 'none',
+                        color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.72)',
+                        backgroundColor: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+                        border: isActive ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid transparent',
+                        fontSize: '0.84rem',
+                        fontWeight: isActive ? 600 : 500,
+                        boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.18)' : 'none',
                         transition: 'all 0.15s ease',
                       }}
                       onMouseEnter={(e) => {
                         if (!isActive) {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
                           e.currentTarget.style.color = '#FFFFFF';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) {
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)';
+                          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.72)';
                         }
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Icon size={18} color={isActive ? '#1A73E8' : 'rgba(255, 255, 255, 0.88)'} />
+                        <Icon size={17} color={isActive ? '#38BDF8' : 'rgba(255, 255, 255, 0.65)'} />
                         <span>{item.label}</span>
                       </div>
 
@@ -380,10 +381,10 @@ export default function AppLayout({ children }) {
                             fontSize: '0.68rem',
                             padding: '2px 7px',
                             borderRadius: '999px',
-                            backgroundColor: isActive ? '#1A73E8' : 'rgba(255, 255, 255, 0.22)',
-                            color: '#FFFFFF',
-                            fontWeight: 700,
-                            border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.3)',
+                            backgroundColor: isActive ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.10)',
+                            color: isActive ? '#BAE6FD' : 'rgba(255, 255, 255, 0.85)',
+                            fontWeight: 600,
+                            border: isActive ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid rgba(255, 255, 255, 0.15)',
                           }}
                         >
                           {item.badge}
@@ -398,13 +399,13 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* =========================================================================
-            PROFILE SECTION AT SIDEBAR BOTTOM (CHATGPT ARCHITECTURE + ORIGINAL COLORS)
+            PROFILE SECTION AT SIDEBAR BOTTOM (SEAMLESSLY DOCKED IN NAVY FOOTER)
             ========================================================================= */}
         <div
           ref={profileMenuRef}
           style={{
             padding: '10px 12px',
-            borderTop: '1px solid rgba(255, 255, 255, 0.18)',
+            borderTop: '1px solid rgba(255, 255, 255, 0.10)',
             position: 'relative',
           }}
         >
@@ -481,7 +482,7 @@ export default function AppLayout({ children }) {
                     borderRadius: '6px',
                     border: '1px solid #E2E8F0',
                     backgroundColor: currentUser?.role === 'institution_admin' ? '#EBF3FE' : '#F8FAFC',
-                    color: currentUser?.role === 'institution_admin' ? '#1A73E8' : '#334155',
+                    color: currentUser?.role === 'institution_admin' ? '#1677D2' : '#334155',
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -497,7 +498,7 @@ export default function AppLayout({ children }) {
                     borderRadius: '6px',
                     border: '1px solid #E2E8F0',
                     backgroundColor: currentUser?.role === 'faculty_mentor' ? '#EBF3FE' : '#F8FAFC',
-                    color: currentUser?.role === 'faculty_mentor' ? '#1A73E8' : '#334155',
+                    color: currentUser?.role === 'faculty_mentor' ? '#1677D2' : '#334155',
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -513,7 +514,7 @@ export default function AppLayout({ children }) {
                     borderRadius: '6px',
                     border: '1px solid #E2E8F0',
                     backgroundColor: currentUser?.role === 'placement_officer' ? '#EBF3FE' : '#F8FAFC',
-                    color: currentUser?.role === 'placement_officer' ? '#1A73E8' : '#334155',
+                    color: currentUser?.role === 'placement_officer' ? '#1677D2' : '#334155',
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -529,7 +530,7 @@ export default function AppLayout({ children }) {
                     borderRadius: '6px',
                     border: '1px solid #E2E8F0',
                     backgroundColor: isStudent ? '#EBF3FE' : '#F8FAFC',
-                    color: isStudent ? '#1A73E8' : '#334155',
+                    color: isStudent ? '#1677D2' : '#334155',
                     fontSize: '0.72rem',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -579,15 +580,15 @@ export default function AppLayout({ children }) {
               alignItems: 'center',
               justifyContent: 'space-between',
               cursor: 'pointer',
-              backgroundColor: isProfileMenuOpen ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.15)',
-              border: '1px solid rgba(255, 255, 255, 0.25)',
+              backgroundColor: isProfileMenuOpen ? 'rgba(255, 255, 255, 0.15)' : 'rgba(255, 255, 255, 0.08)',
+              border: '1px solid rgba(255, 255, 255, 0.14)',
               transition: 'background-color 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
+              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
             }}
             onMouseLeave={(e) => {
-              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
             }}
             title="Account & Settings"
           >
@@ -598,7 +599,7 @@ export default function AppLayout({ children }) {
                   width: '34px',
                   height: '34px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.28)',
+                  backgroundColor: 'rgba(56, 189, 248, 0.22)',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
@@ -606,7 +607,7 @@ export default function AppLayout({ children }) {
                   fontWeight: 700,
                   fontSize: '0.84rem',
                   flexShrink: 0,
-                  border: '1.5px solid rgba(255, 255, 255, 0.55)',
+                  border: '1.5px solid rgba(56, 189, 248, 0.55)',
                 }}
               >
                 {userInitials}
@@ -629,24 +630,24 @@ export default function AppLayout({ children }) {
                 <span
                   style={{
                     fontSize: '0.72rem',
-                    color: 'rgba(255, 255, 255, 0.82)',
+                    color: 'rgba(255, 255, 255, 0.75)',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
                   }}
                 >
-                  {currentUser?.roleLabel || (isStudent ? 'Student' : 'Institution Admin')} • Go
+                  {currentUser?.roleLabel || (isStudent ? 'Student' : 'Institution Admin')} • Pro
                 </span>
               </div>
             </div>
 
-            <MoreHorizontal size={16} color="rgba(255, 255, 255, 0.8)" />
+            <MoreHorizontal size={16} color="rgba(255, 255, 255, 0.75)" />
           </div>
         </div>
       </aside>
 
       {/* =========================================================================
-          2. MIDDLE SECTION & MAIN WORKSPACE CANVAS (ORIGINAL CLEAN LIGHT PALETTE)
+          2. MIDDLE SECTION & MAIN WORKSPACE CANVAS (SYMMETRIC & BALANCED)
           ========================================================================= */}
       <div
         style={{
@@ -659,16 +660,16 @@ export default function AppLayout({ children }) {
           position: 'relative',
         }}
       >
-        {/* MINIMAL TOP HEADER */}
+        {/* BALANCED SYMMETRIC TOP HEADER */}
         <header
           style={{
-            height: '50px',
+            height: '54px',
             backgroundColor: '#FFFFFF',
             borderBottom: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '0 1.5rem',
+            padding: '0 1.75rem',
             flexShrink: 0,
             zIndex: 30,
           }}
@@ -704,24 +705,67 @@ export default function AppLayout({ children }) {
               </button>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem' }}>
-              <span style={{ fontWeight: 700, color: '#0F172A' }}>PRATIBHA AI</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.86rem' }}>
+              <span style={{ fontWeight: 800, color: '#082B56', letterSpacing: '-0.2px' }}>PRATIBHA</span>
               <span style={{ color: '#CBD5E1' }}>/</span>
-              <span style={{ color: '#64748B', fontWeight: 500 }}>{findActiveTitle()}</span>
+              <span style={{ color: '#334155', fontWeight: 600 }}>{findActiveTitle()}</span>
             </div>
+
+            <span
+              style={{
+                fontSize: '0.70rem',
+                color: '#64748B',
+                backgroundColor: '#F8FAFC',
+                border: '1px solid #E2E8F0',
+                padding: '2px 8px',
+                borderRadius: '6px',
+                fontWeight: 500,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+              }}
+            >
+              AY 2025–26 • Sem 6
+            </span>
           </div>
 
-          {/* Right: Quick Actions */}
+          {/* Right: Status Pill & Persona Badge */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '0.72rem',
+                color: backendLive ? '#059669' : '#D97706',
+                backgroundColor: backendLive ? '#ECFDF5' : '#FFFBEB',
+                border: `1px solid ${backendLive ? '#A7F3D0' : '#FDE68A'}`,
+                padding: '3px 9px',
+                borderRadius: '999px',
+                fontWeight: 600,
+              }}
+              title={backendLive ? 'Backend Express API is connected and responding' : 'Operating with deterministic synthetic intelligence records'}
+            >
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: backendLive ? '#10B981' : '#F59E0B',
+                }}
+              />
+              <span>{backendLive ? 'Live API (Port 5000)' : 'Synthetic Mode'}</span>
+            </div>
+
             {/* Current Role Badge */}
             <span
               style={{
-                fontSize: '0.72rem',
-                padding: '3px 9px',
+                fontSize: '0.74rem',
+                padding: '3px 10px',
                 borderRadius: '999px',
                 backgroundColor: '#F1F5F9',
-                border: '1px solid #E2E8F0',
-                color: '#334155',
+                border: '1px solid #CBD5E1',
+                color: '#1E293B',
                 fontWeight: 600,
               }}
             >
@@ -730,12 +774,12 @@ export default function AppLayout({ children }) {
           </div>
         </header>
 
-        {/* SCROLLABLE MAIN CONTENT AREA */}
+        {/* SCROLLABLE MAIN CONTENT AREA (WITH AMPLE BOTTOM CLEARANCE FOR MASCOT) */}
         <main
           style={{
             flex: 1,
             overflowY: 'auto',
-            padding: '1.5rem 2rem 2.5rem',
+            padding: '1.75rem 2rem 5.5rem',
             maxWidth: '1440px',
             width: '100%',
             margin: '0 auto',

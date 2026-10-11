@@ -318,28 +318,28 @@ export default function StudentPortalPage() {
         {/* Quick Metrics & Print Action */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Cumulative CGPA
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0F172A' }}>
-              {student.cgpa} <span style={{ fontSize: '0.8rem', color: '#94A3B8' }}>/ 10.0</span>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56' }}>
+              {student.cgpa} <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>/ 10.0</span>
             </div>
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Aggregate Attendance
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#10B981' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#059669' }}>
               {student.attendanceRate}%
             </div>
           </div>
 
           <div style={{ textAlign: 'right' }}>
-            <div style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+            <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Data Completeness
             </div>
-            <div style={{ fontSize: '1.6rem', fontWeight: 700, color: '#0284C7' }}>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1677D2' }}>
               {student.dataCompleteness}%
             </div>
           </div>
@@ -348,9 +348,9 @@ export default function StudentPortalPage() {
             onClick={handlePrintTranscript}
             style={{
               padding: '8px 16px',
-              backgroundColor: '#0F172A',
-              color: '#FFFFFF',
-              border: 'none',
+              backgroundColor: '#FFFFFF',
+              color: '#334155',
+              border: '1px solid #CBD5E1',
               borderRadius: '8px',
               fontSize: '0.82rem',
               fontWeight: 600,
@@ -358,8 +358,11 @@ export default function StudentPortalPage() {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              boxShadow: '0 2px 6px rgba(15, 23, 42, 0.2)',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'background-color 0.15s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
             title="Print Official Transcript"
           >
             <Printer size={15} />
@@ -375,19 +378,19 @@ export default function StudentPortalPage() {
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: '10px',
-          padding: '4px',
+          padding: '5px',
           gap: '4px',
           overflowX: 'auto',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+          boxShadow: '0 1px 3px rgba(15, 23, 42, 0.03)',
         }}
         role="tablist"
       >
         {[
-          { id: 'overview', label: '1. My Success Overview & Risk Status', icon: GraduationCap },
-          { id: 'academic', label: '2. Courses & Attendance Tracking', icon: BookOpen },
-          { id: 'placement', label: '3. Placement Readiness & Skills', icon: Award },
-          { id: 'interventions', label: '4. My Support Programs & Mentorship', icon: Sparkles },
-          { id: 'feedback', label: '5. Feedback & Suggestions', icon: Send },
+          { id: 'overview', label: 'Success Cockpit & Risk', icon: GraduationCap },
+          { id: 'academic', label: 'Courses & Attendance', icon: BookOpen },
+          { id: 'placement', label: 'Placement Readiness', icon: Award },
+          { id: 'interventions', label: 'Support & Programs', icon: Sparkles },
+          { id: 'feedback', label: 'Feedback & Suggestions', icon: Send },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -399,21 +402,27 @@ export default function StudentPortalPage() {
               onClick={() => handleTabChange(tab.id)}
               style={{
                 flex: 1,
-                minWidth: '180px',
+                minWidth: '170px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '8px',
-                padding: '10px 14px',
+                padding: '9px 14px',
                 borderRadius: '8px',
-                border: 'none',
-                backgroundColor: isActive ? '#0284C7' : 'transparent',
+                border: isActive ? '1px solid #1677D2' : '1px solid transparent',
+                backgroundColor: isActive ? '#1677D2' : 'transparent',
                 color: isActive ? '#FFFFFF' : '#475569',
                 fontWeight: isActive ? 600 : 500,
-                fontSize: '0.85rem',
+                fontSize: '0.84rem',
                 cursor: 'pointer',
                 transition: 'all 150ms ease',
                 whiteSpace: 'nowrap',
+              }}
+              onMouseEnter={(e) => {
+                if (!isActive) e.currentTarget.style.backgroundColor = '#F8FAFC';
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
               <Icon size={16} color={isActive ? '#FFFFFF' : '#64748B'} />

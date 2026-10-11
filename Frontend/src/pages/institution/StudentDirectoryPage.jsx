@@ -247,7 +247,7 @@ export default function StudentDirectoryPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
+            <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
               {role === 'faculty_mentor'
                 ? 'CSE Mentorship & Student Directory'
                 : role === 'placement_officer'
@@ -255,7 +255,7 @@ export default function StudentDirectoryPage() {
                 : 'Student 360° Directory'}
             </h1>
           </div>
-          <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.85rem' }}>
+          <p style={{ margin: '3px 0 0', color: '#64748B', fontSize: '0.84rem' }}>
             {role === 'faculty_mentor'
               ? 'Monitor mentee academic grades, track low attendance (<75%), and identify students needing tutoring support.'
               : role === 'placement_officer'
@@ -265,7 +265,7 @@ export default function StudentDirectoryPage() {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ fontSize: '0.82rem', color: '#64748B', backgroundColor: '#FFFFFF', padding: '6px 14px', borderRadius: '8px', border: '1px solid #E2E8F0', fontWeight: 600 }}>
+          <div style={{ fontSize: '0.80rem', color: '#64748B', backgroundColor: '#FFFFFF', padding: '7px 14px', borderRadius: '8px', border: '1px solid #E2E8F0', fontWeight: 600 }}>
             Showing <strong>{students.length}</strong> Students
           </div>
           <button
@@ -274,20 +274,23 @@ export default function StudentDirectoryPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#0F172A',
-              color: '#FFFFFF',
-              border: 'none',
+              backgroundColor: '#FFFFFF',
+              color: '#334155',
+              border: '1px solid #CBD5E1',
               padding: '7px 14px',
               borderRadius: '8px',
               fontSize: '0.82rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
+              transition: 'background-color 150ms ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
             title={role === 'placement_officer' ? 'Export eligible student roster for visiting recruiters' : 'Export filtered student roster as CSV'}
           >
             <Download size={14} />
-            <span>{role === 'placement_officer' ? 'Export Recruiter Roster (CSV)' : role === 'faculty_mentor' ? 'Export Mentee Report (CSV)' : 'Export Roster (CSV)'}</span>
+            <span>{role === 'placement_officer' ? 'Export Recruiter Roster' : role === 'faculty_mentor' ? 'Export Mentee Report' : 'Export Roster CSV'}</span>
           </button>
           <button
             onClick={handleOpenAddModal}
@@ -295,17 +298,19 @@ export default function StudentDirectoryPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: '#1E40AF',
+              backgroundColor: '#1677D2',
               color: '#FFFFFF',
               border: 'none',
-              padding: '7px 14px',
+              padding: '8px 16px',
               borderRadius: '8px',
               fontSize: '0.82rem',
               fontWeight: 600,
               cursor: 'pointer',
-              boxShadow: '0 1px 3px rgba(30,64,175,0.25)',
+              boxShadow: '0 2px 4px rgba(22, 119, 210, 0.25)',
               transition: 'background-color 150ms ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
             title="Create a new student profile in directory"
           >
             <UserPlus size={14} />
@@ -578,13 +583,45 @@ export default function StudentDirectoryPage() {
                 {/* Profile Cell */}
                 <td style={{ padding: '12px 18px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img
-                      src={student.avatar || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100'}
-                      alt={student.fullName}
-                      style={{ width: '38px', height: '38px', borderRadius: '8px', objectFit: 'cover', flexShrink: 0 }}
-                    />
+                    <div
+                      style={{
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '8px',
+                        background: (() => {
+                          const gradients = [
+                            'linear-gradient(135deg, #1677D2 0%, #082B56 100%)',
+                            'linear-gradient(135deg, #0D9488 0%, #065F46 100%)',
+                            'linear-gradient(135deg, #7C3AED 0%, #4C1D95 100%)',
+                            'linear-gradient(135deg, #D97706 0%, #92400E 100%)',
+                            'linear-gradient(135deg, #0284C7 0%, #075985 100%)',
+                            'linear-gradient(135deg, #E11D48 0%, #9F1239 100%)',
+                          ];
+                          let hash = 0;
+                          const name = student.fullName || 'Student';
+                          for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+                          return gradients[Math.abs(hash) % gradients.length];
+                        })(),
+                        color: '#FFFFFF',
+                        fontWeight: 700,
+                        fontSize: '0.80rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
+                      }}
+                    >
+                      {(student.fullName || 'ST')
+                        .split(' ')
+                        .filter(Boolean)
+                        .map((p) => p[0])
+                        .join('')
+                        .slice(0, 2)
+                        .toUpperCase() || 'ST'}
+                    </div>
                     <div>
-                      <div style={{ fontWeight: 600, color: '#0F172A', fontSize: '0.88rem' }}>{student.fullName}</div>
+                      <div style={{ fontWeight: 600, color: '#082B56', fontSize: '0.88rem' }}>{student.fullName}</div>
                       <div style={{ fontSize: '0.74rem', color: '#64748B', fontFamily: 'monospace' }}>{student.studentId}</div>
                     </div>
                   </div>

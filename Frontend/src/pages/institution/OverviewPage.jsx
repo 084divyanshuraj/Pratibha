@@ -237,18 +237,26 @@ export default function OverviewPage() {
       </div>
 
       {/* 2. PAGE TITLE & ACTIONS */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      {/* 2. PAGE TITLE & ACTIONS */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
             {role === 'faculty_mentor'
               ? 'Faculty Mentorship & Academic Command Center'
               : role === 'placement_officer'
               ? 'Corporate Relations & Placement Command Center'
               : 'Executive Campus Intelligence Overview'}
           </h1>
+          <p style={{ margin: '3px 0 0', color: '#64748B', fontSize: '0.84rem' }}>
+            {role === 'faculty_mentor'
+              ? 'Real-time cohort telemetry, attendance early-warnings, and departmental risk tracking.'
+              : role === 'placement_officer'
+              ? 'Corporate placement conversion rates, decoupled risk indicators, and training metrics.'
+              : 'Holistic campus-wide student success analytics across all academic departments.'}
+          </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
           <button
             onClick={loadData}
             style={{
@@ -263,7 +271,10 @@ export default function OverviewPage() {
               fontWeight: 600,
               color: '#334155',
               cursor: 'pointer',
+              transition: 'background-color 0.15s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
           >
             <RefreshCw size={14} className={loading ? 'spin' : ''} />
             <span>Refresh Analytics</span>
@@ -275,7 +286,7 @@ export default function OverviewPage() {
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
-              backgroundColor: '#1A73E8',
+              backgroundColor: '#1677D2',
               border: 'none',
               borderRadius: '8px',
               padding: '8px 16px',
@@ -283,8 +294,11 @@ export default function OverviewPage() {
               fontWeight: 600,
               color: '#FFFFFF',
               cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+              boxShadow: '0 2px 4px rgba(22, 119, 210, 0.25)',
+              transition: 'background-color 0.15s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
+            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
           >
             <FlaskConical size={15} />
             <span>Open Sandbox Simulator</span>
@@ -292,80 +306,129 @@ export default function OverviewPage() {
         </div>
       </div>
 
-      {/* 2. EXECUTIVE KPI CARDS */}
+      {/* 2. EXECUTIVE KPI CARDS (SYMMETRIC & EQUAL HEIGHT) */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
         {/* KPI 1: Total Students */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            padding: '1.25rem',
+            borderRadius: '12px',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: '142px',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Enrolled Students
             </span>
-            <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#EBF3FE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={18} color="#1A73E8" />
+            <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#EAF3FF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={17} color="#1677D2" />
             </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0F172A', marginTop: '10px' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
             {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'}
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <div style={{ fontSize: '0.76rem', color: '#059669', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span>Active Across {kpis?.departmentCount || 5} Department{kpis?.departmentCount === 1 ? '' : 's'}</span>
           </div>
         </div>
 
         {/* KPI 2: Average Success Score */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            padding: '1.25rem',
+            borderRadius: '12px',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: '142px',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Average Success Score
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#ECFDF5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Award size={18} color="#10B981" />
+              <Award size={17} color="#10B981" />
             </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0F172A', marginTop: '10px' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
             {kpis?.averageSuccessScore != null ? kpis.averageSuccessScore : '74.9'}
             <span style={{ fontSize: '1rem', color: '#94A3B8', fontWeight: 400 }}>/100</span>
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.76rem', color: '#64748B', marginTop: '4px' }}>
             Formula <strong>sss-v1</strong> (Explainable Readiness)
           </div>
         </div>
 
-        {/* KPI 3: Decoupled Risk Divergence Alert */}
-        <div style={{ backgroundColor: '#FFFBEB', padding: '20px', borderRadius: '12px', border: '1px solid #FDE68A', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+        {/* KPI 3: Decoupled Risk Divergence Alert (Harmonious White with Amber Accent) */}
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            padding: '1.25rem',
+            borderRadius: '12px',
+            border: '1px solid #FDE68A',
+            borderLeft: '4px solid #D97706',
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: '142px',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#B45309', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Decoupled Divergence Alert
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#FEF3C7', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <AlertTriangle size={18} color="#D97706" />
+              <AlertTriangle size={17} color="#D97706" />
             </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#92400E', marginTop: '10px' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
             {kpis?.decoupledDivergence?.count != null ? kpis.decoupledDivergence.count : '148'}
-            <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#B45309', marginLeft: '6px' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#D97706', marginLeft: '6px' }}>
               ({kpis?.decoupledDivergence?.percentage != null ? kpis.decoupledDivergence.percentage : '10.4'}%)
             </span>
           </div>
-          <div style={{ fontSize: '0.74rem', color: '#78350F', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.76rem', color: '#B45309', marginTop: '4px', fontWeight: 500 }}>
             High Academic CGPA but High Placement Risk
           </div>
         </div>
 
         {/* KPI 4: 7-Category Data Completeness */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+        <div
+          style={{
+            backgroundColor: '#FFFFFF',
+            padding: '1.25rem',
+            borderRadius: '12px',
+            border: '1px solid #E2E8F0',
+            boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            minHeight: '142px',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
+            <span style={{ fontSize: '0.74rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Data Completeness
             </span>
             <div style={{ width: '34px', height: '34px', borderRadius: '8px', backgroundColor: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Database size={18} color="#64748B" />
+              <Database size={17} color="#64748B" />
             </div>
           </div>
-          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#0F172A', marginTop: '10px' }}>
+          <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
             {kpis?.overallCompletenessAverage != null ? kpis.overallCompletenessAverage : '83.1'}%
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '4px' }}>
+          <div style={{ fontSize: '0.76rem', color: '#64748B', marginTop: '4px' }}>
             Across all 7 Institutional Pillars
           </div>
         </div>
@@ -374,17 +437,17 @@ export default function OverviewPage() {
       {/* 3. CHARTS ROW */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
         {/* Chart A: Success Score Distribution */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '22px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 600, color: '#0F172A' }}>
+              <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700, color: '#082B56' }}>
                 Success Score Cohort Distribution
               </h3>
               <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#64748B' }}>
                 Segmented by explainable Student Success Score bands
               </p>
             </div>
-            <span style={{ fontSize: '0.74rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '4px 8px', borderRadius: '6px', color: '#64748B' }}>
+            <span style={{ fontSize: '0.74rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '3px 8px', borderRadius: '6px', color: '#64748B', fontWeight: 600 }}>
               N = {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'}
             </span>
           </div>
@@ -397,7 +460,7 @@ export default function OverviewPage() {
                 <YAxis tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <Tooltip
                   cursor={{ fill: 'rgba(241, 245, 249, 0.6)' }}
-                  contentStyle={{ backgroundColor: '#0F172A', borderRadius: '8px', color: '#FFFFFF', border: 'none', fontSize: '0.8rem' }}
+                  contentStyle={{ backgroundColor: '#082B56', borderRadius: '8px', color: '#FFFFFF', border: 'none', fontSize: '0.8rem' }}
                 />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -406,19 +469,19 @@ export default function OverviewPage() {
         </div>
 
         {/* Chart B: Historical Trends */}
-        <div style={{ backgroundColor: '#FFFFFF', padding: '22px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
+        <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 600, color: '#0F172A' }}>
+              <h3 style={{ margin: 0, fontSize: '0.98rem', fontWeight: 700, color: '#082B56' }}>
                 Institutional Progress Over Semesters
               </h3>
               <p style={{ margin: '2px 0 0', fontSize: '0.76rem', color: '#64748B' }}>
                 Tracking longitudinal average score vs attendance percentage
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '8px', fontSize: '0.72rem' }}>
-              <span style={{ color: '#1A73E8', fontWeight: 600 }}>● Success Score</span>
-              <span style={{ color: '#10B981', fontWeight: 600 }}>● Attendance %</span>
+            <div style={{ display: 'flex', gap: '10px', fontSize: '0.72rem' }}>
+              <span style={{ color: '#1677D2', fontWeight: 600 }}>● Success Score</span>
+              <span style={{ color: '#0D9488', fontWeight: 600 }}>● Attendance %</span>
             </div>
           </div>
 
@@ -429,10 +492,10 @@ export default function OverviewPage() {
                 <XAxis dataKey="period" tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <YAxis domain={[60, 100]} tick={{ fontSize: 11, fill: '#64748B' }} axisLine={false} tickLine={false} />
                 <Tooltip
-                  contentStyle={{ backgroundColor: '#0F172A', borderRadius: '8px', color: '#FFFFFF', border: 'none', fontSize: '0.8rem' }}
+                  contentStyle={{ backgroundColor: '#082B56', borderRadius: '8px', color: '#FFFFFF', border: 'none', fontSize: '0.8rem' }}
                 />
-                <Line type="monotone" dataKey="averageSuccessScore" stroke="#1A73E8" strokeWidth={3} dot={{ r: 4 }} name="Success Score" />
-                <Line type="monotone" dataKey="averageAttendance" stroke="#10B981" strokeWidth={2} dot={{ r: 4 }} name="Attendance %" />
+                <Line type="monotone" dataKey="averageSuccessScore" stroke="#1677D2" strokeWidth={3} dot={{ r: 4 }} name="Success Score" />
+                <Line type="monotone" dataKey="averageAttendance" stroke="#0D9488" strokeWidth={2} dot={{ r: 4 }} name="Attendance %" />
               </LineChart>
             </ResponsiveContainer>
           </div>
