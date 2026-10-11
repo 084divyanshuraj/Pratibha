@@ -7,13 +7,13 @@ import { getAnalytics, isSupported } from 'firebase/analytics';
  * Project: pratibha-c71c0
  */
 export const DEFAULT_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAmvLIbmhQraSg3KHsKZafX_WyBO3CcptY",
-  authDomain: "pratibha-c71c0.firebaseapp.com",
-  projectId: "pratibha-c71c0",
-  storageBucket: "pratibha-c71c0.firebasestorage.app",
-  messagingSenderId: "419422595748",
-  appId: "1:419422595748:web:df8e1672be43bc71951431",
-  measurementId: "G-47Q5D5TYGQ"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || '',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'pratibha-c71c0.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'pratibha-c71c0',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'pratibha-c71c0.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '419422595748',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:419422595748:web:df8e1672be43bc71951431',
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || 'G-47Q5D5TYGQ'
 };
 
 /**
@@ -59,12 +59,33 @@ export function saveFirebaseConfig(config) {
   }
 }
 
-// Initialize Firebase App
-export const app = getApps().length > 0 ? getApp() : initializeApp(getFirebaseConfig());
+/**
+ * Safely resolves or initializes the Firebase app instance.
+ * Returns null if no valid configuration or apiKey is supplied.
+ */
+function initializeFirebaseAppSafely() {
+  try {
+    const existing = getApps();
+    if (existing && existing.length > 0) {
+      return getApp();
+    }
+    const config = getFirebaseConfig();
+    if (!config || !config.apiKey) {
+      return null;
+    }
+    return initializeApp(config);
+  } catch (err) {
+    console.warn('[PRATIBHA Firebase] Initialization skipped or deferred:', err?.message || err);
+    return null;
+  }
+}
 
-// Initialize Analytics safely (works only in browser environments)
+// Initialize Firebase App safely (returns null if unconfigured)
+export const app = initializeFirebaseAppSafely();
+
+// Initialize Analytics safely (works only in browser environments when app is initialized)
 export let analytics = null;
-if (typeof window !== 'undefined') {
+if (typeof window !== 'undefined' && app) {
   isSupported().then((supported) => {
     if (supported) {
       try {
@@ -76,11 +97,26 @@ if (typeof window !== 'undefined') {
   }).catch(() => {});
 }
 
-// Initialize Auth
-export const auth = getAuth(app);
+// Initialize Auth safely
+export const auth = app ? (() => {
+  try {
+    return getAuth(app);
+  } catch {
+    return null;
+  }
+})() : null;
 
 export function getFirebaseAuthInstance() {
-  return auth;
+  if (auth) return auth;
+  const currentApp = initializeFirebaseAppSafely();
+  if (currentApp) {
+    try {
+      return getAuth(currentApp);
+    } catch {
+      return null;
+    }
+  }
+  return null;
 }
 
 /**
