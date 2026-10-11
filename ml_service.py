@@ -471,7 +471,7 @@ def predict_student_risks(student: dict) -> dict:
             })
 
         for feat, shap_val, obs_val in feature_attributions:
-            spec = FEATURE_SPECS.get(feat, {"label": spec["label"], "benchmark": "N/A", "unit": ""})
+            spec = FEATURE_SPECS.get(feat, {"label": feat.replace("_", " ").title(), "benchmark": "N/A", "unit": ""})
             shap_waterfall.append({
                 "feature": feat,
                 "label": spec["label"],

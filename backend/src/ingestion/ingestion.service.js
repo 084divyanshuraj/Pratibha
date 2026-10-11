@@ -345,10 +345,10 @@ function validateRecord(datasetType, raw, rowNum, existingStudentIds, options = 
   // Student existence check (except when importing students themselves)
   if (studentId && datasetType !== 'students') {
     if (!existingStudentIds.has(studentId)) {
-      if (options.autoProvision === false) {
+      if (options.dryRun || options.autoProvision === false) {
         errors.push({
           field: 'studentId',
-          message: `Student with ID "${studentId}" does not exist in the system.`,
+          message: `studentId "${studentId}" does not exist in the Student directory.`,
         });
       }
     }
@@ -386,36 +386,30 @@ function validateRecord(datasetType, raw, rowNum, existingStudentIds, options = 
         }
         cleaned.assessmentType = assessmentType;
 
-        let marksObtained = toOptionalNumber(raw.marksObtained, 'marksObtained') ?? 0;
-        if (marksObtained < 0) marksObtained = 0;
-        cleaned.marksObtained = marksObtained;
+        let marksObtained = toOptionalNumber(raw.marksObtained, 'marksObtained');
+        if (marksObtained !== null && marksObtained < 0) marksObtained = 0;
+        cleaned.marksObtained = marksObtained ?? 0;
 
         let maxMarks = toOptionalNumber(raw.maxMarks, 'maxMarks') ?? 100;
         if (maxMarks < 1) maxMarks = 100;
-        if (marksObtained > maxMarks) {
-          maxMarks = marksObtained > 100 ? marksObtained : 100;
+        if (marksObtained !== null && marksObtained > maxMarks) {
+          errors.push({
+            field: 'marksObtained',
+            message: 'marksObtained cannot be greater than maxMarks.',
+          });
         }
         cleaned.maxMarks = maxMarks;
 
         let grade = toTrimmedString(raw.grade);
-        if (!grade) {
-          const pct = (marksObtained / maxMarks) * 100;
-          if (pct >= 90) grade = 'A+';
-          else if (pct >= 80) grade = 'A';
-          else if (pct >= 70) grade = 'B+';
-          else if (pct >= 60) grade = 'B';
-          else if (pct >= 50) grade = 'C';
-          else grade = 'F';
-        }
-        cleaned.grade = grade;
+        cleaned.grade = grade || null;
 
         let cgpa = toOptionalNumber(raw.cgpa, 'cgpa');
-        if (cgpa === null || cgpa < 0 || cgpa > 10) {
-          cgpa = parseFloat(((marksObtained / maxMarks) * 10).toFixed(2));
+        if (cgpa !== null && (cgpa < 0 || cgpa > 10)) {
+          errors.push({ field: 'cgpa', message: 'cgpa must be between 0 and 10.' });
         }
         cleaned.cgpa = cgpa;
 
-        cleaned.backlog = toBoolean(raw.backlog, marksObtained < maxMarks * 0.4);
+        cleaned.backlog = toBoolean(raw.backlog, marksObtained !== null && marksObtained < maxMarks * 0.4);
         cleaned.observedAt = toOptionalDate(raw.observedAt, 'observedAt', true);
         break;
       }
@@ -440,9 +434,14 @@ function validateRecord(datasetType, raw, rowNum, existingStudentIds, options = 
           }
         }
         if (classesAttended < 0) classesAttended = 0;
-        if (classesAttended > classesHeld) classesHeld = classesAttended;
+        if (classesAttended > classesHeld) {
+          errors.push({
+            field: 'classesAttended',
+            message: 'classesAttended cannot exceed classesHeld.',
+          });
+        }
 
-        if (attendancePercentage === null) {
+        if (attendancePercentage === null && classesHeld > 0) {
           attendancePercentage = parseFloat(((classesAttended / classesHeld) * 100).toFixed(2));
         } else if (attendancePercentage <= 1 && attendancePercentage > 0) {
           attendancePercentage = parseFloat((attendancePercentage * 100).toFixed(2));
@@ -766,7 +765,7 @@ export async function processImport({
 
   normalizedRecords.forEach((raw, idx) => {
     const rowNum = idx + 2; // Row 1 is typically header in CSV
-    const result = validateRecord(datasetType, raw, rowNum, existingStudentIds, { autoProvision });
+    const result = validateRecord(datasetType, raw, rowNum, existingStudentIds, { autoProvision, dryRun });
 
     if (result.valid) {
       acceptedRecords.push(result.cleanedRecord);
