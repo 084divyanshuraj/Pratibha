@@ -255,112 +255,61 @@ export default function AppLayout({ children }) {
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 76px)', overflow: 'hidden' }}>
-          {/* TOP SIDEBAR HEADER & NEW ANALYSIS BUTTON */}
-          <div style={{ padding: '14px 14px 10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {/* Brand Logo & Collapse Icon */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Link
-                to={isStudent ? '/student/portal' : '/institution/overview'}
+          {/* TOP SIDEBAR HEADER */}
+          <div style={{ padding: '14px 14px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Link
+              to={isStudent ? '/student/portal' : '/institution/overview'}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+                cursor: 'pointer',
+              }}
+              title="PRATIBHA Dashboard Home"
+            >
+              <img
+                src="/assets/images/pratibha_logo.png"
+                alt="PRATIBHA"
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  textDecoration: 'none',
-                  color: '#FFFFFF',
+                  height: '32px',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  display: 'block',
+                  filter: 'drop-shadow(0 0 10px rgba(0, 162, 255, 0.45)) drop-shadow(0 2px 4px rgba(0,0,0,0.4))',
+                  transition: 'transform 0.2s ease',
                 }}
-              >
-                <img
-                  src="/assets/images/pratibha_logo.png"
-                  alt="PRATIBHA"
-                  style={{
-                    height: '28px',
-                    width: 'auto',
-                    objectFit: 'contain',
-                    filter: 'drop-shadow(0 0 8px rgba(0, 162, 255, 0.5))',
-                  }}
-                />
-                <span style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
-                  PRATIBHA
-                </span>
-                <span
-                  style={{
-                    fontSize: '0.65rem',
-                    padding: '2px 6px',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    color: '#FFFFFF',
-                    fontWeight: 700,
-                  }}
-                >
-                  AI 4.0
-                </span>
-              </Link>
+                onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.03)')}
+                onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+              />
+            </Link>
 
-              {/* Sidebar Collapse Button */}
-              <button
-                type="button"
-                onClick={() => setIsSidebarCollapsed(true)}
-                title="Close sidebar"
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  cursor: 'pointer',
-                  padding: '5px',
-                  borderRadius: '6px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#FFFFFF';
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.18)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)';
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <PanelLeftClose size={18} />
-              </button>
-            </div>
-
-            {/* "+ New Analysis / Query" (ChatGPT "+ New chat" Pill Button) */}
+            {/* Sidebar Collapse Button */}
             <button
               type="button"
-              onClick={() => {
-                setIsCopilotOpen(true);
-              }}
+              onClick={() => setIsSidebarCollapsed(true)}
+              title="Close sidebar"
               style={{
-                width: '100%',
+                background: 'transparent',
+                border: 'none',
+                color: 'rgba(255, 255, 255, 0.85)',
+                cursor: 'pointer',
+                padding: '5px',
+                borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '9px 12px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.35)',
-                backgroundColor: 'rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                fontSize: '0.86rem',
-                fontWeight: 600,
-                cursor: 'pointer',
+                justifyContent: 'center',
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.55)';
+                e.currentTarget.style.color = '#FFFFFF';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.18)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
+                e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)';
+                e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Plus size={16} color="#FFFFFF" />
-                <span>New Analysis / Query</span>
-              </div>
-              <Sparkles size={14} color="#FFFFFF" />
+              <PanelLeftClose size={18} />
             </button>
           </div>
 
@@ -770,27 +719,8 @@ export default function AppLayout({ children }) {
             </div>
           </div>
 
-          {/* Right: Live API & Quick Actions */}
+          {/* Right: Quick Actions */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            {/* Live API Indicator Pill */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '3px 10px',
-                borderRadius: '999px',
-                backgroundColor: backendLive ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)',
-                border: `1px solid ${backendLive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
-                fontSize: '0.72rem',
-                color: backendLive ? '#059669' : '#D97706',
-                fontWeight: 600,
-              }}
-            >
-              {backendLive ? <Wifi size={12} /> : <WifiOff size={12} />}
-              <span>{backendLive ? 'Live API (port 5000)' : 'Synthetic Mode'}</span>
-            </div>
-
             {/* Current Role Badge */}
             <span
               style={{
