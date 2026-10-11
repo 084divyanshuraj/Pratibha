@@ -90,7 +90,6 @@ export default function AppLayout({ children }) {
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
-  const [isCopilotHovered, setIsCopilotHovered] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [backendLive, setBackendLive] = useState(false);
 
@@ -149,14 +148,14 @@ export default function AppLayout({ children }) {
   };
 
   // Resolve user display name & initials
-  const displayName = currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Rajesh Sarraf');
+  const displayName = currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Demo Administrator');
   const userInitials = displayName
     .split(' ')
     .filter(Boolean)
     .map((n) => n[0])
     .join('')
     .slice(0, 2)
-    .toUpperCase() || 'RS';
+    .toUpperCase() || 'DA';
 
   // Navigation sections based on role
   const getNavSections = () => {
@@ -230,13 +229,13 @@ export default function AppLayout({ children }) {
         height: '100vh',
         width: '100vw',
         overflow: 'hidden',
-        backgroundColor: '#212121',
-        color: '#ECECEC',
+        backgroundColor: '#F8FAFC',
+        color: '#0F172A',
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       }}
     >
       {/* =========================================================================
-          1. CHATGPT-STYLE LEFT PANEL (FULL-HEIGHT DARK SIDEBAR)
+          1. CHATGPT ARCHITECTURE WITH ORIGINAL PRATIBHA BLUE SIDEBAR (#1A73E8)
           ========================================================================= */}
       <aside
         style={{
@@ -244,19 +243,20 @@ export default function AppLayout({ children }) {
           minWidth: isSidebarCollapsed ? '0px' : '260px',
           transition: 'width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)',
           height: '100vh',
-          backgroundColor: '#171717',
-          borderRight: isSidebarCollapsed ? 'none' : '1px solid #27272a',
+          backgroundColor: '#1A73E8',
+          borderRight: isSidebarCollapsed ? 'none' : '1px solid #1669D6',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           overflow: 'hidden',
           zIndex: 40,
           position: 'relative',
+          boxShadow: '2px 0 10px rgba(26, 115, 232, 0.15)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 76px)', overflow: 'hidden' }}>
           {/* TOP SIDEBAR HEADER & NEW ANALYSIS BUTTON */}
-          <div style={{ padding: '12px 14px 10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ padding: '14px 14px 10px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             {/* Brand Logo & Collapse Icon */}
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <Link
@@ -273,13 +273,13 @@ export default function AppLayout({ children }) {
                   src="/assets/images/pratibha_logo.png"
                   alt="PRATIBHA"
                   style={{
-                    height: '26px',
+                    height: '28px',
                     width: 'auto',
                     objectFit: 'contain',
-                    filter: 'drop-shadow(0 0 8px rgba(0, 162, 255, 0.4))',
+                    filter: 'drop-shadow(0 0 8px rgba(0, 162, 255, 0.5))',
                   }}
                 />
-                <span style={{ fontSize: '0.98rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#F4F4F5' }}>
+                <span style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#FFFFFF' }}>
                   PRATIBHA
                 </span>
                 <span
@@ -287,9 +287,9 @@ export default function AppLayout({ children }) {
                     fontSize: '0.65rem',
                     padding: '2px 6px',
                     borderRadius: '6px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                    color: '#A1A1AA',
-                    fontWeight: 600,
+                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                    color: '#FFFFFF',
+                    fontWeight: 700,
                   }}
                 >
                   AI 4.0
@@ -304,7 +304,7 @@ export default function AppLayout({ children }) {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#A1A1AA',
+                  color: 'rgba(255, 255, 255, 0.85)',
                   cursor: 'pointer',
                   padding: '5px',
                   borderRadius: '6px',
@@ -315,10 +315,10 @@ export default function AppLayout({ children }) {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.color = '#FFFFFF';
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.18)';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#A1A1AA';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)';
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
@@ -326,7 +326,7 @@ export default function AppLayout({ children }) {
               </button>
             </div>
 
-            {/* "+ New Analysis / Simulation" (ChatGPT "+ New chat" Button) */}
+            {/* "+ New Analysis / Query" (ChatGPT "+ New chat" Pill Button) */}
             <button
               type="button"
               onClick={() => {
@@ -339,28 +339,28 @@ export default function AppLayout({ children }) {
                 justifyContent: 'space-between',
                 padding: '9px 12px',
                 borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.14)',
-                backgroundColor: 'transparent',
+                border: '1px solid rgba(255, 255, 255, 0.35)',
+                backgroundColor: 'rgba(255, 255, 255, 0.12)',
                 color: '#FFFFFF',
                 fontSize: '0.86rem',
-                fontWeight: 500,
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.55)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.14)';
+                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.12)';
+                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Plus size={16} color="#FFFFFF" />
                 <span>New Analysis / Query</span>
               </div>
-              <Sparkles size={14} color="#38BDF8" />
+              <Sparkles size={14} color="#FFFFFF" />
             </button>
           </div>
 
@@ -376,15 +376,15 @@ export default function AppLayout({ children }) {
             }}
           >
             {navSections.map((section, idx) => (
-              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+              <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 <div
                   style={{
-                    padding: '4px 10px 6px',
+                    padding: '4px 10px 4px',
                     fontSize: '0.70rem',
                     fontWeight: 700,
-                    color: '#71717A',
+                    color: 'rgba(255, 255, 255, 0.78)',
                     textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
+                    letterSpacing: '0.06em',
                   }}
                 >
                   {section.title}
@@ -405,42 +405,44 @@ export default function AppLayout({ children }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '8px 10px',
+                        padding: '9px 12px',
                         borderRadius: '8px',
                         textDecoration: 'none',
-                        color: isActive ? '#FFFFFF' : '#A1A1AA',
-                        backgroundColor: isActive ? '#27272a' : 'transparent',
-                        fontSize: '0.84rem',
-                        fontWeight: isActive ? 600 : 400,
+                        color: isActive ? '#1A73E8' : 'rgba(255, 255, 255, 0.9)',
+                        backgroundColor: isActive ? '#FFFFFF' : 'transparent',
+                        fontSize: '0.85rem',
+                        fontWeight: isActive ? 700 : 500,
+                        boxShadow: isActive ? '0 3px 10px rgba(0, 0, 0, 0.14)' : 'none',
                         transition: 'all 0.15s ease',
                       }}
                       onMouseEnter={(e) => {
                         if (!isActive) {
-                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.07)';
+                          e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)';
                           e.currentTarget.style.color = '#FFFFFF';
                         }
                       }}
                       onMouseLeave={(e) => {
                         if (!isActive) {
                           e.currentTarget.style.backgroundColor = 'transparent';
-                          e.currentTarget.style.color = '#A1A1AA';
+                          e.currentTarget.style.color = 'rgba(255, 255, 255, 0.9)';
                         }
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Icon size={17} color={isActive ? '#38BDF8' : '#71717A'} />
+                        <Icon size={18} color={isActive ? '#1A73E8' : 'rgba(255, 255, 255, 0.88)'} />
                         <span>{item.label}</span>
                       </div>
 
                       {item.badge && (
                         <span
                           style={{
-                            fontSize: '0.66rem',
-                            padding: '1px 6px',
+                            fontSize: '0.68rem',
+                            padding: '2px 7px',
                             borderRadius: '999px',
-                            backgroundColor: isActive ? 'rgba(56, 189, 248, 0.2)' : 'rgba(255, 255, 255, 0.08)',
-                            color: isActive ? '#38BDF8' : '#A1A1AA',
-                            fontWeight: 600,
+                            backgroundColor: isActive ? '#1A73E8' : 'rgba(255, 255, 255, 0.22)',
+                            color: '#FFFFFF',
+                            fontWeight: 700,
+                            border: isActive ? 'none' : '1px solid rgba(255, 255, 255, 0.3)',
                           }}
                         >
                           {item.badge}
@@ -455,17 +457,17 @@ export default function AppLayout({ children }) {
         </div>
 
         {/* =========================================================================
-            CHATGPT-STYLE PROFILE SECTION (BOTTOM OF SIDEBAR)
+            PROFILE SECTION AT SIDEBAR BOTTOM (CHATGPT ARCHITECTURE + ORIGINAL COLORS)
             ========================================================================= */}
         <div
           ref={profileMenuRef}
           style={{
             padding: '10px 12px',
-            borderTop: '1px solid #27272a',
+            borderTop: '1px solid rgba(255, 255, 255, 0.18)',
             position: 'relative',
           }}
         >
-          {/* Profile Dropdown Popover */}
+          {/* Profile Dropdown Popover (Clean White Container) */}
           {isProfileMenuOpen && (
             <div
               style={{
@@ -473,11 +475,11 @@ export default function AppLayout({ children }) {
                 bottom: '68px',
                 left: '10px',
                 right: '10px',
-                backgroundColor: '#262626',
-                border: '1px solid #3f3f46',
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E2E8F0',
                 borderRadius: '12px',
                 padding: '8px',
-                boxShadow: '0 16px 36px rgba(0, 0, 0, 0.65)',
+                boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: '4px',
@@ -485,12 +487,12 @@ export default function AppLayout({ children }) {
               }}
             >
               {/* User Email & Role Info */}
-              <div style={{ padding: '8px 10px', borderBottom: '1px solid rgba(255, 255, 255, 0.1)', marginBottom: '4px' }}>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#FFFFFF' }}>{displayName}</div>
-                <div style={{ fontSize: '0.72rem', color: '#A1A1AA', marginTop: '2px' }}>
+              <div style={{ padding: '8px 10px', borderBottom: '1px solid #F1F5F9', marginBottom: '4px' }}>
+                <div style={{ fontSize: '0.84rem', fontWeight: 700, color: '#0F172A' }}>{displayName}</div>
+                <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
                   {currentUser?.email || (isStudent ? 'student@example.edu' : 'admin@example.edu')}
                 </div>
-                <div style={{ fontSize: '0.68rem', color: '#10B981', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <div style={{ fontSize: '0.70rem', color: '#059669', marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#10B981' }} />
                   <span>{backendLive ? 'API Service Connected (port 5000)' : 'Synthetic Mode Active'}</span>
                 </div>
@@ -511,21 +513,21 @@ export default function AppLayout({ children }) {
                   borderRadius: '6px',
                   border: 'none',
                   backgroundColor: 'transparent',
-                  color: '#E4E4E7',
+                  color: '#334155',
                   fontSize: '0.80rem',
                   cursor: 'pointer',
                   textAlign: 'left',
                   transition: 'background-color 0.15s ease',
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.08)')}
+                onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F1F5F9')}
                 onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
               >
-                <User size={14} color="#A1A1AA" />
+                <User size={14} color="#64748B" />
                 <span>My Profile & Details</span>
               </button>
 
               {/* Persona Switching Header */}
-              <div style={{ padding: '6px 10px 2px', fontSize: '0.68rem', fontWeight: 700, color: '#71717A', textTransform: 'uppercase' }}>
+              <div style={{ padding: '6px 10px 2px', fontSize: '0.68rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase' }}>
                 Switch Persona
               </div>
 
@@ -536,10 +538,11 @@ export default function AppLayout({ children }) {
                   style={{
                     padding: '5px 8px',
                     borderRadius: '6px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    backgroundColor: currentUser?.role === 'institution_admin' ? '#3F3F46' : 'transparent',
-                    color: '#E4E4E7',
+                    border: '1px solid #E2E8F0',
+                    backgroundColor: currentUser?.role === 'institution_admin' ? '#EBF3FE' : '#F8FAFC',
+                    color: currentUser?.role === 'institution_admin' ? '#1A73E8' : '#334155',
                     fontSize: '0.72rem',
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
@@ -551,10 +554,11 @@ export default function AppLayout({ children }) {
                   style={{
                     padding: '5px 8px',
                     borderRadius: '6px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    backgroundColor: currentUser?.role === 'faculty_mentor' ? '#3F3F46' : 'transparent',
-                    color: '#E4E4E7',
+                    border: '1px solid #E2E8F0',
+                    backgroundColor: currentUser?.role === 'faculty_mentor' ? '#EBF3FE' : '#F8FAFC',
+                    color: currentUser?.role === 'faculty_mentor' ? '#1A73E8' : '#334155',
                     fontSize: '0.72rem',
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
@@ -566,10 +570,11 @@ export default function AppLayout({ children }) {
                   style={{
                     padding: '5px 8px',
                     borderRadius: '6px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    backgroundColor: currentUser?.role === 'placement_officer' ? '#3F3F46' : 'transparent',
-                    color: '#E4E4E7',
+                    border: '1px solid #E2E8F0',
+                    backgroundColor: currentUser?.role === 'placement_officer' ? '#EBF3FE' : '#F8FAFC',
+                    color: currentUser?.role === 'placement_officer' ? '#1A73E8' : '#334155',
                     fontSize: '0.72rem',
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
@@ -581,10 +586,11 @@ export default function AppLayout({ children }) {
                   style={{
                     padding: '5px 8px',
                     borderRadius: '6px',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    backgroundColor: isStudent ? '#3F3F46' : 'transparent',
-                    color: '#E4E4E7',
+                    border: '1px solid #E2E8F0',
+                    backgroundColor: isStudent ? '#EBF3FE' : '#F8FAFC',
+                    color: isStudent ? '#1A73E8' : '#334155',
                     fontSize: '0.72rem',
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
@@ -593,7 +599,7 @@ export default function AppLayout({ children }) {
               </div>
 
               {/* Log out option */}
-              <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', marginTop: '4px', paddingTop: '4px' }}>
+              <div style={{ borderTop: '1px solid #F1F5F9', marginTop: '4px', paddingTop: '4px' }}>
                 <button
                   type="button"
                   onClick={handleLogout}
@@ -605,60 +611,61 @@ export default function AppLayout({ children }) {
                     borderRadius: '6px',
                     border: 'none',
                     backgroundColor: 'transparent',
-                    color: '#F87171',
+                    color: '#EF4444',
                     fontSize: '0.80rem',
                     cursor: 'pointer',
                     width: '100%',
                     textAlign: 'left',
                     transition: 'background-color 0.15s ease',
                   }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.15)')}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#FEF2F2')}
                   onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
                 >
-                  <LogOut size={14} color="#F87171" />
+                  <LogOut size={14} color="#EF4444" />
                   <span>Log out</span>
                 </button>
               </div>
             </div>
           )}
 
-          {/* Profile Bar Button (Avatar + Name + Role like Image 2) */}
+          {/* Profile Bar Button at Sidebar Bottom */}
           <div
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             style={{
-              padding: '6px 8px',
-              borderRadius: '8px',
+              padding: '8px 10px',
+              borderRadius: '10px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               cursor: 'pointer',
-              backgroundColor: isProfileMenuOpen ? 'rgba(255, 255, 255, 0.08)' : 'transparent',
+              backgroundColor: isProfileMenuOpen ? 'rgba(255, 255, 255, 0.25)' : 'rgba(255, 255, 255, 0.15)',
+              border: '1px solid rgba(255, 255, 255, 0.25)',
               transition: 'background-color 0.15s ease',
             }}
             onMouseEnter={(e) => {
-              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)';
+              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.22)';
             }}
             onMouseLeave={(e) => {
-              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'transparent';
+              if (!isProfileMenuOpen) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
             }}
             title="Account & Settings"
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px', overflow: 'hidden' }}>
-              {/* Circle Avatar (RS initials like Image 2) */}
+              {/* Circle Avatar */}
               <div
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '34px',
+                  height: '34px',
                   borderRadius: '50%',
-                  backgroundColor: '#10B981',
+                  backgroundColor: 'rgba(255, 255, 255, 0.28)',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   fontWeight: 700,
-                  fontSize: '0.82rem',
+                  fontSize: '0.84rem',
                   flexShrink: 0,
-                  border: '1.5px solid rgba(255, 255, 255, 0.2)',
+                  border: '1.5px solid rgba(255, 255, 255, 0.55)',
                 }}
               >
                 {userInitials}
@@ -669,8 +676,8 @@ export default function AppLayout({ children }) {
                 <span
                   style={{
                     fontSize: '0.84rem',
-                    fontWeight: 600,
-                    color: '#F4F4F5',
+                    fontWeight: 700,
+                    color: '#FFFFFF',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
@@ -680,8 +687,8 @@ export default function AppLayout({ children }) {
                 </span>
                 <span
                   style={{
-                    fontSize: '0.70rem',
-                    color: '#A1A1AA',
+                    fontSize: '0.72rem',
+                    color: 'rgba(255, 255, 255, 0.82)',
                     whiteSpace: 'nowrap',
                     textOverflow: 'ellipsis',
                     overflow: 'hidden',
@@ -692,13 +699,13 @@ export default function AppLayout({ children }) {
               </div>
             </div>
 
-            <MoreHorizontal size={16} color="#A1A1AA" />
+            <MoreHorizontal size={16} color="rgba(255, 255, 255, 0.8)" />
           </div>
         </div>
       </aside>
 
       {/* =========================================================================
-          2. CHATGPT-STYLE MIDDLE SECTION & MAIN WORKSPACE CANVAS
+          2. MIDDLE SECTION & MAIN WORKSPACE CANVAS (ORIGINAL CLEAN LIGHT PALETTE)
           ========================================================================= */}
       <div
         style={{
@@ -707,20 +714,20 @@ export default function AppLayout({ children }) {
           flexDirection: 'column',
           height: '100vh',
           overflow: 'hidden',
-          backgroundColor: '#212121',
+          backgroundColor: '#F8FAFC',
           position: 'relative',
         }}
       >
-        {/* MINIMAL TOP HEADER (SEAMLESS CHATGPT STYLE) */}
+        {/* MINIMAL TOP HEADER */}
         <header
           style={{
-            height: '48px',
-            backgroundColor: '#212121',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+            height: '50px',
+            backgroundColor: '#FFFFFF',
+            borderBottom: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '0 1.25rem',
+            padding: '0 1.5rem',
             flexShrink: 0,
             zIndex: 30,
           }}
@@ -735,7 +742,7 @@ export default function AppLayout({ children }) {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#A1A1AA',
+                  color: '#64748B',
                   cursor: 'pointer',
                   padding: '5px',
                   borderRadius: '6px',
@@ -744,11 +751,11 @@ export default function AppLayout({ children }) {
                   justifyContent: 'center',
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#FFFFFF';
-                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.color = '#0F172A';
+                  e.currentTarget.style.backgroundColor = '#F1F5F9';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#A1A1AA';
+                  e.currentTarget.style.color = '#64748B';
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
@@ -757,9 +764,9 @@ export default function AppLayout({ children }) {
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.88rem' }}>
-              <span style={{ fontWeight: 600, color: '#FFFFFF' }}>PRATIBHA AI</span>
-              <span style={{ color: '#52525B' }}>/</span>
-              <span style={{ color: '#A1A1AA', fontWeight: 500 }}>{findActiveTitle()}</span>
+              <span style={{ fontWeight: 700, color: '#0F172A' }}>PRATIBHA AI</span>
+              <span style={{ color: '#CBD5E1' }}>/</span>
+              <span style={{ color: '#64748B', fontWeight: 500 }}>{findActiveTitle()}</span>
             </div>
           </div>
 
@@ -773,11 +780,11 @@ export default function AppLayout({ children }) {
                 gap: '6px',
                 padding: '3px 10px',
                 borderRadius: '999px',
-                backgroundColor: backendLive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                backgroundColor: backendLive ? 'rgba(16, 185, 129, 0.12)' : 'rgba(245, 158, 11, 0.12)',
                 border: `1px solid ${backendLive ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'}`,
                 fontSize: '0.72rem',
-                color: backendLive ? '#10B981' : '#F59E0B',
-                fontWeight: 500,
+                color: backendLive ? '#059669' : '#D97706',
+                fontWeight: 600,
               }}
             >
               {backendLive ? <Wifi size={12} /> : <WifiOff size={12} />}
@@ -790,10 +797,10 @@ export default function AppLayout({ children }) {
                 fontSize: '0.72rem',
                 padding: '3px 9px',
                 borderRadius: '999px',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#D4D4D8',
-                fontWeight: 500,
+                backgroundColor: '#F1F5F9',
+                border: '1px solid #E2E8F0',
+                color: '#334155',
+                fontWeight: 600,
               }}
             >
               {currentUser?.roleLabel || 'Administrator'}
@@ -810,14 +817,14 @@ export default function AppLayout({ children }) {
             maxWidth: '1440px',
             width: '100%',
             margin: '0 auto',
-            color: '#ECECEC',
+            color: '#0F172A',
           }}
         >
           {children}
         </main>
 
         {/* =========================================================================
-            CHATGPT-STYLE BOTTOM PROMPT BAR (DOCKED AT BOTTOM OF MIDDLE SECTION)
+            CHATGPT-STYLE BOTTOM PROMPT BAR (CLEAN LIGHT PALETTE)
             ========================================================================= */}
         <div
           style={{
@@ -832,18 +839,24 @@ export default function AppLayout({ children }) {
           <form
             onSubmit={handleBottomPromptSubmit}
             style={{
-              backgroundColor: '#2f2f2f',
-              border: '1px solid rgba(255, 255, 255, 0.14)',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #CBD5E1',
               borderRadius: '26px',
               padding: '6px 12px 6px 14px',
               display: 'flex',
               alignItems: 'center',
               gap: '10px',
-              boxShadow: '0 12px 32px rgba(0, 0, 0, 0.55)',
+              boxShadow: '0 10px 30px rgba(15, 23, 42, 0.1)',
               transition: 'border-color 0.2s ease, box-shadow 0.2s ease',
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.3)')}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.14)')}
+            onFocus={(e) => {
+              e.currentTarget.style.borderColor = '#1A73E8';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(26, 115, 232, 0.18)';
+            }}
+            onBlur={(e) => {
+              e.currentTarget.style.borderColor = '#CBD5E1';
+              e.currentTarget.style.boxShadow = '0 10px 30px rgba(15, 23, 42, 0.1)';
+            }}
           >
             {/* "+" Action / Attachment Button */}
             <button
@@ -855,8 +868,8 @@ export default function AppLayout({ children }) {
                 height: '32px',
                 borderRadius: '50%',
                 border: 'none',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                color: '#FFFFFF',
+                backgroundColor: '#F1F5F9',
+                color: '#475569',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -864,8 +877,8 @@ export default function AppLayout({ children }) {
                 flexShrink: 0,
                 transition: 'background-color 0.15s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.16)')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)')}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#E2E8F0')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#F1F5F9')}
             >
               <Plus size={16} />
             </button>
@@ -881,13 +894,13 @@ export default function AppLayout({ children }) {
                 backgroundColor: 'transparent',
                 border: 'none',
                 outline: 'none',
-                color: '#FFFFFF',
+                color: '#0F172A',
                 fontSize: '0.92rem',
                 fontFamily: 'inherit',
               }}
             />
 
-            {/* "Think" Toggle Button (Exact replica of ChatGPT Image 2) */}
+            {/* "Think" Toggle Button */}
             <button
               type="button"
               onClick={() => setIsThinkingActive(!isThinkingActive)}
@@ -898,9 +911,9 @@ export default function AppLayout({ children }) {
                 gap: '5px',
                 padding: '4px 10px',
                 borderRadius: '999px',
-                border: isThinkingActive ? '1px solid #38BDF8' : '1px solid rgba(255, 255, 255, 0.1)',
-                backgroundColor: isThinkingActive ? 'rgba(56, 189, 248, 0.15)' : 'rgba(255, 255, 255, 0.06)',
-                color: isThinkingActive ? '#38BDF8' : '#D4D4D8',
+                border: isThinkingActive ? '1px solid #1A73E8' : '1px solid #BFDBFE',
+                backgroundColor: isThinkingActive ? '#EBF3FE' : '#EFF6FF',
+                color: isThinkingActive ? '#1A73E8' : '#1D4ED8',
                 fontSize: '0.74rem',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -908,7 +921,7 @@ export default function AppLayout({ children }) {
                 transition: 'all 0.15s ease',
               }}
             >
-              <BrainCircuit size={13} color={isThinkingActive ? '#38BDF8' : '#A1A1AA'} />
+              <BrainCircuit size={13} color={isThinkingActive ? '#1A73E8' : '#2563EB'} />
               <span>Think</span>
             </button>
 
@@ -923,7 +936,7 @@ export default function AppLayout({ children }) {
                 borderRadius: '50%',
                 border: 'none',
                 backgroundColor: 'transparent',
-                color: '#A1A1AA',
+                color: '#64748B',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -932,11 +945,11 @@ export default function AppLayout({ children }) {
                 transition: 'all 0.15s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.color = '#38BDF8';
-                e.currentTarget.style.backgroundColor = 'rgba(56, 189, 248, 0.1)';
+                e.currentTarget.style.color = '#1A73E8';
+                e.currentTarget.style.backgroundColor = '#EBF3FE';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.color = '#A1A1AA';
+                e.currentTarget.style.color = '#64748B';
                 e.currentTarget.style.backgroundColor = 'transparent';
               }}
             >
@@ -953,8 +966,8 @@ export default function AppLayout({ children }) {
                 height: '32px',
                 borderRadius: '50%',
                 border: 'none',
-                backgroundColor: bottomPrompt.trim() ? '#FFFFFF' : 'rgba(255, 255, 255, 0.2)',
-                color: bottomPrompt.trim() ? '#000000' : 'rgba(255, 255, 255, 0.4)',
+                backgroundColor: bottomPrompt.trim() ? '#1A73E8' : '#E2E8F0',
+                color: bottomPrompt.trim() ? '#FFFFFF' : '#94A3B8',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',

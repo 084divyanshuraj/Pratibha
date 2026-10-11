@@ -122,22 +122,22 @@ export default function SandboxPage() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', color: '#ECECEC' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Persona Focus Alert */}
       <div
         style={{
           backgroundColor:
             role === 'faculty_mentor'
-              ? 'rgba(22, 163, 74, 0.12)'
+              ? '#F0FDF4'
               : role === 'placement_officer'
-              ? 'rgba(37, 99, 235, 0.12)'
-              : 'rgba(38, 38, 38, 0.8)',
+              ? '#EFF6FF'
+              : '#F8FAFC',
           border: `1px solid ${
             role === 'faculty_mentor'
-              ? 'rgba(34, 197, 94, 0.25)'
+              ? '#BBF7D0'
               : role === 'placement_officer'
-              ? 'rgba(59, 130, 246, 0.25)'
-              : 'rgba(255, 255, 255, 0.1)'
+              ? '#BFDBFE'
+              : '#E2E8F0'
           }`,
           borderRadius: '12px',
           padding: '1rem 1.25rem',
@@ -152,13 +152,12 @@ export default function SandboxPage() {
             height: '36px',
             borderRadius: '8px',
             backgroundColor:
-              role === 'faculty_mentor' ? '#16A34A' : role === 'placement_officer' ? '#2563EB' : '#27272A',
+              role === 'faculty_mentor' ? '#16A34A' : role === 'placement_officer' ? '#2563EB' : '#0F172A',
             color: '#FFFFFF',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             flexShrink: 0,
-            border: '1px solid rgba(255, 255, 255, 0.15)',
           }}
         >
           {role === 'faculty_mentor' ? (
@@ -177,10 +176,10 @@ export default function SandboxPage() {
               textTransform: 'uppercase',
               color:
                 role === 'faculty_mentor'
-                  ? '#4ADE80'
+                  ? '#15803D'
                   : role === 'placement_officer'
-                  ? '#60A5FA'
-                  : '#A1A1AA',
+                  ? '#1D4ED8'
+                  : '#334155',
             }}
           >
             {role === 'faculty_mentor'
@@ -189,7 +188,7 @@ export default function SandboxPage() {
               ? 'Campus Placement Training Planner'
               : 'Campus Resource Allocation Planner'}
           </div>
-          <div style={{ fontSize: '0.84rem', color: '#D4D4D8', marginTop: '2px' }}>
+          <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '2px' }}>
             {role === 'faculty_mentor'
               ? 'Plan remedial coaching sessions, attendance recovery classes, and peer mentoring seats for CSE students.'
               : role === 'placement_officer'
@@ -202,14 +201,14 @@ export default function SandboxPage() {
       {/* Title & Action Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#FFFFFF', margin: 0, letterSpacing: '-0.3px' }}>
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 700, color: '#0F172A', margin: 0, letterSpacing: '-0.3px' }}>
             {role === 'faculty_mentor'
               ? 'Remedial Tutoring & Mentorship Sandbox'
               : role === 'placement_officer'
               ? 'Interview & Placement Training Sandbox'
               : 'Intervention Sandbox & Resource Optimizer'}
           </h1>
-          <p style={{ margin: '4px 0 0', color: '#A1A1AA', fontSize: '0.86rem' }}>
+          <p style={{ margin: '4px 0 0', color: '#64748B', fontSize: '0.86rem' }}>
             {role === 'faculty_mentor'
               ? 'Plan remedial coaching and peer mentoring cohorts within actual department faculty teaching capacity.'
               : role === 'placement_officer'
@@ -223,9 +222,9 @@ export default function SandboxPage() {
             <button
               onClick={handleExportReport}
               style={{
-                backgroundColor: '#2F2F2F',
-                color: '#FFFFFF',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
+                backgroundColor: '#FFFFFF',
+                color: '#334155',
+                border: '1px solid #CBD5E1',
                 borderRadius: '8px',
                 padding: '9px 15px',
                 fontWeight: 600,
@@ -234,12 +233,10 @@ export default function SandboxPage() {
                 display: 'flex',
                 alignItems: 'center',
                 gap: '6px',
-                transition: 'background-color 0.15s ease',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#3F3F46')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#2F2F2F')}
             >
-              <Download size={16} color="#A1A1AA" />
+              <Download size={16} color="#475569" />
               <span>Export CSV</span>
             </button>
             {!approvedState && (
@@ -257,7 +254,7 @@ export default function SandboxPage() {
                   display: 'flex',
                   alignItems: 'center',
                   gap: '6px',
-                  boxShadow: '0 2px 8px rgba(16, 185, 129, 0.3)',
+                  boxShadow: '0 2px 4px rgba(16, 185, 129, 0.2)',
                 }}
               >
                 <CheckCircle2 size={16} />
@@ -273,9 +270,9 @@ export default function SandboxPage() {
           style={{
             padding: '12px 18px',
             borderRadius: '8px',
-            backgroundColor: 'rgba(16, 185, 129, 0.15)',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
-            color: '#34D399',
+            backgroundColor: '#ECFDF5',
+            border: '1px solid #A7F3D0',
+            color: '#065F46',
             fontSize: '0.85rem',
             fontWeight: 600,
           }}
@@ -286,32 +283,32 @@ export default function SandboxPage() {
 
       {/* Simulator Workspace Grid */}
       <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '20px', alignItems: 'start' }}>
-        {/* Left Column: Parameter Controls (Styled like ChatGPT code/prompt box in Image 2) */}
+        {/* Left Column: Parameter Controls (Clean White Card Architecture) */}
         <div
           style={{
-            backgroundColor: '#262626',
-            padding: '20px',
+            backgroundColor: '#FFFFFF',
+            padding: '22px',
             borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            border: '1px solid #E2E8F0',
             display: 'flex',
             flexDirection: 'column',
             gap: '1.25rem',
-            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
           }}
         >
-          {/* Header styled like "</> Plain text" in Image 2 */}
+          {/* Header styled with code-block indicator */}
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
               paddingBottom: '10px',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+              borderBottom: '1px solid #F1F5F9',
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Code2 size={17} color="#38BDF8" />
-              <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#FFFFFF' }}>
+              <Sliders size={16} color="#1A73E8" />
+              <span style={{ fontSize: '0.96rem', fontWeight: 700, color: '#0F172A' }}>
                 Scenario Parameters
               </span>
             </div>
@@ -320,8 +317,8 @@ export default function SandboxPage() {
                 fontSize: '0.68rem',
                 padding: '2px 7px',
                 borderRadius: '6px',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                color: '#A1A1AA',
+                backgroundColor: '#F1F5F9',
+                color: '#64748B',
                 fontWeight: 600,
                 fontFamily: 'monospace',
               }}
@@ -332,7 +329,7 @@ export default function SandboxPage() {
 
           {/* Strategy Selector */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#A1A1AA', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>
               Allocation Strategy:
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -352,10 +349,10 @@ export default function SandboxPage() {
                     key={strat.id}
                     onClick={() => setStrategy(strat.id)}
                     style={{
-                      padding: '9px 12px',
+                      padding: '8px 12px',
                       borderRadius: '8px',
-                      border: `1px solid ${isSelected ? '#38BDF8' : 'rgba(255, 255, 255, 0.08)'}`,
-                      backgroundColor: isSelected ? 'rgba(56, 189, 248, 0.12)' : '#1F1F23',
+                      border: `1px solid ${isSelected ? '#1A73E8' : '#E2E8F0'}`,
+                      backgroundColor: isSelected ? '#EBF3FE' : '#FFFFFF',
                       cursor: 'pointer',
                       transition: 'all 0.15s ease',
                     }}
@@ -364,12 +361,12 @@ export default function SandboxPage() {
                       style={{
                         fontSize: '0.82rem',
                         fontWeight: 600,
-                        color: isSelected ? '#38BDF8' : '#F4F4F5',
+                        color: isSelected ? '#1A73E8' : '#1E293B',
                       }}
                     >
                       {strat.label}
                     </div>
-                    <div style={{ fontSize: '0.72rem', color: '#71717A', marginTop: '2px' }}>{strat.desc}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#64748B', marginTop: '2px' }}>{strat.desc}</div>
                   </div>
                 );
               })}
@@ -378,7 +375,7 @@ export default function SandboxPage() {
 
           {/* Intervention Program */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#A1A1AA', display: 'block', marginBottom: '6px' }}>
+            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569', display: 'block', marginBottom: '6px' }}>
               Intervention Program:
             </label>
             <select
@@ -387,34 +384,26 @@ export default function SandboxPage() {
               style={{
                 width: '100%',
                 padding: '9px 12px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.14)',
+                borderRadius: '6px',
+                border: '1px solid #CBD5E1',
                 fontSize: '0.84rem',
                 outline: 'none',
-                backgroundColor: '#18181B',
-                color: '#FFFFFF',
+                backgroundColor: '#FFFFFF',
+                color: '#0F172A',
               }}
             >
-              <option value="remedial_classes" style={{ backgroundColor: '#18181B', color: '#FFFFFF' }}>
-                Remedial Subject Coaching
-              </option>
-              <option value="peer_mentoring" style={{ backgroundColor: '#18181B', color: '#FFFFFF' }}>
-                Peer-to-Peer Academic Mentoring
-              </option>
-              <option value="career_bootcamp" style={{ backgroundColor: '#18181B', color: '#FFFFFF' }}>
-                Mock Interview & Aptitude Bootcamp
-              </option>
-              <option value="counseling_session" style={{ backgroundColor: '#18181B', color: '#FFFFFF' }}>
-                Student Wellness Counseling
-              </option>
+              <option value="remedial_classes">Remedial Subject Coaching</option>
+              <option value="peer_mentoring">Peer-to-Peer Academic Mentoring</option>
+              <option value="career_bootcamp">Mock Interview & Aptitude Bootcamp</option>
+              <option value="counseling_session">Student Wellness Counseling</option>
             </select>
           </div>
 
           {/* Capacity Constraint Slider */}
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#A1A1AA' }}>Seat Capacity Limit:</label>
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#38BDF8' }}>{capacitySeats} Seats</span>
+              <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#475569' }}>Seat Capacity Limit:</label>
+              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: '#1A73E8' }}>{capacitySeats} Seats</span>
             </div>
             <input
               type="range"
@@ -423,9 +412,9 @@ export default function SandboxPage() {
               step="5"
               value={capacitySeats}
               onChange={(e) => setCapacitySeats(Number(e.target.value))}
-              style={{ width: '100%', cursor: 'pointer', accentColor: '#38BDF8' }}
+              style={{ width: '100%', cursor: 'pointer', accentColor: '#1A73E8' }}
             />
-            <div style={{ fontSize: '0.68rem', color: '#71717A', marginTop: '2px' }}>
+            <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: '2px' }}>
               Limits total concurrent intervention enrollments
             </div>
           </div>
@@ -435,7 +424,7 @@ export default function SandboxPage() {
             onClick={handleRunSimulation}
             disabled={simulating}
             style={{
-              backgroundColor: '#2563EB',
+              backgroundColor: '#1A73E8',
               color: '#FFFFFF',
               border: 'none',
               borderRadius: '8px',
@@ -447,14 +436,8 @@ export default function SandboxPage() {
               alignItems: 'center',
               justifyContent: 'center',
               gap: '6px',
-              boxShadow: '0 2px 8px rgba(37, 99, 235, 0.35)',
+              boxShadow: '0 2px 4px rgba(26, 115, 232, 0.25)',
               transition: 'background-color 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!simulating) e.currentTarget.style.backgroundColor = '#1D4ED8';
-            }}
-            onMouseLeave={(e) => {
-              if (!simulating) e.currentTarget.style.backgroundColor = '#2563EB';
             }}
           >
             <Play size={15} fill="#FFFFFF" />
@@ -468,9 +451,9 @@ export default function SandboxPage() {
             /* Empty State */
             <div
               style={{
-                backgroundColor: '#262626',
+                backgroundColor: '#FFFFFF',
                 borderRadius: '12px',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                border: '1px solid #E2E8F0',
                 padding: '48px 24px',
                 textAlign: 'center',
                 display: 'flex',
@@ -484,16 +467,16 @@ export default function SandboxPage() {
                   width: '56px',
                   height: '56px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                  backgroundColor: '#F1F5F9',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
               >
-                <FlaskConical size={26} color="#71717A" />
+                <FlaskConical size={26} color="#94A3B8" />
               </div>
-              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#FFFFFF' }}>Intervention Simulation Ready</h3>
-              <p style={{ margin: 0, fontSize: '0.84rem', color: '#A1A1AA', maxWidth: '420px', lineHeight: '1.5' }}>
+              <h3 style={{ margin: 0, fontSize: '1.05rem', color: '#0F172A' }}>Intervention Simulation Ready</h3>
+              <p style={{ margin: 0, fontSize: '0.84rem', color: '#64748B', maxWidth: '420px', lineHeight: '1.5' }}>
                 Configure capacity limits and strategy on the left, then click <strong>Run Simulation</strong> to compute
                 deterministic student assignments with explainable selection/exclusion rationales.
               </p>
@@ -501,100 +484,100 @@ export default function SandboxPage() {
           ) : (
             /* Results Presentation */
             <>
-              {/* Summary Metrics (4 cards styled like ChatGPT metrics) */}
+              {/* Summary Metrics (Original clean white cards from Image 1) */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
                 <div
                   style={{
-                    backgroundColor: '#262626',
+                    backgroundColor: '#FFFFFF',
                     padding: '16px',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #E2E8F0',
                   }}
                 >
-                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#A1A1AA', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
                     Selected for Program
                   </div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#10B981', marginTop: '4px' }}>
                     {simulationResult.allocationResults?.length || 0} Students
                   </div>
-                  <div style={{ fontSize: '0.70rem', color: '#71717A' }}>Strictly within {capacitySeats} seat cap</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Strictly within {capacitySeats} seat cap</div>
                 </div>
 
                 <div
                   style={{
-                    backgroundColor: '#262626',
+                    backgroundColor: '#FFFFFF',
                     padding: '16px',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #E2E8F0',
                   }}
                 >
-                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#A1A1AA', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
                     Excluded Due to Capacity
                   </div>
                   <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#F59E0B', marginTop: '4px' }}>
                     {simulationResult.excludedResults?.length || 0} Students
                   </div>
-                  <div style={{ fontSize: '0.70rem', color: '#71717A' }}>Queued for next cohort cycle</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Queued for next cohort cycle</div>
                 </div>
 
                 <div
                   style={{
-                    backgroundColor: '#262626',
+                    backgroundColor: '#FFFFFF',
                     padding: '16px',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #E2E8F0',
                   }}
                 >
-                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#A1A1AA', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
                     AI Optimizer Gain (Model 4)
                   </div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#38BDF8', marginTop: '4px' }}>
+                  <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#1A73E8', marginTop: '4px' }}>
                     {simulationResult.resourceSummary?.optimizerEfficiencyGain || '+23.4% Reach'}
                   </div>
-                  <div style={{ fontSize: '0.70rem', color: '#10B981', fontWeight: 600 }}>
+                  <div style={{ fontSize: '0.72rem', color: '#10B981', fontWeight: 600 }}>
                     {simulationResult.resourceSummary?.predictedCohortUplift || '+13.2% avg uplift'}
                   </div>
                 </div>
 
                 <div
                   style={{
-                    backgroundColor: '#262626',
+                    backgroundColor: '#FFFFFF',
                     padding: '16px',
                     borderRadius: '10px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #E2E8F0',
                   }}
                 >
-                  <div style={{ fontSize: '0.70rem', fontWeight: 600, color: '#A1A1AA', textTransform: 'uppercase' }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
                     Human Approval State
                   </div>
                   <div
                     style={{
-                      fontSize: '1.1rem',
+                      fontSize: '1.15rem',
                       fontWeight: 700,
-                      color: approvedState ? '#10B981' : '#F59E0B',
+                      color: approvedState ? '#10B981' : '#D97706',
                       marginTop: '6px',
                     }}
                   >
                     {approvedState ? 'APPROVED & ASSIGNED' : 'SIMULATED (PENDING)'}
                   </div>
-                  <div style={{ fontSize: '0.70rem', color: '#71717A' }}>Requires provost authorization</div>
+                  <div style={{ fontSize: '0.72rem', color: '#64748B' }}>Requires provost authorization</div>
                 </div>
               </div>
 
               {/* Zero Outcome Fabrication Integrity Notice */}
               <div
                 style={{
-                  backgroundColor: 'rgba(30, 58, 138, 0.22)',
-                  border: '1px solid rgba(59, 130, 246, 0.35)',
-                  borderRadius: '10px',
+                  backgroundColor: '#EFF6FF',
+                  border: '1px solid #BFDBFE',
+                  borderRadius: '8px',
                   padding: '12px 16px',
                   display: 'flex',
                   gap: '10px',
                   alignItems: 'center',
                 }}
               >
-                <ShieldCheck size={20} color="#38BDF8" flexShrink={0} />
-                <div style={{ fontSize: '0.76rem', color: '#93C5FD', lineHeight: '1.45' }}>
+                <ShieldCheck size={20} color="#1A73E8" flexShrink={0} />
+                <div style={{ fontSize: '0.76rem', color: '#1E40AF', lineHeight: '1.45' }}>
                   <strong>KPMG Compliance Rule: Zero Outcome Fabrication.</strong> Estimated causal uplifts are not simulated blindly.
                   Actual outcomes are recorded longitudinally only after verified intervention completion.
                 </div>
@@ -603,20 +586,20 @@ export default function SandboxPage() {
               {/* Selected Students Table */}
               <div
                 style={{
-                  backgroundColor: '#262626',
+                  backgroundColor: '#FFFFFF',
                   borderRadius: '12px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
+                  border: '1px solid #E2E8F0',
                   overflow: 'hidden',
                 }}
               >
                 <div
                   style={{
                     padding: '14px 18px',
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                    backgroundColor: '#1E1E22',
+                    borderBottom: '1px solid #E2E8F0',
+                    backgroundColor: '#F8FAFC',
                     fontWeight: 600,
                     fontSize: '0.86rem',
-                    color: '#FFFFFF',
+                    color: '#0F172A',
                   }}
                 >
                   Allocated Students ({simulationResult.allocationResults?.length || 0})
@@ -625,9 +608,9 @@ export default function SandboxPage() {
                   <thead>
                     <tr
                       style={{
-                        backgroundColor: '#262626',
-                        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                        color: '#A1A1AA',
+                        backgroundColor: '#FFFFFF',
+                        borderBottom: '1px solid #F1F5F9',
+                        color: '#64748B',
                       }}
                     >
                       <th style={{ padding: '10px 18px', textAlign: 'left' }}>Student</th>
@@ -637,19 +620,19 @@ export default function SandboxPage() {
                   </thead>
                   <tbody>
                     {(simulationResult.allocationResults || []).map((alloc, idx) => (
-                      <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                      <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
                         <td style={{ padding: '10px 18px' }}>
-                          <span style={{ fontWeight: 600, color: '#FFFFFF', display: 'block' }}>
+                          <span style={{ fontWeight: 600, color: '#0F172A', display: 'block' }}>
                             {studentsMap.get(alloc.studentId)?.fullName || 'Student'}
                           </span>
-                          <span style={{ fontSize: '0.74rem', color: '#38BDF8', fontFamily: 'monospace' }}>
+                          <span style={{ fontSize: '0.74rem', color: '#1A73E8', fontFamily: 'monospace' }}>
                             {alloc.studentId}
                           </span>
                         </td>
-                        <td style={{ padding: '10px 14px', textTransform: 'capitalize', color: '#E4E4E7' }}>
+                        <td style={{ padding: '10px 14px', textTransform: 'capitalize', color: '#1E293B' }}>
                           {alloc.interventionType.replace('_', ' ')}
                         </td>
-                        <td style={{ padding: '10px 18px', color: '#D4D4D8' }}>{alloc.reason}</td>
+                        <td style={{ padding: '10px 18px', color: '#334155' }}>{alloc.reason}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -660,20 +643,20 @@ export default function SandboxPage() {
               {simulationResult.excludedResults && simulationResult.excludedResults.length > 0 && (
                 <div
                   style={{
-                    backgroundColor: '#262626',
+                    backgroundColor: '#FFFFFF',
                     borderRadius: '12px',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
+                    border: '1px solid #E2E8F0',
                     overflow: 'hidden',
                   }}
                 >
                   <div
                     style={{
                       padding: '14px 18px',
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                      backgroundColor: '#1E1E22',
+                      borderBottom: '1px solid #E2E8F0',
+                      backgroundColor: '#F8FAFC',
                       fontWeight: 600,
                       fontSize: '0.86rem',
-                      color: '#FFFFFF',
+                      color: '#0F172A',
                     }}
                   >
                     Excluded Students ({simulationResult.excludedResults.length})
@@ -682,9 +665,9 @@ export default function SandboxPage() {
                     <thead>
                       <tr
                         style={{
-                          backgroundColor: '#262626',
-                          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
-                          color: '#A1A1AA',
+                          backgroundColor: '#FFFFFF',
+                          borderBottom: '1px solid #F1F5F9',
+                          color: '#64748B',
                         }}
                       >
                         <th style={{ padding: '10px 18px', textAlign: 'left' }}>Student</th>
@@ -693,16 +676,16 @@ export default function SandboxPage() {
                     </thead>
                     <tbody>
                       {simulationResult.excludedResults.map((excl, idx) => (
-                        <tr key={idx} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.06)' }}>
+                        <tr key={idx} style={{ borderBottom: '1px solid #F1F5F9' }}>
                           <td style={{ padding: '10px 18px' }}>
-                            <span style={{ fontWeight: 600, color: '#FFFFFF', display: 'block' }}>
+                            <span style={{ fontWeight: 600, color: '#0F172A', display: 'block' }}>
                               {studentsMap.get(excl.studentId)?.fullName || 'Student'}
                             </span>
-                            <span style={{ fontSize: '0.74rem', color: '#71717A', fontFamily: 'monospace' }}>
+                            <span style={{ fontSize: '0.74rem', color: '#64748B', fontFamily: 'monospace' }}>
                               {excl.studentId}
                             </span>
                           </td>
-                          <td style={{ padding: '10px 18px', color: '#A1A1AA' }}>{excl.reason}</td>
+                          <td style={{ padding: '10px 18px', color: '#64748B' }}>{excl.reason}</td>
                         </tr>
                       ))}
                     </tbody>
