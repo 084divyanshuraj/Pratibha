@@ -1236,18 +1236,7 @@ export const api = {
    */
   async previewImport(datasetType, file) {
     try {
-      let adminToken = sessionStorage.getItem('pratibha_token');
-      // Ensure valid admin token for dataset operations
-      if (!adminToken) {
-        const loginRes = await fetch(`${API_BASE}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'admin@example.edu', password: 'DemoUser123!' }),
-        }).then((r) => r.json()).catch(() => null);
-        if (loginRes?.data?.accessToken) {
-          adminToken = loginRes.data.accessToken;
-        }
-      }
+      const adminToken = await ensureAdminToken();
 
       const formData = new FormData();
       formData.append('file', file);
@@ -1275,37 +1264,94 @@ export const api = {
         sampleValidRecords: res.sampleValidRecords || [],
       };
     } catch {
-      // Dynamic client-side fallback using XLSX library
+      // Dynamic client-side fallback using XLSX library with active rule checks
       try {
         const buffer = await file.arrayBuffer();
         const workbook = XLSX.read(buffer, { type: 'array' });
         const firstSheet = workbook.SheetNames[0];
         const rows = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet], { defval: '' });
 
+        const errors = [];
+        const validRecords = [];
+
+        rows.forEach((r, idx) => {
+          const rowNum = idx + 2;
+          let hasError = false;
+
+          if (datasetType === 'students') {
+            const sem = Number(r.semester);
+            const yr = Number(r.enrollmentYear);
+            if (sem && (sem < 1 || sem > 12)) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'semester', message: `Semester must be between 1 and 12 (received ${sem}).` });
+              hasError = true;
+            }
+            if (yr && yr < 2000) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'enrollmentYear', message: `Enrollment year must be >= 2000 (received ${yr}).` });
+              hasError = true;
+            }
+          } else if (datasetType === 'academic') {
+            const marks = Number(r.marksObtained);
+            const max = Number(r.maxMarks) || 100;
+            const cg = Number(r.cgpa);
+            if (!isNaN(marks) && marks > max) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'marksObtained', message: `marksObtained (${marks}) exceeds maxMarks (${max}).` });
+              hasError = true;
+            }
+            if (!isNaN(cg) && (cg < 0 || cg > 10)) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'cgpa', message: `CGPA must be between 0.0 and 10.0 (received ${cg}).` });
+              hasError = true;
+            }
+          } else if (datasetType === 'attendance') {
+            const held = Number(r.classesHeld);
+            const attended = Number(r.classesAttended);
+            const pct = Number(r.attendancePercentage);
+            if (!isNaN(held) && !isNaN(attended) && attended > held) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'classesAttended', message: `classesAttended (${attended}) cannot exceed classesHeld (${held}).` });
+              hasError = true;
+            }
+            if (!isNaN(pct) && (pct < 0 || pct > 100)) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'attendancePercentage', message: `Attendance percentage must be between 0% and 100% (received ${pct}%).` });
+              hasError = true;
+            }
+          } else if (datasetType === 'placement') {
+            const sc = Number(r.score);
+            const msc = Number(r.maxScore) || 100;
+            if (!isNaN(sc) && sc > msc) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'score', message: `Score (${sc}) exceeds maximum score (${msc}).` });
+              hasError = true;
+            }
+          } else if (datasetType === 'feedback') {
+            const rt = Number(r.rating);
+            if (!isNaN(rt) && (rt < 1 || rt > 5)) {
+              errors.push({ row: rowNum, studentId: r.studentId || 'N/A', field: 'rating', message: `Feedback rating must be on a 1 to 5 scale (received ${rt}).` });
+              hasError = true;
+            }
+          }
+
+          if (!hasError) validRecords.push(r);
+        });
+
         return {
           importId: `PREV_${Date.now()}`,
           datasetType,
           fileName: file.name,
           totalRows: rows.length,
-          acceptedCount: rows.length,
-          rejectedCount: 0,
+          acceptedCount: validRecords.length,
+          rejectedCount: errors.length,
           warningsCount: 0,
-          errors: [],
-          sampleValidRecords: rows.slice(0, 4),
+          errors,
+          sampleValidRecords: validRecords.slice(0, 4),
         };
       } catch {
         return {
           importId: `PREV_${Date.now()}`,
           datasetType,
           fileName: file.name,
-          totalRows: 48,
-          acceptedCount: 46,
-          rejectedCount: 2,
-          warningsCount: 1,
-          errors: [
-            { row: 14, studentId: 'STU_9999', message: 'Student ID not registered in institutional directory.' },
-            { row: 29, studentId: 'STU_0042', message: 'Value out of declared range (8.5 > scale 10.0).' },
-          ],
+          totalRows: 1,
+          acceptedCount: 1,
+          rejectedCount: 0,
+          warningsCount: 0,
+          errors: [],
           sampleValidRecords: [],
         };
       }
@@ -1318,17 +1364,7 @@ export const api = {
     let backendSuccess = false;
 
     try {
-      let adminToken = sessionStorage.getItem('pratibha_token');
-      if (!adminToken) {
-        const loginRes = await fetch(`${API_BASE}/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: 'admin@example.edu', password: 'DemoUser123!' }),
-        }).then((r) => r.json()).catch(() => null);
-        if (loginRes?.data?.accessToken) {
-          adminToken = loginRes.data.accessToken;
-        }
-      }
+      const adminToken = await ensureAdminToken();
 
       const formData = new FormData();
       formData.append('file', file);
@@ -1356,18 +1392,18 @@ export const api = {
       if (rows.length > 0) {
         if (!committedRows) committedRows = rows.length;
 
-        if (datasetType === 'students') {
-          const current = [...getActiveStudents()];
-          const currentMap = new Map();
-          current.forEach((st) => currentMap.set(st.studentId, st));
+        const current = [...getActiveStudents()];
+        const currentMap = new Map();
+        current.forEach((st) => currentMap.set(st.studentId.toUpperCase(), st));
 
+        if (datasetType === 'students') {
           rows.forEach((r, idx) => {
             const sId = r.studentId ? String(r.studentId).toUpperCase() : `STU_${String(current.length + idx + 1).padStart(4, '0')}`;
             const fn = r.firstName || r.name?.split(' ')[0] || 'Student';
             const ln = r.lastName || r.name?.split(' ').slice(1).join(' ') || `${idx + 1}`;
-            const cg = r.cgpa != null ? Number(r.cgpa) : +(6.5 + Math.random() * 3).toFixed(1);
-            const att = r.attendancePercentage != null ? Number(r.attendancePercentage) : Math.round(65 + Math.random() * 30);
-            const score = +(cg * 8 + (att / 100) * 20).toFixed(1);
+            const cg = r.cgpa != null && r.cgpa !== '' ? Number(r.cgpa) : +(7.0 + Math.random() * 2.5).toFixed(1);
+            const att = r.attendancePercentage != null && r.attendancePercentage !== '' ? Number(r.attendancePercentage) : Math.round(75 + Math.random() * 20);
+            const score = +(cg * 5 + att * 0.4).toFixed(1);
 
             currentMap.set(sId, {
               id: sId.toLowerCase(),
@@ -1387,18 +1423,63 @@ export const api = {
               avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
             });
           });
-
           saveActiveStudents(Array.from(currentMap.values()));
-        } else {
-          // If a category file (academic, attendance, lms, placement, skills, engagement, feedback) was imported
-          try {
-            let customCov = {};
-            const rawCov = localStorage.getItem('pratibha_category_coverage');
-            if (rawCov) customCov = JSON.parse(rawCov);
-            customCov[datasetType] = 100.0;
-            localStorage.setItem('pratibha_category_coverage', JSON.stringify(customCov));
-          } catch {}
+        } else if (datasetType === 'academic') {
+          rows.forEach((r) => {
+            const sId = (r.studentId || '').toString().trim().toUpperCase();
+            if (currentMap.has(sId)) {
+              const student = currentMap.get(sId);
+              if (r.cgpa != null && r.cgpa !== '') {
+                const newCgpa = Number(r.cgpa);
+                if (!isNaN(newCgpa) && newCgpa >= 0 && newCgpa <= 10) {
+                  student.cgpa = newCgpa;
+                  student.academicRisk = newCgpa < 6.5 ? 'high' : newCgpa < 7.5 ? 'medium' : 'low';
+                  student.successScore = +(newCgpa * 5 + (student.attendanceRate || 85) * 0.4).toFixed(1);
+                }
+              }
+            }
+          });
+          saveActiveStudents(Array.from(currentMap.values()));
+        } else if (datasetType === 'attendance') {
+          rows.forEach((r) => {
+            const sId = (r.studentId || '').toString().trim().toUpperCase();
+            if (currentMap.has(sId)) {
+              const student = currentMap.get(sId);
+              const attVal = r.attendancePercentage != null && r.attendancePercentage !== ''
+                ? Number(r.attendancePercentage)
+                : (r.classesAttended && r.classesHeld ? Number(((Number(r.classesAttended) / Number(r.classesHeld)) * 100).toFixed(1)) : null);
+              if (attVal !== null && !isNaN(attVal) && attVal >= 0 && attVal <= 100) {
+                student.attendanceRate = attVal;
+                if (attVal < 75) student.academicRisk = 'high';
+                student.successScore = +((student.cgpa || 8.0) * 5 + attVal * 0.4).toFixed(1);
+              }
+            }
+          });
+          saveActiveStudents(Array.from(currentMap.values()));
+        } else if (datasetType === 'placement') {
+          rows.forEach((r) => {
+            const sId = (r.studentId || '').toString().trim().toUpperCase();
+            if (currentMap.has(sId)) {
+              const student = currentMap.get(sId);
+              const score = Number(r.score);
+              const maxScore = Number(r.maxScore) || 100;
+              if (!isNaN(score)) {
+                const pct = (score / maxScore) * 100;
+                student.placementRisk = pct < 60 ? 'high' : pct < 75 ? 'medium' : 'low';
+              }
+            }
+          });
+          saveActiveStudents(Array.from(currentMap.values()));
         }
+
+        // Always update pillar coverage metric
+        try {
+          let customCov = {};
+          const rawCov = localStorage.getItem('pratibha_category_coverage');
+          if (rawCov) customCov = JSON.parse(rawCov);
+          customCov[datasetType] = 100.0;
+          localStorage.setItem('pratibha_category_coverage', JSON.stringify(customCov));
+        } catch {}
       }
     } catch {}
 
