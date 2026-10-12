@@ -12,7 +12,6 @@ import {
   FlaskConical,
   Target,
   UploadCloud,
-  ChevronRight,
   HelpCircle,
 } from 'lucide-react';
 import {
@@ -27,7 +26,6 @@ import {
   Line,
 } from 'recharts';
 import { api } from '../../services/api';
-import { IMAGES } from '../../assets/images';
 import { useAuth } from '../../context/AuthContext';
 import {
   Briefcase,
@@ -113,7 +111,7 @@ export default function OverviewPage() {
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   padding: '2px 8px',
-                  borderRadius: '999px',
+                  borderRadius: '4px',
                   backgroundColor: role === 'faculty_mentor' ? '#DCFCE7' : role === 'placement_officer' ? '#DBEAFE' : '#E2E8F0',
                   color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
                 }}
@@ -121,14 +119,14 @@ export default function OverviewPage() {
                 {role === 'faculty_mentor' ? 'Faculty Mentor Persona' : role === 'placement_officer' ? 'Placement Officer (TPO)' : 'Institution Administrator'}
               </span>
               <strong style={{ fontSize: '0.96rem', color: '#0F172A' }}>
-                {currentUser?.name || (role === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : role === 'placement_officer' ? 'Vikram Malhotra' : 'Dr. Sunita Rao')}
+                {currentUser?.name || currentUser?.displayName || (currentUser?.username ? `@${currentUser.username}` : (role === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : role === 'placement_officer' ? 'Vikram Malhotra' : 'Administrator'))}
               </strong>
             </div>
           </div>
         </div>
 
         {/* Quick Role Actions */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className="responsive-toolbar-actions">
           {role === 'faculty_mentor' ? (
             <>
               <button
@@ -237,7 +235,6 @@ export default function OverviewPage() {
       </div>
 
       {/* 2. PAGE TITLE & ACTIONS */}
-      {/* 2. PAGE TITLE & ACTIONS */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
@@ -256,7 +253,7 @@ export default function OverviewPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="responsive-toolbar-actions">
           <button
             onClick={loadData}
             style={{
@@ -272,6 +269,8 @@ export default function OverviewPage() {
               color: '#334155',
               cursor: 'pointer',
               transition: 'background-color 0.15s ease',
+              height: '38px',
+              boxSizing: 'border-box',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
@@ -296,6 +295,8 @@ export default function OverviewPage() {
               cursor: 'pointer',
               boxShadow: '0 2px 4px rgba(22, 119, 210, 0.25)',
               transition: 'background-color 0.15s ease',
+              height: '38px',
+              boxSizing: 'border-box',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
@@ -307,7 +308,7 @@ export default function OverviewPage() {
       </div>
 
       {/* 2. EXECUTIVE KPI CARDS (SYMMETRIC & EQUAL HEIGHT) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '16px' }}>
+      <div className="responsive-stat-grid">
         {/* KPI 1: Total Students */}
         <div
           style={{
@@ -331,10 +332,10 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
-            {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'}
+            {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '121'}
           </div>
-          <div style={{ fontSize: '0.76rem', color: '#059669', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <span>Active Across {kpis?.departmentCount || 5} Department{kpis?.departmentCount === 1 ? '' : 's'}</span>
+          <div style={{ fontSize: '0.76rem', color: (kpis?.totalStudents || 0) > 0 ? '#059669' : '#64748B', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span>{(kpis?.totalStudents || 0) > 0 ? `Active Across ${kpis?.departmentCount || 1} Department${kpis?.departmentCount === 1 ? '' : 's'}` : 'Awaiting Student Ingestion'}</span>
           </div>
         </div>
 
@@ -435,7 +436,7 @@ export default function OverviewPage() {
       </div>
 
       {/* 3. CHARTS ROW */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))', gap: '20px' }}>
+      <div className="responsive-charts-grid">
         {/* Chart A: Success Score Distribution */}
         <div style={{ backgroundColor: '#FFFFFF', padding: '1.25rem', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
@@ -448,7 +449,7 @@ export default function OverviewPage() {
               </p>
             </div>
             <span style={{ fontSize: '0.74rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '3px 8px', borderRadius: '6px', color: '#64748B', fontWeight: 600 }}>
-              N = {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'}
+              N = {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '121'}
             </span>
           </div>
 
@@ -517,7 +518,7 @@ export default function OverviewPage() {
                   backgroundColor: '#EFF6FF',
                   color: '#1D4ED8',
                   padding: '2px 8px',
-                  borderRadius: '999px',
+                  borderRadius: '4px',
                   border: '1px solid #BFDBFE',
                 }}
               >
@@ -550,7 +551,7 @@ export default function OverviewPage() {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '12px' }}>
+        <div className="responsive-pillar-grid">
           {[
             { name: 'Academic', key: 'academic', pct: kpis?.categoryCoverage?.academic != null ? kpis.categoryCoverage.academic : 100 },
             { name: 'Attendance', key: 'attendance', pct: kpis?.categoryCoverage?.attendance != null ? kpis.categoryCoverage.attendance : 96.7 },
@@ -603,7 +604,7 @@ export default function OverviewPage() {
                       backgroundColor: statusBg,
                       color: statusColor,
                       padding: '1px 6px',
-                      borderRadius: '999px',
+                      borderRadius: '4px',
                       textTransform: 'uppercase',
                       letterSpacing: '0.02em',
                     }}
@@ -627,158 +628,6 @@ export default function OverviewPage() {
               </div>
             );
           })}
-        </div>
-      </div>
-
-      {/* 5. VISUAL ACTION CARDS WITH REAL PHOTOGRAPHY */}
-      <div>
-        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', marginBottom: '12px' }}>
-          Platform Action Hub
-        </h3>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '18px' }}>
-          {/* Action 1: Sandbox Simulator */}
-          <div
-            onClick={() => navigate('/institution/sandbox')}
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              border: '1px solid #E2E8F0',
-              overflow: 'hidden',
-              cursor: 'pointer',
-              transition: 'all 200ms ease',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}
-          >
-            <div style={{ height: '140px', overflow: 'hidden', position: 'relative' }}>
-              <img
-                src={IMAGES.careerPrep}
-                alt="Intervention Sandbox"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  backgroundColor: '#0F172A',
-                  color: '#FFFFFF',
-                  fontSize: '0.7rem',
-                  fontWeight: 600,
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                }}
-              >
-                KPMG Differentiator
-              </span>
-            </div>
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span>Intervention Sandbox Simulator</span>
-                <ChevronRight size={16} color="#1A73E8" />
-              </h4>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B', lineHeight: '1.45' }}>
-                Simulate targeted remedial and mentoring allocations under strict capacity constraints with human-in-the-loop approval.
-              </p>
-            </div>
-          </div>
-
-          {/* Action 2: Decoupled Risk Radar */}
-          <div
-            onClick={() => navigate('/institution/risk-radar')}
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              border: '1px solid #E2E8F0',
-              overflow: 'hidden',
-              cursor: 'pointer',
-              transition: 'all 200ms ease',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}
-          >
-            <div style={{ height: '140px', overflow: 'hidden', position: 'relative' }}>
-              <img
-                src={IMAGES.dataScienceLab}
-                alt="Risk Intelligence"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  backgroundColor: '#1A73E8',
-                  color: '#FFFFFF',
-                  fontSize: '0.7rem',
-                  fontWeight: 600,
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                }}
-              >
-                ML Models
-              </span>
-            </div>
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span>Decoupled Risk Intelligence Radar</span>
-                <ChevronRight size={16} color="#1A73E8" />
-              </h4>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B', lineHeight: '1.45' }}>
-                Inspect independent Academic Risk (LightGBM ~91%) and Placement Risk (LogReg ~69%) divergence clusters.
-              </p>
-            </div>
-          </div>
-
-          {/* Action 3: Student 360 Directory */}
-          <div
-            onClick={() => navigate('/institution/students')}
-            style={{
-              backgroundColor: '#FFFFFF',
-              borderRadius: '12px',
-              border: '1px solid #E2E8F0',
-              overflow: 'hidden',
-              cursor: 'pointer',
-              transition: 'all 200ms ease',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            }}
-          >
-            <div style={{ height: '140px', overflow: 'hidden', position: 'relative' }}>
-              <img
-                src={IMAGES.libraryStudy}
-                alt="Student 360 Directory"
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-              />
-              <span
-                style={{
-                  position: 'absolute',
-                  top: '12px',
-                  left: '12px',
-                  backgroundColor: '#059669',
-                  color: '#FFFFFF',
-                  fontSize: '0.7rem',
-                  fontWeight: 600,
-                  padding: '3px 8px',
-                  borderRadius: '4px',
-                }}
-              >
-                Directory
-              </span>
-            </div>
-            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <h4 style={{ margin: 0, fontSize: '0.96rem', fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <span>Student 360° Directory</span>
-                <ChevronRight size={16} color="#1A73E8" />
-              </h4>
-              <p style={{ margin: 0, fontSize: '0.78rem', color: '#64748B', lineHeight: '1.45' }}>
-                Browse {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '1,420'} profiles with live multi-criteria search, radar breakdowns, and instant slide-over drawer inspections.
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

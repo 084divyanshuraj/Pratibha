@@ -287,10 +287,11 @@ export default function SandboxPage() {
         </div>
       )}
 
-      {/* Simulator Workspace Grid (Symmetrical 2-Column with Sticky Controls) */}
-      <div style={{ display: 'grid', gridTemplateColumns: '360px 1fr', gap: '20px', alignItems: 'start' }}>
-        {/* Left Column: Parameter Controls (Sticky & Perfectly Sized) */}
+      {/* Simulator Workspace Grid (Symmetrical 2-Column Responsive Grid) */}
+      <div className="responsive-split-grid">
+        {/* Left Column: Parameter Controls */}
         <div
+          className="responsive-sticky-sidebar"
           style={{
             backgroundColor: '#FFFFFF',
             padding: '1.25rem',
@@ -300,8 +301,6 @@ export default function SandboxPage() {
             flexDirection: 'column',
             gap: '1.2rem',
             boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
-            position: 'sticky',
-            top: '1.25rem',
             alignSelf: 'start',
           }}
         >

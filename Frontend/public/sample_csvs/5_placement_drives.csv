@@ -1,0 +1,31 @@
+studentId,assessmentType,score,maxScore,outcomeLabel,employerOrProgram
+STU_0121,aptitude,89,100,Cleared,National Qualifier Mock
+STU_0122,coding,58,100,Needs Preparation,HackerRank DSA Diagnostic
+STU_0123,mock_interview,61,100,Conditional,Technical Mock Interview
+STU_0124,aptitude,61,100,Conditional,National Qualifier Mock
+STU_0125,coding,70,100,Conditional,HackerRank DSA Diagnostic
+STU_0126,mock_interview,89,100,Cleared,Technical Mock Interview
+STU_0127,aptitude,91,100,Cleared,National Qualifier Mock
+STU_0128,coding,66,100,Conditional,HackerRank DSA Diagnostic
+STU_0129,mock_interview,63,100,Conditional,Technical Mock Interview
+STU_0130,aptitude,84,100,Cleared,National Qualifier Mock
+STU_0131,coding,63,100,Conditional,HackerRank DSA Diagnostic
+STU_0132,mock_interview,80,100,Cleared,Technical Mock Interview
+STU_0133,aptitude,96,100,Cleared,National Qualifier Mock
+STU_0134,coding,87,100,Cleared,HackerRank DSA Diagnostic
+STU_0135,mock_interview,87,100,Cleared,Technical Mock Interview
+STU_0136,aptitude,57,100,Needs Preparation,National Qualifier Mock
+STU_0137,coding,60,100,Conditional,HackerRank DSA Diagnostic
+STU_0138,mock_interview,55,100,Needs Preparation,Technical Mock Interview
+STU_0139,aptitude,74,100,Conditional,National Qualifier Mock
+STU_0140,coding,89,100,Cleared,HackerRank DSA Diagnostic
+STU_0141,mock_interview,92,100,Cleared,Technical Mock Interview
+STU_0142,aptitude,81,100,Cleared,National Qualifier Mock
+STU_0143,coding,84,100,Cleared,HackerRank DSA Diagnostic
+STU_0144,mock_interview,59,100,Needs Preparation,Technical Mock Interview
+STU_0145,aptitude,86,100,Cleared,National Qualifier Mock
+STU_0146,coding,89,100,Cleared,HackerRank DSA Diagnostic
+STU_0147,mock_interview,81,100,Cleared,Technical Mock Interview
+STU_0148,aptitude,79,100,Cleared,National Qualifier Mock
+STU_0149,coding,89,100,Cleared,HackerRank DSA Diagnostic
+STU_0150,mock_interview,96,100,Cleared,Technical Mock Interview

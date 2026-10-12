@@ -42,7 +42,7 @@ export default function CampusDashboard() {
           <span style={{ padding: '2px 8px', borderRadius: '4px', backgroundColor: 'var(--color-blue-primary)', fontWeight: 600 }}>
             INSTITUTION PORTAL DEMO
           </span>
-          <span>Logged in as: <strong>{currentUser?.name || 'Dr. Sunita Rao (Provost)'}</strong> ({currentUser?.roleLabel || 'Administrator'})</span>
+          <span>Logged in as: <strong>{currentUser?.name || (currentUser?.username ? `@${currentUser.username}` : 'Administrator')}</strong> ({currentUser?.roleLabel || 'Administrator'})</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
           <button
@@ -108,14 +108,7 @@ export default function CampusDashboard() {
       {/* Dashboard Content */}
       <main style={{ maxWidth: '1280px', width: '100%', margin: '2rem auto', padding: '0 1.5rem', flex: 1 }}>
         {/* Metric Cards Row */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-            gap: '1.25rem',
-            marginBottom: '2rem',
-          }}
-        >
+        <div className="responsive-stat-grid" style={{ marginBottom: '2rem' }}>
           {/* Card 1 */}
           <div className="card" style={{ padding: '1.5rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--color-text-secondary)', fontSize: '0.82rem', marginBottom: '8px' }}>

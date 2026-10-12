@@ -72,6 +72,10 @@ export default function LoginPage() {
 
   // Form Fields - Register
   const [regUsername, setRegUsername] = useState('');
+  const [regFullName, setRegFullName] = useState('');
+  const [regStudentId, setRegStudentId] = useState('');
+  const [regDepartment, setRegDepartment] = useState('Computer Science');
+  const [regSemester, setRegSemester] = useState('Semester 5');
   const [regEmail, setRegEmail] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
@@ -306,6 +310,17 @@ export default function LoginPage() {
       return;
     }
 
+    if (portal === 'student') {
+      if (!regFullName.trim()) {
+        setError('Please enter your full student name.');
+        return;
+      }
+      if (!regStudentId.trim()) {
+        setError('Please enter your College Roll No / Student ID (e.g. 2024CSE042 or STU_0042).');
+        return;
+      }
+    }
+
     setLoading(true);
     try {
       const newUser = await registerWithCredentials(
@@ -313,11 +328,22 @@ export default function LoginPage() {
         trimmedEmail,
         regPassword,
         portal,
-        portal === 'institution' ? institutionRole : 'student'
+        portal === 'institution' ? institutionRole : 'student',
+        portal === 'student'
+          ? {
+              displayName: regFullName.trim(),
+              studentId: regStudentId.trim().toUpperCase(),
+              department: regDepartment,
+              semester: regSemester,
+            }
+          : {
+              displayName: trimmedUsername,
+              department: institutionRole === 'faculty_mentor' ? 'Computer Science' : 'Campus Administration',
+            }
       );
-      setSuccessMsg('Account created successfully! Redirecting to setup your profile...');
+      setSuccessMsg('Account created successfully! Redirecting to student success cockpit...');
       setTimeout(() => {
-        const targetRoute = newUser.portal === 'student' ? '/student/profile?onboarding=true' : '/institution/profile?onboarding=true';
+        const targetRoute = newUser.portal === 'student' ? '/student/portal' : '/institution/overview';
         navigate(targetRoute);
       }, 700);
     } catch (err) {
@@ -643,6 +669,88 @@ export default function LoginPage() {
                 </div>
               </div>
             )}
+            {/* Student Specific Identity Inputs */}
+            {portal === 'student' && (
+              <>
+                <div className="cyber-input-box anim-slide">
+                  <input
+                    type="text"
+                    id="regFullName"
+                    value={regFullName}
+                    onChange={(e) => setRegFullName(e.target.value)}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="regFullName">Full Name (e.g. Rohan Verma)</label>
+                  <div className="cyber-input-icon">
+                    <User size={16} />
+                  </div>
+                </div>
+
+                <div className="cyber-input-box anim-slide">
+                  <input
+                    type="text"
+                    id="regStudentId"
+                    value={regStudentId}
+                    onChange={(e) => setRegStudentId(e.target.value)}
+                    required
+                    placeholder=" "
+                  />
+                  <label htmlFor="regStudentId">College Roll No / Student ID (e.g. 2024CSE042)</label>
+                  <div className="cyber-input-icon">
+                    <GraduationCap size={16} />
+                  </div>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '8px', marginBottom: '14px' }} className="anim-slide">
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', marginBottom: '4px', fontWeight: 600 }}>Branch / Department</label>
+                    <select
+                      value={regDepartment}
+                      onChange={(e) => setRegDepartment(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 8px',
+                        background: '#070d18',
+                        border: '1px solid rgba(0, 162, 255, 0.4)',
+                        borderRadius: '8px',
+                        color: '#f8fafc',
+                        fontSize: '0.78rem',
+                        outline: 'none',
+                      }}
+                    >
+                      <option value="Computer Science">Computer Science</option>
+                      <option value="Information Technology">Information Tech</option>
+                      <option value="Data Science">Data Science</option>
+                      <option value="Electronics & Comm.">Electronics (ECE)</option>
+                      <option value="Mechanical">Mechanical</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: '0.72rem', color: '#94a3b8', marginBottom: '4px', fontWeight: 600 }}>Current Semester</label>
+                    <select
+                      value={regSemester}
+                      onChange={(e) => setRegSemester(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '8px 8px',
+                        background: '#070d18',
+                        border: '1px solid rgba(0, 162, 255, 0.4)',
+                        borderRadius: '8px',
+                        color: '#f8fafc',
+                        fontSize: '0.78rem',
+                        outline: 'none',
+                      }}
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
+                        <option key={s} value={`Semester ${s}`}>Semester {s}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </>
+            )}
+
             {/* Username */}
             <div className="cyber-input-box anim-slide">
               <input
@@ -654,7 +762,7 @@ export default function LoginPage() {
                 autoComplete="username"
                 placeholder=" "
               />
-              <label htmlFor="regUsername">Username</label>
+              <label htmlFor="regUsername">Portal Username</label>
               <div className="cyber-input-icon">
                 <User size={16} />
               </div>
@@ -985,14 +1093,14 @@ export default function LoginPage() {
             </div>
 
             {/* Mode Switch Tabs */}
-            <div style={{ display: 'flex', background: 'rgba(13, 21, 39, 0.75)', border: '1px solid rgba(0, 162, 255, 0.35)', borderRadius: '24px', padding: '3px', gap: '4px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', background: 'rgba(13, 21, 39, 0.75)', border: '1px solid rgba(0, 162, 255, 0.35)', borderRadius: '8px', padding: '3px', gap: '4px', marginBottom: '16px' }}>
               <button
                 type="button"
                 onClick={() => setFbMode('direct')}
                 style={{
                   flex: 1,
                   padding: '6px 10px',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   border: 'none',
                   fontSize: '0.8rem',
                   fontWeight: 600,
@@ -1011,7 +1119,7 @@ export default function LoginPage() {
                 style={{
                   flex: 1,
                   padding: '6px 10px',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   border: 'none',
                   fontSize: '0.8rem',
                   fontWeight: 600,

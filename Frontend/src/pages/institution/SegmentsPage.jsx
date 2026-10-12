@@ -79,7 +79,7 @@ export default function SegmentsPage() {
       )}
 
       {/* 5 Archetype Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '18px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '18px' }}>
         {segments.map((seg) => (
           <div
             key={seg.key}
@@ -102,7 +102,7 @@ export default function SegmentsPage() {
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     padding: '2px 8px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     backgroundColor: seg.urgency === 'high' ? '#FEE2E2' : seg.urgency === 'medium' ? '#FEF3C7' : '#DCFCE7',
                     color: seg.urgency === 'high' ? '#DC2626' : seg.urgency === 'medium' ? '#D97706' : '#16A34A',
                   }}

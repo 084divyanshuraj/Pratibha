@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import {
   Search,
   Filter,
@@ -21,12 +21,14 @@ import {
   X,
   AlertCircle,
   RefreshCw,
+  UploadCloud,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import StudentDrawer from '../../components/students/StudentDrawer';
 
 export default function StudentDirectoryPage() {
+  const navigate = useNavigate();
   const { currentUser } = useAuth();
   const role = currentUser?.role || 'institution_admin';
   const [searchParams, setSearchParams] = useSearchParams();
@@ -38,6 +40,9 @@ export default function StudentDirectoryPage() {
   const [personaChip, setPersonaChip] = useState('');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pageSize, setPageSize] = useState(50);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
 
   // CRUD State
   const [showModal, setShowModal] = useState(false);
@@ -64,9 +69,10 @@ export default function StudentDirectoryPage() {
 
   const fetchStudents = () => {
     setLoading(true);
-    api.getStudents({ search, department })
+    api.getStudents({ search, department, limit: pageSize === 'all' ? 'all' : pageSize, page: currentPage })
       .then((res) => {
         let list = res?.students || [];
+        setTotalCount(res?.pagination?.total ?? list.length);
 
         // Apply risk filters
         if (riskFilter === 'high') {
@@ -94,7 +100,7 @@ export default function StudentDirectoryPage() {
     const handleUpdate = () => fetchStudents();
     window.addEventListener('pratibha_data_updated', handleUpdate);
     return () => window.removeEventListener('pratibha_data_updated', handleUpdate);
-  }, [search, department, riskFilter, personaChip]);
+  }, [search, department, riskFilter, personaChip, pageSize, currentPage]);
 
   // Export CSV Handler
   const handleExportCsv = () => {
@@ -264,29 +270,40 @@ export default function StudentDirectoryPage() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <div style={{ fontSize: '0.80rem', color: '#64748B', backgroundColor: '#FFFFFF', padding: '7px 14px', borderRadius: '8px', border: '1px solid #E2E8F0', fontWeight: 600 }}>
-            Showing <strong>{students.length}</strong> Students
+        <div className="directory-header-actions">
+          <div className="directory-counter-card">
+            <span>Showing <strong>{students.length}</strong> of <strong>{totalCount || students.length}</strong> Students</span>
+            <div style={{ width: '1px', height: '14px', backgroundColor: '#CBD5E1' }} />
+            <label style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 500 }}>Rows:</label>
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                const val = e.target.value === 'all' ? 'all' : Number(e.target.value);
+                setPageSize(val);
+                setCurrentPage(1);
+              }}
+              style={{
+                border: '1px solid #CBD5E1',
+                borderRadius: '5px',
+                padding: '2px 6px',
+                fontSize: '0.76rem',
+                color: '#1E293B',
+                fontWeight: 600,
+                backgroundColor: '#F8FAFC',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value={20}>20</option>
+              <option value={30}>30</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+              <option value="all">All</option>
+            </select>
           </div>
           <button
             onClick={handleExportCsv}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#FFFFFF',
-              color: '#334155',
-              border: '1px solid #CBD5E1',
-              padding: '7px 14px',
-              borderRadius: '8px',
-              fontSize: '0.82rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
-              transition: 'background-color 150ms ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+            className="directory-action-btn secondary"
             title={role === 'placement_officer' ? 'Export eligible student roster for visiting recruiters' : 'Export filtered student roster as CSV'}
           >
             <Download size={14} />
@@ -294,23 +311,7 @@ export default function StudentDirectoryPage() {
           </button>
           <button
             onClick={handleOpenAddModal}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              backgroundColor: '#1677D2',
-              color: '#FFFFFF',
-              border: 'none',
-              padding: '8px 16px',
-              borderRadius: '8px',
-              fontSize: '0.82rem',
-              fontWeight: 600,
-              cursor: 'pointer',
-              boxShadow: '0 2px 4px rgba(22, 119, 210, 0.25)',
-              transition: 'background-color 150ms ease',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
-            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
+            className="directory-action-btn primary"
             title="Create a new student profile in directory"
           >
             <UserPlus size={14} />
@@ -333,14 +334,15 @@ export default function StudentDirectoryPage() {
                 setPersonaChip(personaChip === 'mentees' ? '' : 'mentees');
               }}
               style={{
-                padding: '5px 12px',
-                borderRadius: '999px',
+                padding: '6px 12px',
+                borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #BBF7D0',
                 backgroundColor: personaChip === 'mentees' ? '#16A34A' : '#F0FDF4',
                 color: personaChip === 'mentees' ? '#FFFFFF' : '#15803D',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               🎯 My CSE Mentees (Prof. Rajesh Kumar)
@@ -348,14 +350,15 @@ export default function StudentDirectoryPage() {
             <button
               onClick={() => setPersonaChip(personaChip === 'attendance_warning' ? '' : 'attendance_warning')}
               style={{
-                padding: '5px 12px',
-                borderRadius: '999px',
+                padding: '6px 12px',
+                borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #FED7AA',
                 backgroundColor: personaChip === 'attendance_warning' ? '#EA580C' : '#FFF7ED',
                 color: personaChip === 'attendance_warning' ? '#FFFFFF' : '#C2410C',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               ⚠ Statutory Attendance Alert (&lt;75%)
@@ -368,14 +371,15 @@ export default function StudentDirectoryPage() {
             <button
               onClick={() => setPersonaChip(personaChip === 'tier1_eligible' ? '' : 'tier1_eligible')}
               style={{
-                padding: '5px 12px',
-                borderRadius: '999px',
+                padding: '6px 12px',
+                borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #BFDBFE',
                 backgroundColor: personaChip === 'tier1_eligible' ? '#2563EB' : '#EFF6FF',
                 color: personaChip === 'tier1_eligible' ? '#FFFFFF' : '#1D4ED8',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               💼 Tier-1 Placement Eligible (CGPA ≥ 7.5, 0 Backlogs)
@@ -386,14 +390,15 @@ export default function StudentDirectoryPage() {
                 setPersonaChip('');
               }}
               style={{
-                padding: '5px 12px',
-                borderRadius: '999px',
+                padding: '6px 12px',
+                borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #FDE68A',
                 backgroundColor: riskFilter === 'divergent' ? '#D97706' : '#FFFBEB',
                 color: riskFilter === 'divergent' ? '#FFFFFF' : '#B45309',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               🚨 Mock Interview Deficit (Divergent Cluster)
@@ -410,14 +415,15 @@ export default function StudentDirectoryPage() {
                 setPersonaChip('');
               }}
               style={{
-                padding: '5px 12px',
-                borderRadius: '999px',
+                padding: '6px 12px',
+                borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #E2E8F0',
                 backgroundColor: !department && !riskFilter && !personaChip ? '#0F172A' : '#FFFFFF',
                 color: !department && !riskFilter && !personaChip ? '#FFFFFF' : '#475569',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               🏛 All Departments (Cross-Campus)
@@ -428,14 +434,15 @@ export default function StudentDirectoryPage() {
                 setPersonaChip('');
               }}
               style={{
-                padding: '5px 12px',
-                borderRadius: '999px',
+                padding: '6px 12px',
+                borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #FECACA',
                 backgroundColor: riskFilter === 'high' ? '#DC2626' : '#FEF2F2',
                 color: riskFilter === 'high' ? '#FFFFFF' : '#B91C1C',
                 cursor: 'pointer',
+                transition: 'all 0.15s ease',
               }}
             >
               ⚡ High Risk Cohort
@@ -467,21 +474,9 @@ export default function StudentDirectoryPage() {
       </div>
 
       {/* Filter & Search Bar */}
-      <div
-        style={{
-          backgroundColor: '#FFFFFF',
-          padding: '14px 18px',
-          borderRadius: '10px',
-          border: '1px solid #E2E8F0',
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '12px',
-          alignItems: 'center',
-          boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
-        }}
-      >
+      <div className="directory-filter-bar">
         {/* Search */}
-        <div style={{ flex: '1 1 240px', position: 'relative' }}>
+        <div className="directory-search-input-wrap" style={{ position: 'relative' }}>
           <Search size={16} color="#94A3B8" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
           <input
             type="text"
@@ -495,12 +490,13 @@ export default function StudentDirectoryPage() {
               border: '1px solid #CBD5E1',
               fontSize: '0.84rem',
               outline: 'none',
+              boxSizing: 'border-box',
             }}
           />
         </div>
 
         {/* Department Filter */}
-        <div style={{ flex: '0 1 200px' }}>
+        <div>
           <select
             value={department}
             onChange={(e) => {
@@ -516,6 +512,7 @@ export default function StudentDirectoryPage() {
               outline: 'none',
               backgroundColor: '#FFFFFF',
               color: '#334155',
+              boxSizing: 'border-box',
             }}
           >
             <option value="">All Departments</option>
@@ -527,7 +524,7 @@ export default function StudentDirectoryPage() {
         </div>
 
         {/* Risk / Divergence Filter */}
-        <div style={{ flex: '0 1 200px' }}>
+        <div>
           <select
             value={riskFilter}
             onChange={(e) => {
@@ -543,6 +540,7 @@ export default function StudentDirectoryPage() {
               outline: 'none',
               backgroundColor: '#FFFFFF',
               color: '#334155',
+              boxSizing: 'border-box',
             }}
           >
             <option value="">All Risk Profiles</option>
@@ -554,7 +552,8 @@ export default function StudentDirectoryPage() {
 
       {/* Student Table */}
       <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+        <div className="responsive-table-wrapper">
+          <table style={{ width: '100%', minWidth: '840px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
           <thead>
             <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B', fontWeight: 600 }}>
               <th style={{ padding: '12px 18px' }}>Student Profile</th>
@@ -681,7 +680,7 @@ export default function StudentDirectoryPage() {
                     style={{
                       display: 'inline-block',
                       padding: '2px 8px',
-                      borderRadius: '999px',
+                      borderRadius: '4px',
                       fontSize: '0.72rem',
                       fontWeight: 600,
                       textTransform: 'capitalize',
@@ -699,7 +698,7 @@ export default function StudentDirectoryPage() {
                     style={{
                       display: 'inline-block',
                       padding: '2px 8px',
-                      borderRadius: '999px',
+                      borderRadius: '4px',
                       fontSize: '0.72rem',
                       fontWeight: 600,
                       textTransform: 'capitalize',
@@ -784,35 +783,196 @@ export default function StudentDirectoryPage() {
             ))}
             {students.length === 0 && (
               <tr>
-                <td colSpan={8} style={{ padding: '48px 24px', textAlign: 'center' }}>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ width: '44px', height: '44px', borderRadius: '50%', backgroundColor: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Users size={22} color="#94A3B8" />
+                <td colSpan={8} style={{ padding: '60px 24px', textAlign: 'center' }}>
+                  {search || department || riskFilter || personaChip ? (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                      <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: '#F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Users size={24} color="#94A3B8" />
+                      </div>
+                      <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.98rem' }}>No student records matched your active filters</div>
+                      <div style={{ fontSize: '0.82rem', color: '#64748B' }}>Try clearing your search term or resetting the department filter.</div>
+                      <div style={{ display: 'flex', gap: '8px', marginTop: '10px' }}>
+                        <button
+                          onClick={() => {
+                            setDepartment('');
+                            setRiskFilter('');
+                            setPersonaChip('');
+                            setSearch('');
+                          }}
+                          style={{
+                            padding: '6px 14px',
+                            backgroundColor: '#F1F5F9',
+                            color: '#334155',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Clear All Filters
+                        </button>
+                        <button
+                          onClick={handleOpenAddModal}
+                          style={{
+                            padding: '6px 14px',
+                            backgroundColor: '#1E40AF',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: '6px',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          + Add Student Profile
+                        </button>
+                      </div>
                     </div>
-                    <div style={{ fontWeight: 600, color: '#334155', fontSize: '0.95rem' }}>No student records matched your filters</div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748B' }}>Try clearing your search term, resetting department filter, or create a new student profile.</div>
-                    <button
-                      onClick={handleOpenAddModal}
-                      style={{
-                        marginTop: '8px',
-                        padding: '6px 14px',
-                        backgroundColor: '#1E40AF',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '6px',
-                        fontSize: '0.78rem',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                      }}
-                    >
-                      + Add Student Profile
-                    </button>
-                  </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', maxWidth: '640px', margin: '0 auto' }}>
+                      <div style={{ width: '56px', height: '56px', borderRadius: '14px', backgroundColor: '#EFF6FF', border: '1px solid #BFDBFE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <UploadCloud size={28} color="#2563EB" />
+                      </div>
+                      <div style={{ fontWeight: 700, color: '#0F172A', fontSize: '1.1rem', letterSpacing: '-0.2px' }}>
+                        No Students Uploaded Yet for Your Account ({currentUser?.username ? `@${currentUser.username}` : currentUser?.name || 'Administrator'})
+                      </div>
+                      <div style={{ fontSize: '0.84rem', color: '#64748B', lineHeight: 1.55 }}>
+                        Aap ek real administrator profile ke roop me logged in hain. Yahan par sirf wahi student records show honge jo aapke account dwara upload ya create kiye gaye hon. Data Integration Studio se student roster CSV upload karein ya naya profile add karein.
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px', marginTop: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <button
+                          onClick={() => navigate('/institution/ingestion')}
+                          style={{
+                            padding: '8px 18px',
+                            backgroundColor: '#1E40AF',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: '8px',
+                            fontSize: '0.82rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '7px',
+                            boxShadow: '0 2px 4px rgba(30,64,175,0.2)',
+                          }}
+                        >
+                          <FileSpreadsheet size={15} />
+                          <span>Go to Data Integration Studio (Upload CSV)</span>
+                        </button>
+                        <button
+                          onClick={handleOpenAddModal}
+                          style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#FFFFFF',
+                            color: '#1E40AF',
+                            border: '1px solid #BFDBFE',
+                            borderRadius: '8px',
+                            fontSize: '0.82rem',
+                            fontWeight: 600,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <UserPlus size={15} />
+                          <span>+ Add Student Manually</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            if (window.confirm('Load 121 sample benchmark students into your workspace for demonstration and testing?')) {
+                              api.loadSampleBenchmark();
+                              fetchStudents();
+                            }
+                          }}
+                          style={{
+                            padding: '8px 14px',
+                            backgroundColor: '#F8FAFC',
+                            color: '#475569',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: '8px',
+                            fontSize: '0.80rem',
+                            fontWeight: 500,
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '5px',
+                          }}
+                          title="Quickly populate sample benchmark cohort into your account"
+                        >
+                          <RefreshCw size={14} />
+                          <span>⚡ Load Sample Benchmark (121 Students)</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </td>
               </tr>
             )}
           </tbody>
         </table>
+        </div>
+
+        {/* Pagination Bar */}
+        {totalCount > (typeof pageSize === 'number' ? pageSize : 0) && (
+          <div
+            style={{
+              padding: '12px 18px',
+              borderTop: '1px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              backgroundColor: '#FAFAFA',
+              fontSize: '0.80rem',
+              color: '#64748B',
+              flexWrap: 'wrap',
+              gap: '10px',
+            }}
+          >
+            <div>
+              Showing page <strong>{currentPage}</strong> of <strong>{Math.ceil(totalCount / (typeof pageSize === 'number' ? pageSize : 1)) || 1}</strong> ({totalCount} total students)
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <button
+                disabled={currentPage <= 1}
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #CBD5E1',
+                  backgroundColor: currentPage <= 1 ? '#F1F5F9' : '#FFFFFF',
+                  color: currentPage <= 1 ? '#94A3B8' : '#334155',
+                  cursor: currentPage <= 1 ? 'not-allowed' : 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Previous
+              </button>
+              <span style={{ padding: '0 6px', fontWeight: 600, color: '#1E293B' }}>
+                {currentPage}
+              </span>
+              <button
+                disabled={currentPage >= Math.ceil(totalCount / (typeof pageSize === 'number' ? pageSize : 1))}
+                onClick={() => setCurrentPage((p) => p + 1)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #CBD5E1',
+                  backgroundColor: currentPage >= Math.ceil(totalCount / (typeof pageSize === 'number' ? pageSize : 1)) ? '#F1F5F9' : '#FFFFFF',
+                  color: currentPage >= Math.ceil(totalCount / (typeof pageSize === 'number' ? pageSize : 1)) ? '#94A3B8' : '#334155',
+                  cursor: currentPage >= Math.ceil(totalCount / (typeof pageSize === 'number' ? pageSize : 1)) ? 'not-allowed' : 'pointer',
+                  fontWeight: 600,
+                  fontSize: '0.78rem',
+                }}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Slide-over Drawer */}

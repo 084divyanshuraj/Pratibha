@@ -223,24 +223,34 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const registerWithCredentials = async (username, email, password, selectedPortal = 'student', specificRole = null) => {
+  const registerWithCredentials = async (
+    username,
+    email,
+    password,
+    selectedPortal = 'student',
+    specificRole = null,
+    extraData = {}
+  ) => {
     const assignedRole = selectedPortal === 'student'
       ? 'student'
       : (specificRole || 'institution_admin');
 
     let defaultRoleLabel = 'Institution Administrator';
-    let defaultDepartment = 'Campus Administration';
+    let defaultDepartment = extraData.department || 'Campus Administration';
 
     if (assignedRole === 'faculty_mentor') {
       defaultRoleLabel = 'Faculty Mentor & HOD';
-      defaultDepartment = 'Computer Science & Engineering';
+      defaultDepartment = extraData.department || 'Computer Science & Engineering';
     } else if (assignedRole === 'placement_officer') {
       defaultRoleLabel = 'Placement Officer (TPO)';
-      defaultDepartment = 'Corporate Relations & Career Cell';
+      defaultDepartment = extraData.department || 'Corporate Relations & Career Cell';
     } else if (assignedRole === 'student') {
       defaultRoleLabel = 'Registered Student';
-      defaultDepartment = 'Computer Science & Engineering';
+      defaultDepartment = extraData.department || 'Computer Science & Engineering';
     }
+
+    const finalDisplayName = extraData.displayName || username.trim();
+    const finalStudentId = extraData.studentId ? extraData.studentId.trim().toUpperCase() : null;
 
     try {
       const res = await api.register({
@@ -249,7 +259,10 @@ export function AuthProvider({ children }) {
         password,
         portal: selectedPortal,
         role: assignedRole,
-        displayName: username.trim(),
+        displayName: finalDisplayName,
+        studentId: finalStudentId,
+        department: defaultDepartment,
+        semester: extraData.semester || 'Semester 1',
       });
       if (res?.accessToken) {
         sessionStorage.setItem('pratibha_token', res.accessToken);
@@ -265,16 +278,16 @@ export function AuthProvider({ children }) {
 
       const profile = {
         id: user.id || `USR_${Date.now()}`,
-        name: user.displayName || username || email.split('@')[0],
+        name: user.displayName || finalDisplayName || username || email.split('@')[0],
         username: user.username || username,
         role: finalRole,
         portal: isStudentPortal ? 'student' : 'institution',
         roleLabel: user.roleLabel || defaultRoleLabel,
         email: email.trim(),
-        department: user.department || null,
-        program: user.program || null,
-        semester: user.semester || null,
-        studentId: user.studentId || (isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
+        department: user.department || defaultDepartment,
+        program: user.program || 'B.Tech',
+        semester: user.semester || extraData.semester || 'Semester 1',
+        studentId: user.studentId || finalStudentId || (isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
         isNewUser: true,
       };
       setCurrentUser(profile);
@@ -286,16 +299,16 @@ export function AuthProvider({ children }) {
       }
       const profile = {
         id: `DEMO-REG-${Math.floor(100 + Math.random() * 900)}`,
-        name: username || email.split('@')[0],
+        name: finalDisplayName || username || email.split('@')[0],
         username,
         role: assignedRole,
         portal: selectedPortal,
         roleLabel: defaultRoleLabel,
         email: email.trim(),
-        department: null,
-        program: null,
-        semester: null,
-        studentId: isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null,
+        department: defaultDepartment,
+        program: 'B.Tech',
+        semester: extraData.semester || 'Semester 1',
+        studentId: finalStudentId || (isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
         isNewUser: true,
       };
       setCurrentUser(profile);

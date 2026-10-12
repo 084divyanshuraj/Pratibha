@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   GraduationCap,
@@ -6,6 +6,7 @@ import {
   Calendar,
   CheckCircle2,
   AlertTriangle,
+  AlertCircle,
   BookOpen,
   TrendingUp,
   Clock,
@@ -14,6 +15,7 @@ import {
   Send,
   Star,
   Shield,
+  ShieldAlert,
   Layers,
   ChevronRight,
   Download,
@@ -29,6 +31,10 @@ import {
   User,
   Mail,
   Building,
+  RefreshCw,
+  Database,
+  FileSpreadsheet,
+  MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
@@ -52,31 +58,101 @@ export default function StudentPortalPage() {
     setSearchParams(newTab === 'overview' ? {} : { tab: newTab });
   };
 
+  // Detect whether this is the pre-configured demo student (Aarav Sharma) vs a real user
+  const isDemoStudent =
+    !currentUser ||
+    currentUser?.email === 'student@example.edu' ||
+    currentUser?.studentId === 'STU_0001' ||
+    currentUser?.studentId === 'STU_DEMO_01' ||
+    currentUser?.role === 'demo_student';
+
+  // College Ingestion Status (true = records found in DB or demo, false = awaiting admin CSV upload)
+  const [hasCollegeRecords, setHasCollegeRecords] = useState(isDemoStudent);
+  const [recheckLoading, setRecheckLoading] = useState(false);
+  const [recheckFeedback, setRecheckFeedback] = useState('');
+  const [recheckCounter, setRecheckCounter] = useState(0);
+
+  // Self-Declared Student Goals (Accessible anytime, even when awaiting college records)
+  const [targetCgpa, setTargetCgpa] = useState(() => localStorage.getItem('pratibha_target_cgpa') || '8.5');
+  const [targetCareer, setTargetCareer] = useState(() => localStorage.getItem('pratibha_target_career') || 'Software Development Engineer');
+  const [targetSkills, setTargetSkills] = useState(() => localStorage.getItem('pratibha_target_skills') || 'Data Structures, Cloud Systems, System Design');
+  const [goalsSaved, setGoalsSaved] = useState(false);
+
+  const handleSaveGoals = (e) => {
+    e.preventDefault();
+    localStorage.setItem('pratibha_target_cgpa', targetCgpa);
+    localStorage.setItem('pratibha_target_career', targetCareer);
+    localStorage.setItem('pratibha_target_skills', targetSkills);
+    setGoalsSaved(true);
+    setTimeout(() => setGoalsSaved(false), 3000);
+  };
+
   // Student Identity & State
   const [student, setStudent] = useState({
-    studentId: currentUser?.studentId || 'STU-2024-0042',
-    fullName: currentUser?.name || currentUser?.displayName || 'Student Scholar',
+    studentId: currentUser?.studentId || (isDemoStudent ? 'STU-2024-0042' : 'ROLL_PENDING'),
+    fullName: currentUser?.name || currentUser?.displayName || (isDemoStudent ? 'Aarav Sharma' : 'Student Scholar'),
     avatar: currentUser?.avatar || STUDENT_AVATARS[0],
     program:
       currentUser?.program ||
-      (currentUser?.department ? `B.Tech in ${currentUser.department}` : 'B.Tech Program'),
+      (currentUser?.department ? `B.Tech in ${currentUser.department}` : (isDemoStudent ? 'B.Tech in Computer Science' : 'B.Tech Program')),
     semester: currentUser?.semester
       ? (String(currentUser.semester).toLowerCase().includes('semester')
           ? currentUser.semester
           : `Semester ${currentUser.semester}`)
-      : 'Semester 1',
+      : (isDemoStudent ? 'Semester 6' : 'Semester 1'),
     email: currentUser?.email || 'student@campus.edu',
-    cgpa: 8.42,
-    attendanceRate: 88.5,
-    successScore: 78.4,
-    academicRisk: 'Low',
-    placementRisk: 'Low to Moderate',
-    dataCompleteness: 100,
+    cgpa: isDemoStudent ? 8.42 : null,
+    attendanceRate: isDemoStudent ? 88.5 : null,
+    successScore: isDemoStudent ? 78.4 : null,
+    academicRisk: isDemoStudent ? 'Low' : 'Pending Data',
+    placementRisk: isDemoStudent ? 'Low to Moderate' : 'Pending Data',
+    dataCompleteness: isDemoStudent ? 100 : 0,
   });
 
   const [predictionsData, setPredictionsData] = useState(null);
   const [scoreData, setScoreData] = useState(null);
   const [loadingLive, setLoadingLive] = useState(false);
+
+  // Manual / Reactive re-check of college records
+  const handleRecheckRecords = async () => {
+    setRecheckLoading(true);
+    setRecheckFeedback('');
+    try {
+      const studentIdToFetch = currentUser?.studentId || '';
+      const emailToFetch = currentUser?.email || '';
+
+      const [studentsRes, recordsRes] = await Promise.all([
+        api.getStudents({ search: studentIdToFetch || emailToFetch }).catch(() => null),
+        studentIdToFetch ? api.getStudentRecords(studentIdToFetch).catch(() => null) : Promise.resolve(null),
+      ]);
+
+      const match = studentsRes?.students?.find(
+        (s) => (studentIdToFetch && s.studentId === studentIdToFetch) || (emailToFetch && s.email === emailToFetch)
+      );
+
+      const hasData = Boolean(
+        match && (
+          match.cgpa != null ||
+          match.attendanceRate != null ||
+          recordsRes?.counts?.academic > 0 ||
+          recordsRes?.counts?.attendance > 0
+        )
+      );
+
+      if (hasData) {
+        setHasCollegeRecords(true);
+        setRecheckFeedback('✅ Great news! Real college records found and linked.');
+        setRecheckCounter((c) => c + 1);
+      } else {
+        setHasCollegeRecords(false);
+        setRecheckFeedback('ℹ️ College administration has not yet uploaded semester CSV sheets for Roll No ' + (studentIdToFetch || 'your ID') + '. Please check back once results are announced.');
+      }
+    } catch {
+      setRecheckFeedback('⚠️ Unable to query institutional records database right now. Please try again.');
+    } finally {
+      setRecheckLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (currentUser) {
@@ -97,41 +173,101 @@ export default function StudentPortalPage() {
       }));
     }
 
-    const studentIdToFetch = currentUser?.studentId || 'STU_0001';
+    // 1. DEMO STUDENT MODE: Load seeded benchmark persona
+    if (isDemoStudent) {
+      setHasCollegeRecords(true);
+      const studentIdToFetch = 'STU_0001';
+      setLoadingLive(true);
+      Promise.all([
+        api.getStudentSuccessScore(studentIdToFetch).catch(() => null),
+        api.getStudentPredictions(studentIdToFetch).catch(() => null),
+        api.getStudents({ search: studentIdToFetch }).catch(() => null),
+      ])
+        .then(([scoreRes, predRes, studentsRes]) => {
+          setScoreData(scoreRes);
+          setPredictionsData(predRes);
+          const match = studentsRes?.students?.find((s) => s.studentId === studentIdToFetch) || studentsRes?.students?.[0];
+          if (match) {
+            setStudent((prev) => ({
+              ...prev,
+              cgpa: match.cgpa ?? 8.42,
+              attendanceRate: match.attendanceRate ?? 88.5,
+              successScore: match.successScore ?? 78.4,
+              academicRisk: match.academicRisk ?? 'low',
+              placementRisk: match.placementRisk ?? 'low',
+              dataCompleteness: match.dataCompleteness ?? 100,
+            }));
+          }
+        })
+        .finally(() => setLoadingLive(false));
+      return;
+    }
+
+    // 2. REAL STUDENT MODE: Strict lookup by Roll No / studentId and Email (NO fallback to students[0])
+    const realStudentId = currentUser?.studentId;
+    const realEmail = currentUser?.email;
+
+    if (!realStudentId && !realEmail) {
+      setHasCollegeRecords(false);
+      return;
+    }
+
     setLoadingLive(true);
     Promise.all([
-      api.getStudentSuccessScore(studentIdToFetch),
-      api.getStudentPredictions(studentIdToFetch),
-      api.getStudents({ search: studentIdToFetch }),
+      realStudentId ? api.getStudentSuccessScore(realStudentId).catch(() => null) : Promise.resolve(null),
+      realStudentId ? api.getStudentPredictions(realStudentId).catch(() => null) : Promise.resolve(null),
+      api.getStudents({ search: realStudentId || realEmail }).catch(() => null),
+      realStudentId ? api.getStudentRecords(realStudentId).catch(() => null) : Promise.resolve(null),
     ])
-      .then(([scoreRes, predRes, studentsRes]) => {
-        setScoreData(scoreRes);
-        setPredictionsData(predRes);
+      .then(([scoreRes, predRes, studentsRes, recordsRes]) => {
+        // Strict Match: Match by exact studentId or email. NEVER use students[0] fallback!
         const match = studentsRes?.students?.find(
-          (s) => s.studentId === studentIdToFetch || s.email === currentUser?.email
-        ) || studentsRes?.students?.[0];
+          (s) => (realStudentId && s.studentId === realStudentId) || (realEmail && s.email === realEmail)
+        );
 
-        if (match) {
+        const hasRealData = Boolean(
+          match && (
+            match.cgpa != null ||
+            match.attendanceRate != null ||
+            (recordsRes?.counts?.academic > 0 || recordsRes?.counts?.attendance > 0)
+          )
+        );
+
+        if (hasRealData) {
+          setHasCollegeRecords(true);
+          setScoreData(scoreRes);
+          setPredictionsData(predRes);
           setStudent((prev) => ({
             ...prev,
-            cgpa: match.cgpa ?? prev.cgpa,
-            attendanceRate: match.attendanceRate ?? prev.attendanceRate,
-            successScore: match.successScore ?? prev.successScore,
-            academicRisk: match.academicRisk ?? prev.academicRisk,
-            placementRisk: match.placementRisk ?? prev.placementRisk,
-            dataCompleteness: match.dataCompleteness ?? 100,
+            cgpa: match.cgpa ?? null,
+            attendanceRate: match.attendanceRate ?? null,
+            successScore: match.successScore ?? scoreRes?.score ?? null,
+            academicRisk: match.academicRisk ?? 'Low',
+            placementRisk: match.placementRisk ?? 'Low',
+            dataCompleteness: match.dataCompleteness ?? scoreRes?.dataCompleteness ?? 100,
           }));
-        } else if (scoreRes?.score) {
+        } else {
+          // No records uploaded yet by Admin for this registered student
+          setHasCollegeRecords(false);
+          setScoreData(null);
+          setPredictionsData(null);
           setStudent((prev) => ({
             ...prev,
-            successScore: scoreRes.score,
-            dataCompleteness: scoreRes.data_completeness_pct ?? 100,
+            cgpa: null,
+            attendanceRate: null,
+            successScore: null,
+            academicRisk: 'Pending Data',
+            placementRisk: 'Pending Data',
+            dataCompleteness: 0,
           }));
         }
       })
-      .catch((err) => console.warn('StudentPortal live fetch error:', err))
+      .catch((err) => {
+        console.warn('StudentPortal live fetch error:', err);
+        setHasCollegeRecords(false);
+      })
       .finally(() => setLoadingLive(false));
-  }, [currentUser]);
+  }, [currentUser, recheckCounter]);
 
   // Score Drivers (Explainable PRD compliance)
   const scoreDrivers = useMemo(() => {
@@ -325,19 +461,35 @@ export default function StudentPortalPage() {
               <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
                 {student.fullName}
               </h1>
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  padding: '3px 9px',
-                  backgroundColor: '#ECFDF5',
-                  color: '#059669',
-                  borderRadius: '999px',
-                  border: '1px solid #A7F3D0',
-                }}
-              >
-                ✓ Good Standing
-              </span>
+              {hasCollegeRecords ? (
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    padding: '3px 9px',
+                    backgroundColor: '#ECFDF5',
+                    color: '#059669',
+                    borderRadius: '6px',
+                    border: '1px solid #A7F3D0',
+                  }}
+                >
+                  ✓ Active Ingested Cohort
+                </span>
+              ) : (
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 600,
+                    padding: '3px 9px',
+                    backgroundColor: '#FEF3C7',
+                    color: '#B45309',
+                    borderRadius: '6px',
+                    border: '1px solid #FDE68A',
+                  }}
+                >
+                  ⏳ College Records Pending Ingestion
+                </span>
+              )}
               {currentUser?.authProvider === 'firebase_google' && (
                 <span
                   style={{
@@ -346,7 +498,7 @@ export default function StudentPortalPage() {
                     padding: '3px 9px',
                     backgroundColor: '#EFF6FF',
                     color: '#1D4ED8',
-                    borderRadius: '999px',
+                    borderRadius: '6px',
                     border: '1px solid #BFDBFE',
                   }}
                 >
@@ -366,13 +518,19 @@ export default function StudentPortalPage() {
         </div>
 
         {/* Quick Metrics & Print Action */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', flexWrap: 'wrap' }}>
+        <div className="student-header-metrics">
           <div style={{ textAlign: 'right' }}>
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Cumulative CGPA
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#082B56' }}>
-              {student.cgpa} <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>/ 10.0</span>
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: hasCollegeRecords ? '#082B56' : '#94A3B8' }}>
+              {hasCollegeRecords && student.cgpa != null ? (
+                <>
+                  {student.cgpa} <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>/ 10.0</span>
+                </>
+              ) : (
+                <span style={{ fontSize: '0.88rem', color: '#94A3B8', fontWeight: 600 }}>Awaiting CoE</span>
+              )}
             </div>
           </div>
 
@@ -380,8 +538,12 @@ export default function StudentPortalPage() {
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Aggregate Attendance
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#059669' }}>
-              {student.attendanceRate}%
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: hasCollegeRecords ? '#059669' : '#94A3B8' }}>
+              {hasCollegeRecords && student.attendanceRate != null ? (
+                `${student.attendanceRate}%`
+              ) : (
+                <span style={{ fontSize: '0.88rem', color: '#94A3B8', fontWeight: 600 }}>Awaiting Biometrics</span>
+              )}
             </div>
           </div>
 
@@ -389,13 +551,14 @@ export default function StudentPortalPage() {
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Data Completeness
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1677D2' }}>
-              {student.dataCompleteness}%
+            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: hasCollegeRecords ? '#1677D2' : '#D97706' }}>
+              {hasCollegeRecords ? `${student.dataCompleteness}%` : '0% (Pending)'}
             </div>
           </div>
 
           <button
             onClick={handlePrintTranscript}
+            className="print-btn-col"
             style={{
               padding: '8px 16px',
               backgroundColor: '#FFFFFF',
@@ -485,7 +648,301 @@ export default function StudentPortalPage() {
       {/* =========================================================================
           TAB 1: SUCCESS COCKPIT & RISK RADAR (OVERVIEW)
           ========================================================================= */}
-      {activeTab === 'overview' && (
+      {activeTab === 'overview' && !hasCollegeRecords && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* 1. College Ingestion Notice Banner */}
+          <div
+            style={{
+              backgroundColor: '#FFFBEB',
+              border: '1px solid #FCD34D',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              boxShadow: '0 2px 6px rgba(245, 158, 11, 0.08)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '1rem',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '10px',
+                    backgroundColor: '#FEF3C7',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#D97706',
+                    flexShrink: 0,
+                  }}
+                >
+                  <AlertCircle size={24} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#92400E', margin: '0 0 4px 0' }}>
+                    College Academic & Attendance Records Pending Ingestion
+                  </h3>
+                  <p style={{ fontSize: '0.86rem', color: '#B45309', margin: 0, lineHeight: 1.5 }}>
+                    Welcome <strong>{student.fullName}</strong>! Your student account is successfully registered and verified for <strong>{student.program}</strong> ({student.semester}) with Roll No: <strong>{student.studentId}</strong>.
+                  </p>
+                </div>
+              </div>
+
+              {/* Live Re-check Button */}
+              <button
+                type="button"
+                onClick={handleRecheckRecords}
+                disabled={recheckLoading}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #D97706',
+                  backgroundColor: '#FFFFFF',
+                  color: '#B45309',
+                  fontWeight: 600,
+                  fontSize: '0.82rem',
+                  cursor: recheckLoading ? 'not-allowed' : 'pointer',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <RefreshCw size={15} className={recheckLoading ? 'spin' : ''} />
+                <span>{recheckLoading ? 'Querying Database...' : 'Check / Refresh College Records'}</span>
+              </button>
+            </div>
+
+            <div style={{ fontSize: '0.84rem', color: '#78350F', lineHeight: 1.6, backgroundColor: '#FFFFFF', padding: '12px 16px', borderRadius: '8px', border: '1px solid #FDE68A' }}>
+              <strong>Why are my marks, attendance, and success score not visible yet?</strong><br />
+              In university enterprise governance, student intelligence is generated from verified records ingested by the <strong>Registrar, Controller of Examinations (CoE), Biometric Attendance Portal, and Training & Placement Cell</strong>. Your institution administrator uploads these records as structured CSV files via the <strong>Admin Ingestion Portal</strong>. As soon as your college uploads your department's CSV sheet, your explainable 360° Success Score, Survival Curve, and AI Risk Radar will automatically appear here.
+            </div>
+
+            {recheckFeedback && (
+              <div
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '6px',
+                  backgroundColor: recheckFeedback.includes('Great news') ? '#ECFDF5' : '#EFF6FF',
+                  color: recheckFeedback.includes('Great news') ? '#065F46' : '#1E40AF',
+                  border: `1px solid ${recheckFeedback.includes('Great news') ? '#A7F3D0' : '#BFDBFE'}`,
+                  fontSize: '0.82rem',
+                  fontWeight: 500,
+                }}
+              >
+                {recheckFeedback}
+              </div>
+            )}
+          </div>
+
+          {/* 2. 8-Pillars Institutional Ingestion Readiness Checklist */}
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '8px' }}>
+              <div>
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>
+                  Institutional Telemetry Readiness Tracker (8 Pillars)
+                </h4>
+                <p style={{ fontSize: '0.8rem', color: '#64748B', margin: 0 }}>
+                  Live ingestion status across university administrative and academic domains for Roll No: <strong>{student.studentId}</strong>
+                </p>
+              </div>
+              <span
+                style={{
+                  fontSize: '0.72rem',
+                  fontWeight: 600,
+                  padding: '3px 9px',
+                  backgroundColor: '#FEF3C7',
+                  color: '#B45309',
+                  borderRadius: '4px',
+                }}
+              >
+                1 / 8 Verified (Account Onboarded)
+              </span>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+              {[
+                { title: 'Student Identity & Enrollment', source: 'Registrar ERP', status: 'VERIFIED', icon: CheckCircle2, color: '#059669', badgeBg: '#ECFDF5', badgeColor: '#065F46', detail: `Roll No ${student.studentId} matched to ${student.program}` },
+                { title: 'Academic Examinations (SGPA/CGPA)', source: 'Controller of Examinations', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting semester examination results CSV' },
+                { title: 'Biometric RFID Attendance', source: 'Campus Attendance Portal', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting classroom attendance sessions upload' },
+                { title: 'Digital LMS Platform Activity', source: 'Moodle / Canvas LMS', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting assignment submissions telemetry' },
+                { title: 'Placement Aptitude & Mock Rounds', source: 'Training & Placement Cell (TPO)', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting diagnostic mock tests CSV' },
+                { title: 'Computing Lab & Practical Skills', source: 'Department Computer Labs', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting programming lab performance' },
+                { title: 'Co-Curricular & Club Activities', source: 'Student Affairs Council', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting hackathon and event records' },
+                { title: 'Confidential Student Feedback', source: 'Quality Assurance Cell', status: 'READY', icon: CheckCircle2, color: '#2563EB', badgeBg: '#EFF6FF', badgeColor: '#1E40AF', detail: 'Open for student submission in Feedback tab' },
+              ].map((p, idx) => {
+                const IconComp = p.icon;
+                return (
+                  <div
+                    key={idx}
+                    style={{
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '8px',
+                      padding: '14px',
+                      backgroundColor: p.status === 'VERIFIED' ? '#F0FDF4' : '#F8FAFC',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '8px',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>{p.source}</span>
+                        <span
+                          style={{
+                            fontSize: '0.68rem',
+                            fontWeight: 700,
+                            padding: '2px 7px',
+                            borderRadius: '4px',
+                            backgroundColor: p.badgeBg,
+                            color: p.badgeColor,
+                          }}
+                        >
+                          {p.status}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <IconComp size={15} color={p.color} />
+                        <span>{p.title}</span>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: '0.76rem', color: '#64748B', lineHeight: 1.4 }}>
+                      {p.detail}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* 3. Self-Service Target Goals Form */}
+          <div
+            style={{
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+            }}
+          >
+            <div style={{ marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Target size={20} color="#2563EB" />
+                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                  Personal Academic Targets & Career Goals (Self-Declared)
+                </h4>
+              </div>
+              <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 0 0' }}>
+                You can define your personal aspirational milestones right now. These goals will be benchmarked against your actual semester telemetry once uploaded.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveGoals} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Target CGPA for this Semester
+                </label>
+                <input
+                  type="text"
+                  value={targetCgpa}
+                  onChange={(e) => setTargetCgpa(e.target.value)}
+                  placeholder="e.g. 8.5"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #CBD5E1',
+                    fontSize: '0.84rem',
+                    color: '#0F172A',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Primary Career / Industry Aspiration
+                </label>
+                <input
+                  type="text"
+                  value={targetCareer}
+                  onChange={(e) => setTargetCareer(e.target.value)}
+                  placeholder="e.g. Software Development Engineer"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #CBD5E1',
+                    fontSize: '0.84rem',
+                    color: '#0F172A',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Core Focus Skills to Master
+                </label>
+                <input
+                  type="text"
+                  value={targetSkills}
+                  onChange={(e) => setTargetSkills(e.target.value)}
+                  placeholder="e.g. Data Structures, Cloud Computing"
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    borderRadius: '6px',
+                    border: '1px solid #CBD5E1',
+                    fontSize: '0.84rem',
+                    color: '#0F172A',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '9px 18px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    backgroundColor: '#2563EB',
+                    color: '#FFFFFF',
+                    fontSize: '0.82rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <Check size={14} />
+                  <span>{goalsSaved ? 'Goals Saved ✓' : 'Save Aspirational Goals'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* =========================================================================
+          TAB 1: SUCCESS COCKPIT & RISK RADAR (OVERVIEW) — REAL INGESTED COHORT
+          ========================================================================= */}
+      {activeTab === 'overview' && hasCollegeRecords && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           <div
             style={{
@@ -826,16 +1283,74 @@ export default function StudentPortalPage() {
           ========================================================================= */}
       {activeTab === 'academic' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Course Attendance Telemetry */}
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '10px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            }}
-          >
+          {!hasCollegeRecords && (
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                padding: '2.5rem 1.5rem',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              }}
+            >
+              <div
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  backgroundColor: '#EFF6FF',
+                  color: '#2563EB',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 1rem auto',
+                }}
+              >
+                <BookOpen size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0' }}>
+                Course & Attendance Telemetry Pending Ingestion
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '600px', margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
+                Your department has not yet uploaded the semester course roster or biometric attendance logs for Roll No <strong>{student.studentId}</strong>. Once your college administrator uploads the attendance CSV via the Admin Ingestion Portal, your subject-wise attendance percentages, classes held vs attended, and 75% AICTE safety margins will be automatically populated here.
+              </p>
+              <button
+                type="button"
+                onClick={handleRecheckRecords}
+                disabled={recheckLoading}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#2563EB',
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '0.84rem',
+                  cursor: recheckLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                <RefreshCw size={15} className={recheckLoading ? 'spin' : ''} />
+                <span>{recheckLoading ? 'Querying Database...' : 'Re-Check Course Telemetry'}</span>
+              </button>
+            </div>
+          )}
+
+          {hasCollegeRecords && (
+            <>
+              {/* Course Attendance Telemetry */}
+              <div
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '10px',
+                  padding: '1.5rem',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                }}
+              >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
               <div>
                 <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
@@ -852,7 +1367,7 @@ export default function StudentPortalPage() {
                   padding: '4px 10px',
                   backgroundColor: '#ECFDF5',
                   color: '#059669',
-                  borderRadius: '999px',
+                  borderRadius: '6px',
                 }}
               >
                 Overall: {student.attendanceRate}%
@@ -1003,16 +1518,76 @@ export default function StudentPortalPage() {
               ))}
             </div>
           </div>
-        </div>
+        </>
       )}
+    </div>
+  )}
 
       {/* =========================================================================
           TAB 3: PLACEMENT READINESS & SKILLS
           ========================================================================= */}
       {activeTab === 'placement' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Assessment Metrics Row */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+          {!hasCollegeRecords && (
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: '12px',
+                padding: '2.5rem 1.5rem',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              }}
+            >
+              <div
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  backgroundColor: '#EFF6FF',
+                  color: '#2563EB',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 1rem auto',
+                }}
+              >
+                <Award size={28} />
+              </div>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0' }}>
+                Placement Readiness Assessment Pending Ingestion
+              </h3>
+              <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '600px', margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
+                Your Training & Placement Cell (TPO) has not yet uploaded diagnostic mock interviews, aptitude percentiles, or coding test assessments for Roll No <strong>{student.studentId}</strong>. Once uploaded via the Admin Ingestion Portal, your 2×2 Placement Readiness Matrix and Model 2 (Causal Forest) uplift pathways will be computed.
+              </p>
+              <button
+                type="button"
+                onClick={handleRecheckRecords}
+                disabled={recheckLoading}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '9px 18px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  backgroundColor: '#2563EB',
+                  color: '#FFFFFF',
+                  fontWeight: 600,
+                  fontSize: '0.84rem',
+                  cursor: recheckLoading ? 'not-allowed' : 'pointer',
+                }}
+              >
+                <RefreshCw size={15} className={recheckLoading ? 'spin' : ''} />
+                <span>{recheckLoading ? 'Querying Database...' : 'Re-Check Placement Data'}</span>
+              </button>
+            </div>
+          )}
+
+          {hasCollegeRecords && (
+            <>
+              {/* Assessment Metrics Row */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
             <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
               <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
                 Cognitive Aptitude & Reasoning
@@ -1148,8 +1723,10 @@ export default function StudentPortalPage() {
               ))}
             </div>
           </div>
-        </div>
+        </>
       )}
+    </div>
+  )}
 
       {/* =========================================================================
           TAB 4: MY INTERVENTIONS & MENTORSHIP
@@ -1217,7 +1794,7 @@ export default function StudentPortalPage() {
                         padding: '4px 12px',
                         backgroundColor: '#ECFDF5',
                         color: '#059669',
-                        borderRadius: '999px',
+                        borderRadius: '4px',
                         fontSize: '0.78rem',
                         fontWeight: 600,
                       }}
@@ -1482,7 +2059,7 @@ export default function StudentPortalPage() {
                       padding: '3px 10px',
                       backgroundColor: '#ECFDF5',
                       color: '#059669',
-                      borderRadius: '999px',
+                      borderRadius: '4px',
                       fontSize: '0.74rem',
                       fontWeight: 600,
                     }}

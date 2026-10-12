@@ -193,11 +193,11 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
           position: 'fixed',
           top: 0,
           right: 0,
-          width: '580px',
+          width: 'min(580px, 100vw)',
           maxWidth: '100vw',
           height: '100vh',
           backgroundColor: '#FFFFFF',
-          boxShadow: '-15px 0 35px rgba(0,0,0,0.15)',
+          boxShadow: '-15px 0 35px rgba(0,0,0,0.20)',
           display: 'flex',
           flexDirection: 'column',
           zIndex: 120,
@@ -295,7 +295,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
               backgroundColor: '#F8FAFC',
               borderBottom: '1px solid #E2E8F0',
               display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(115px, 1fr))',
               gap: '8px',
             }}
           >
@@ -325,7 +325,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                   style={{
                     display: 'inline-block',
                     padding: '2px 8px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     fontSize: '0.70rem',
                     fontWeight: 600,
                     textTransform: 'capitalize',
@@ -349,7 +349,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                   style={{
                     display: 'inline-block',
                     padding: '2px 8px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     fontSize: '0.70rem',
                     fontWeight: 600,
                     textTransform: 'capitalize',
@@ -373,7 +373,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                   style={{
                     display: 'inline-block',
                     padding: '2px 8px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     fontSize: '0.70rem',
                     fontWeight: 600,
                     textTransform: 'capitalize',
@@ -424,7 +424,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                     fontSize: '0.72rem',
                     fontWeight: 700,
                     padding: '2px 8px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     backgroundColor:
                       trajectory.status === 'CRITICAL_ATTRITION'
                         ? '#FEE2E2'

@@ -32,67 +32,40 @@ import {
   Check,
   ArrowUp,
   Lightbulb,
+  Menu,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import CopilotDrawer from '../copilot/CopilotDrawer';
 
-const INSTITUTION_NAV_SECTIONS = [
-  {
-    title: 'Intelligence Modules',
-    items: [
-      { path: '/institution/overview', label: 'Executive Overview', icon: BarChart3, badge: null },
-      { path: '/institution/students', label: 'Student 360° Directory', icon: Users, badge: '1,420' },
-      { path: '/institution/risk-radar', label: 'Decoupled Risk Radar', icon: Target, badge: 'ML' },
-    ],
-  },
-  {
-    title: 'Simulations & Tools',
-    items: [
-      { path: '/institution/sandbox', label: 'Intervention Sandbox', icon: FlaskConical, badge: 'Simulator' },
-      { path: '/institution/segments', label: 'Student Archetypes', icon: Layers, badge: '5' },
-      { path: '/institution/ingestion', label: 'Data Integration Studio', icon: UploadCloud, badge: '8 Pillars' },
-    ],
-  },
-  {
-    title: 'Governance & Audits',
-    items: [
-      { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
-      { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
-      { path: '/institution/profile', label: 'My Profile & Details', icon: User, badge: null },
-    ],
-  },
-];
-
-const STUDENT_NAV_SECTIONS = [
-  {
-    title: 'Academic Intelligence',
-    items: [
-      { path: '/student/portal', label: 'My Academic Dashboard', icon: GraduationCap, badge: 'Live', tab: 'overview' },
-      { path: '/student/portal?tab=academic', label: 'Attendance & Courses', icon: BookOpen, badge: '88%', tab: 'academic' },
-      { path: '/student/portal?tab=placement', label: 'Placement Readiness', icon: Award, badge: 'Tier-1', tab: 'placement' },
-    ],
-  },
-  {
-    title: 'Support & Guidance',
-    items: [
-      { path: '/student/portal?tab=interventions', label: 'My Support Programs', icon: Sparkles, badge: 'Active', tab: 'interventions' },
-      { path: '/student/portal?tab=feedback', label: 'Feedback & Suggestions', icon: MessageSquareHeart, badge: null, tab: 'feedback' },
-      { path: '/student/profile', label: 'My Profile & Details', icon: User, badge: null },
-    ],
-  },
-];
+// Base navigation structures (badges populated dynamically inside component based on live DB state)
 
 export default function AppLayout({ children }) {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  // Responsive device viewport detector: Auto-collapse on tablet/mobile (< 1024px)
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => typeof window !== 'undefined' && window.innerWidth < 1024);
   const [isCopilotOpen, setIsCopilotOpen] = useState(false);
   const [isCopilotHovered, setIsCopilotHovered] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [backendLive, setBackendLive] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.innerWidth < 1024;
+      setIsMobile(mobile);
+      if (mobile) {
+        setIsSidebarCollapsed(true);
+      } else {
+        setIsSidebarCollapsed(false);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const profileMenuRef = useRef(null);
 
@@ -109,6 +82,11 @@ export default function AppLayout({ children }) {
       }
     }
   }, [currentUser, location.pathname, navigate]);
+
+  // Auto-close Copilot drawer on route transition
+  useEffect(() => {
+    setIsCopilotOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     // Check live connectivity to backend Express service
@@ -141,27 +119,105 @@ export default function AppLayout({ children }) {
 
 
 
+  const [liveKpis, setLiveKpis] = useState(null);
+  const [studentTelemetry, setStudentTelemetry] = useState(null);
+
+  const fetchLiveTelemetry = () => {
+    // 1. Fetch live overview KPIs
+    api
+      .getOverviewKpis()
+      .then((res) => {
+        if (res) setLiveKpis(res);
+      })
+      .catch(() => {});
+
+    // 2. If student persona, query student records
+    if (isStudent && currentUser) {
+      const sId = currentUser.studentId;
+      const sEmail = currentUser.email;
+      if (sId || sEmail) {
+        api.getStudents({ search: sId || sEmail }).then((res) => {
+          const match = res?.students?.find(
+            (s) => (sId && s.studentId === sId) || (sEmail && s.email === sEmail)
+          );
+          if (match) setStudentTelemetry(match);
+        }).catch(() => {});
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchLiveTelemetry();
+    window.addEventListener('pratibha_data_updated', fetchLiveTelemetry);
+    return () => window.removeEventListener('pratibha_data_updated', fetchLiveTelemetry);
+  }, [currentUser, isStudent]);
+
   // Resolve user display name & initials
-  const displayName = currentUser?.name || (isStudent ? 'Aarav Sharma' : 'Demo Administrator');
+  const displayName =
+    currentUser?.name ||
+    currentUser?.displayName ||
+    (currentUser?.username ? `@${currentUser.username}` : null) ||
+    (currentUser?.email ? currentUser.email.split('@')[0] : (isStudent ? 'Aarav Sharma' : 'Administrator'));
+
   const userInitials = displayName
+    .replace(/^@/, '')
     .split(' ')
     .filter(Boolean)
     .map((n) => n[0])
     .join('')
     .slice(0, 2)
-    .toUpperCase() || 'DA';
+    .toUpperCase() || 'AD';
 
-  // Navigation sections based on role
+  // Navigation sections based on role and dynamic DB metrics
   const getNavSections = () => {
-    if (isStudent) return STUDENT_NAV_SECTIONS;
+    const totalStudents = liveKpis?.totalStudents != null ? liveKpis.totalStudents : null;
+    const isDemo = !currentUser || currentUser?.email === 'student@example.edu' || currentUser?.studentId === 'STU_0001';
+
+    if (isStudent) {
+      const hasRecords = Boolean(studentTelemetry && (studentTelemetry.cgpa != null || studentTelemetry.attendanceRate != null));
+      const attRate = hasRecords ? studentTelemetry.attendanceRate : (isDemo ? 88.5 : null);
+      const cgpa = hasRecords ? studentTelemetry.cgpa : (isDemo ? 8.42 : null);
+
+      return [
+        {
+          title: 'Academic Intelligence',
+          items: [
+            { path: '/student/portal', label: 'My Academic Dashboard', icon: GraduationCap, badge: 'Live', tab: 'overview' },
+            {
+              path: '/student/portal?tab=academic',
+              label: 'Attendance & Courses',
+              icon: BookOpen,
+              badge: attRate != null ? `${Math.round(attRate)}%` : 'Pending',
+              tab: 'academic',
+            },
+            {
+              path: '/student/portal?tab=placement',
+              label: 'Placement Readiness',
+              icon: Award,
+              badge: cgpa != null ? (cgpa >= 8.0 ? 'Tier-1' : 'Core') : 'Pending',
+              tab: 'placement',
+            },
+          ],
+        },
+        {
+          title: 'Support & Guidance',
+          items: [
+            { path: '/student/portal?tab=interventions', label: 'My Support Programs', icon: Sparkles, badge: 'Active', tab: 'interventions' },
+            { path: '/student/portal?tab=feedback', label: 'Feedback & Suggestions', icon: MessageSquareHeart, badge: null, tab: 'feedback' },
+            { path: '/student/profile', label: 'My Profile & Details', icon: User, badge: null },
+          ],
+        },
+      ];
+    }
 
     if (currentUser?.role === 'faculty_mentor') {
+      const menteesCount = totalStudents != null ? Math.max(1, Math.round(totalStudents / (liveKpis?.departmentCount || 5))) : 25;
       return [
         {
           title: 'Department Overview',
           items: [
-            { path: '/institution/overview', label: 'Faculty Overview', icon: BarChart3, badge: 'CSE' },
-            { path: '/institution/students', label: 'CSE Mentees Directory', icon: Users, badge: '28' },
+            { path: '/institution/overview', label: 'Faculty Overview', icon: BarChart3, badge: currentUser?.department ? currentUser.department.slice(0, 3).toUpperCase() : 'CSE' },
+            { path: '/institution/students', label: 'Mentees Directory', icon: Users, badge: `${menteesCount}` },
             { path: '/institution/risk-radar', label: 'Academic Risk Radar', icon: Target, badge: 'Attendance' },
           ],
         },
@@ -178,13 +234,14 @@ export default function AppLayout({ children }) {
     }
 
     if (currentUser?.role === 'placement_officer') {
+      const eligibleCount = totalStudents != null ? Math.round(totalStudents * 0.72) : 88;
       return [
         {
           title: 'Placement Matrix',
           items: [
             { path: '/institution/overview', label: 'Placement Overview', icon: BarChart3, badge: 'TPO' },
             { path: '/institution/segments', label: 'Placement Readiness Matrix', icon: Layers, badge: 'Tier-1' },
-            { path: '/institution/students', label: 'Eligible Candidates Roster', icon: Users, badge: 'Eligible' },
+            { path: '/institution/students', label: 'Eligible Candidates Roster', icon: Users, badge: `${eligibleCount} Eligible` },
           ],
         },
         {
@@ -199,7 +256,37 @@ export default function AppLayout({ children }) {
       ];
     }
 
-    return INSTITUTION_NAV_SECTIONS;
+    return [
+      {
+        title: 'Intelligence Modules',
+        items: [
+          { path: '/institution/overview', label: 'Executive Overview', icon: BarChart3, badge: null },
+          {
+            path: '/institution/students',
+            label: 'Student 360° Directory',
+            icon: Users,
+            badge: totalStudents != null && totalStudents > 0 ? totalStudents.toLocaleString() : null,
+          },
+          { path: '/institution/risk-radar', label: 'Decoupled Risk Radar', icon: Target, badge: 'ML' },
+        ],
+      },
+      {
+        title: 'Simulations & Tools',
+        items: [
+          { path: '/institution/sandbox', label: 'Intervention Sandbox', icon: FlaskConical, badge: 'Simulator' },
+          { path: '/institution/segments', label: 'Student Archetypes', icon: Layers, badge: '5' },
+          { path: '/institution/ingestion', label: 'Data Integration Studio', icon: UploadCloud, badge: '8 Pillars' },
+        ],
+      },
+      {
+        title: 'Governance & Audits',
+        items: [
+          { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
+          { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
+          { path: '/institution/profile', label: 'My Profile & Details', icon: User, badge: null },
+        ],
+      },
+    ];
   };
 
   const navSections = getNavSections();
@@ -228,14 +315,31 @@ export default function AppLayout({ children }) {
         fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
       }}
     >
+      {/* Mobile Off-Canvas Backdrop Overlay */}
+      {isMobile && !isSidebarCollapsed && (
+        <div
+          onClick={() => setIsSidebarCollapsed(true)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(8, 43, 86, 0.60)',
+            backdropFilter: 'blur(3px)',
+            zIndex: 95,
+            transition: 'opacity 0.25s ease',
+          }}
+          aria-hidden="true"
+        />
+      )}
+
       {/* =========================================================================
           1. CHATGPT ARCHITECTURE WITH PRATIBHA DEEP BRAND NAVY SIDEBAR (#082B56)
           ========================================================================= */}
       <aside
         style={{
-          width: isSidebarCollapsed ? '0px' : '260px',
-          minWidth: isSidebarCollapsed ? '0px' : '260px',
-          transition: 'width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)',
+          width: isSidebarCollapsed ? '0px' : isMobile ? '280px' : '260px',
+          minWidth: isSidebarCollapsed ? '0px' : isMobile ? '280px' : '260px',
+          maxWidth: isMobile ? '85vw' : '260px',
+          transition: 'width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease',
           height: '100vh',
           backgroundColor: '#082B56',
           borderRight: isSidebarCollapsed ? 'none' : '1px solid #061F3E',
@@ -243,9 +347,13 @@ export default function AppLayout({ children }) {
           flexDirection: 'column',
           justifyContent: 'space-between',
           overflow: 'hidden',
-          zIndex: 40,
-          position: 'relative',
-          boxShadow: '2px 0 12px rgba(8, 43, 86, 0.12)',
+          zIndex: isMobile ? 100 : 40,
+          position: isMobile ? 'fixed' : 'relative',
+          top: isMobile ? 0 : 'auto',
+          left: isMobile ? 0 : 'auto',
+          boxShadow: isMobile && !isSidebarCollapsed
+            ? '6px 0 32px rgba(0, 0, 0, 0.45)'
+            : '2px 0 12px rgba(8, 43, 86, 0.12)',
         }}
       >
         <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 76px)', overflow: 'hidden' }}>
@@ -344,6 +452,9 @@ export default function AppLayout({ children }) {
                     <NavLink
                       key={item.path}
                       to={item.path}
+                      onClick={() => {
+                        if (isMobile) setIsSidebarCollapsed(true);
+                      }}
                       style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -382,7 +493,7 @@ export default function AppLayout({ children }) {
                           style={{
                             fontSize: '0.68rem',
                             padding: '2px 7px',
-                            borderRadius: '999px',
+                            borderRadius: '4px',
                             backgroundColor: isActive ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.10)',
                             color: isActive ? '#BAE6FD' : 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 600,
@@ -444,7 +555,7 @@ export default function AppLayout({ children }) {
                       backgroundColor: '#EAF3FF',
                       border: '1px solid #D0E3F8',
                       padding: '1px 7px',
-                      borderRadius: '999px',
+                      borderRadius: '4px',
                       whiteSpace: 'nowrap',
                       flexShrink: 0,
                     }}
@@ -611,55 +722,60 @@ export default function AppLayout({ children }) {
         {/* BALANCED SYMMETRIC TOP HEADER */}
         <header
           style={{
-            height: '54px',
+            height: '56px',
             backgroundColor: '#FFFFFF',
             borderBottom: '1px solid #E2E8F0',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            padding: '0 1.75rem',
+            padding: isMobile ? '0 1rem' : '0 2rem',
             flexShrink: 0,
             zIndex: 30,
+            gap: '12px',
           }}
         >
-          {/* Left: Sidebar Toggle (when collapsed) + Breadcrumb */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {isSidebarCollapsed && (
+          {/* Left: Sidebar Toggle + Breadcrumb */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px', minWidth: 0 }}>
+            {(isSidebarCollapsed || isMobile) && (
               <button
                 type="button"
-                onClick={() => setIsSidebarCollapsed(false)}
-                title="Open sidebar"
+                onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                title="Toggle navigation sidebar"
+                aria-label="Toggle navigation sidebar"
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#64748B',
+                  color: '#082B56',
                   cursor: 'pointer',
-                  padding: '5px',
+                  padding: '6px',
                   borderRadius: '6px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  transition: 'background-color 0.15s ease',
+                  flexShrink: 0,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.color = '#0F172A';
                   e.currentTarget.style.backgroundColor = '#F1F5F9';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.color = '#64748B';
                   e.currentTarget.style.backgroundColor = 'transparent';
                 }}
               >
-                <PanelLeftOpen size={18} />
+                <Menu size={20} />
               </button>
             )}
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.86rem' }}>
-              <span style={{ fontWeight: 800, color: '#082B56', letterSpacing: '-0.2px' }}>PRATIBHA</span>
-              <span style={{ color: '#CBD5E1' }}>/</span>
-              <span style={{ color: '#334155', fontWeight: 600 }}>{findActiveTitle()}</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.86rem', minWidth: 0, overflow: 'hidden' }}>
+              <span style={{ fontWeight: 800, color: '#082B56', letterSpacing: '-0.2px', flexShrink: 0 }}>PRATIBHA</span>
+              <span style={{ color: '#CBD5E1', flexShrink: 0 }}>/</span>
+              <span style={{ color: '#334155', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
+                {findActiveTitle()}
+              </span>
             </div>
 
             <span
+              className="hide-on-mobile"
               style={{
                 fontSize: '0.70rem',
                 color: '#64748B',
@@ -668,17 +784,20 @@ export default function AppLayout({ children }) {
                 padding: '2px 8px',
                 borderRadius: '6px',
                 fontWeight: 500,
-                display: 'inline-flex',
                 alignItems: 'center',
                 gap: '4px',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
               }}
             >
-              AY 2025–26 • Sem 6
+              {currentUser?.semester
+                ? `AY 2026–27 • ${String(currentUser.semester).includes('Sem') ? currentUser.semester : `Sem ${currentUser.semester}`}`
+                : (isStudent ? 'AY 2026–27 • Sem 4' : 'AY 2026–27 • Central Cohort')}
             </span>
           </div>
 
           {/* Right: Status Pill & Persona Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
             <div
               style={{
                 display: 'flex',
@@ -688,9 +807,10 @@ export default function AppLayout({ children }) {
                 color: backendLive ? '#059669' : '#D97706',
                 backgroundColor: backendLive ? '#ECFDF5' : '#FFFBEB',
                 border: `1px solid ${backendLive ? '#A7F3D0' : '#FDE68A'}`,
-                padding: '3px 9px',
-                borderRadius: '999px',
+                padding: '3px 8px',
+                borderRadius: '6px',
                 fontWeight: 600,
+                whiteSpace: 'nowrap',
               }}
               title={backendLive ? 'Backend Express API is connected and responding' : 'Operating with deterministic synthetic intelligence records'}
             >
@@ -702,38 +822,31 @@ export default function AppLayout({ children }) {
                   backgroundColor: backendLive ? '#10B981' : '#F59E0B',
                 }}
               />
-              <span>{backendLive ? 'Live Service' : 'Synthetic Mode'}</span>
+              <span className="hide-on-mobile">{backendLive ? 'Live Service' : 'Synthetic'}</span>
             </div>
 
             {/* Current Role Badge */}
             <span
               style={{
                 fontSize: '0.74rem',
-                padding: '3px 10px',
-                borderRadius: '999px',
+                padding: '3px 9px',
+                borderRadius: '6px',
                 backgroundColor: '#F1F5F9',
                 border: '1px solid #CBD5E1',
                 color: '#1E293B',
                 fontWeight: 600,
+                whiteSpace: 'nowrap',
               }}
             >
-              {currentUser?.roleLabel || 'Administrator'}
+              {isMobile
+                ? (currentUser?.role === 'institution_admin' ? 'Admin' : currentUser?.role === 'faculty_mentor' ? 'Faculty' : currentUser?.role === 'placement_officer' ? 'TPO' : (isStudent ? 'Student' : 'Staff'))
+                : (currentUser?.roleLabel || 'Admin')}
             </span>
           </div>
         </header>
 
         {/* SCROLLABLE MAIN CONTENT AREA (WITH AMPLE BOTTOM CLEARANCE FOR MASCOT) */}
-        <main
-          style={{
-            flex: 1,
-            overflowY: 'auto',
-            padding: '1.75rem 2rem 5.5rem',
-            maxWidth: '1440px',
-            width: '100%',
-            margin: '0 auto',
-            color: '#0F172A',
-          }}
-        >
+        <main className="main-workspace-canvas">
           {children}
         </main>
       </div>
@@ -748,16 +861,16 @@ export default function AppLayout({ children }) {
         title={isStudent ? 'Ask Student Copilot' : 'Ask Campus Copilot'}
         style={{
           position: 'fixed',
-          bottom: '24px',
-          right: '28px',
+          bottom: isMobile ? '16px' : '24px',
+          right: isMobile ? '16px' : '28px',
           backgroundColor: '#0F172A',
           color: '#FFFFFF',
           border: isCopilotHovered ? '1.5px solid rgba(56, 189, 248, 0.65)' : '1.5px solid rgba(56, 189, 248, 0.35)',
-          borderRadius: '999px',
-          height: '56px',
-          minWidth: '56px',
-          maxWidth: isCopilotHovered ? '320px' : '56px',
-          padding: isCopilotHovered ? '8px 18px 8px 9px' : '8px',
+          borderRadius: '12px',
+          height: isMobile ? '50px' : '56px',
+          minWidth: isMobile ? '50px' : '56px',
+          maxWidth: isCopilotHovered ? (isMobile ? '240px' : '320px') : (isMobile ? '50px' : '56px'),
+          padding: isCopilotHovered ? (isMobile ? '6px 14px 6px 7px' : '8px 18px 8px 9px') : '6px',
           display: 'flex',
           alignItems: 'center',
           gap: isCopilotHovered ? '10px' : '0px',
@@ -796,7 +909,7 @@ export default function AppLayout({ children }) {
               backgroundColor: 'rgba(56, 189, 248, 0.16)',
               color: '#38BDF8',
               padding: '3px 8px',
-              borderRadius: '999px',
+              borderRadius: '4px',
               fontSize: '0.68rem',
               fontWeight: 700,
               letterSpacing: '0.02em',

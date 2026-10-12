@@ -102,7 +102,7 @@ export default function PublicFooter() {
               alignItems: 'center',
               gap: '8px',
               padding: '6px 12px',
-              borderRadius: '999px',
+              borderRadius: '6px',
               backgroundColor: 'rgba(16, 185, 129, 0.1)',
               border: '1px solid rgba(16, 185, 129, 0.25)',
               fontSize: '0.75rem',

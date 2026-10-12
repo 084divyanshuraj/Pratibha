@@ -133,7 +133,7 @@ export default function PublicNavbar() {
                 color: '#FFFFFF',
                 border: '1px solid rgba(255, 255, 255, 0.35)',
                 padding: '0.55rem 1.25rem',
-                borderRadius: 'var(--radius-full)',
+                borderRadius: 'var(--radius-sm)',
                 fontSize: '0.88rem',
                 fontWeight: 500,
                 cursor: 'pointer',

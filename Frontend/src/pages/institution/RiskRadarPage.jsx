@@ -47,7 +47,7 @@ export default function RiskRadarPage() {
     return () => window.removeEventListener('pratibha_data_updated', handleUpdate);
   }, []);
 
-  const totalPop = riskData?.totalStudents || riskData?.departmentBreakdown?.reduce((acc, d) => acc + (d.total || 0), 0) || 1420;
+  const totalPop = riskData?.totalStudents || riskData?.departmentBreakdown?.reduce((acc, d) => acc + (d.total || 0), 0) || 121;
   const divCount = riskData?.decoupledDivergence?.count ?? Math.round(totalPop * 0.104);
   const divPct = riskData?.decoupledDivergence?.percentage ?? +((divCount / totalPop) * 100).toFixed(1);
   const doubleRiskCount = riskData?.doubleRiskCount ?? Math.round(totalPop * 0.058);
@@ -98,7 +98,7 @@ export default function RiskRadarPage() {
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   padding: '2px 8px',
-                  borderRadius: '999px',
+                  borderRadius: '4px',
                   backgroundColor: role === 'faculty_mentor' ? '#DCFCE7' : role === 'placement_officer' ? '#DBEAFE' : '#E2E8F0',
                   color: role === 'faculty_mentor' ? '#15803D' : role === 'placement_officer' ? '#1D4ED8' : '#334155',
                 }}
@@ -111,10 +111,10 @@ export default function RiskRadarPage() {
             </div>
             <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '3px', maxWidth: '850px' }}>
               {role === 'faculty_mentor'
-                ? 'Prof. Rajesh Kumar · Priority focus on CSE mentees with low attendance (<75%) and pending subject backlogs before semester exams.'
+                ? `${currentUser?.name || 'Prof. Rajesh Kumar'} · Priority focus on CSE mentees with low attendance (<75%) and pending subject backlogs before semester exams.`
                 : role === 'placement_officer'
-                ? 'Vikram Malhotra · Priority focus on students with strong CGPA (≥ 7.5) who need mock interview and coding preparation for visiting companies.'
-                : 'Dr. Sunita Rao · Dual AI models evaluate classroom theory and placement readiness separately so no student is overlooked.'}
+                ? `${currentUser?.name || 'Vikram Malhotra'} · Priority focus on students with strong CGPA (≥ 7.5) who need mock interview and coding preparation for visiting companies.`
+                : `${currentUser?.name || (currentUser?.username ? `@${currentUser.username}` : 'Provost & Leadership')} · Dual AI models evaluate classroom theory and placement readiness separately so no student is overlooked.`}
             </div>
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function RiskRadarPage() {
 
       {/* Title */}
       <div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '999px', backgroundColor: '#EAF3FF', color: '#1677D2', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px', border: '1px solid #BFDBFE' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 10px', borderRadius: '6px', backgroundColor: '#EAF3FF', color: '#1677D2', fontSize: '0.74rem', fontWeight: 600, marginBottom: '6px', border: '1px solid #BFDBFE' }}>
           <Target size={13} />
           <span>Independent Dual-Engine Architecture</span>
         </div>
@@ -249,7 +249,7 @@ export default function RiskRadarPage() {
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px' }}>
+        <div className="responsive-quadrant-grid">
           {/* Quadrant 1: Decoupled Divergence (High CGPA + High Placement Risk) */}
           <div
             style={{
@@ -270,7 +270,7 @@ export default function RiskRadarPage() {
                 <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#B45309', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Decoupled Divergence Cluster
                 </span>
-                <span style={{ backgroundColor: '#FEF3C7', color: '#B45309', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
+                <span style={{ backgroundColor: '#FEF3C7', color: '#B45309', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem' }}>
                   Action Needed
                 </span>
               </div>
@@ -328,7 +328,7 @@ export default function RiskRadarPage() {
                 <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#DC2626', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Comprehensive Double Risk
                 </span>
-                <span style={{ backgroundColor: '#FEE2E2', color: '#DC2626', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
+                <span style={{ backgroundColor: '#FEE2E2', color: '#DC2626', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem' }}>
                   Critical Priority
                 </span>
               </div>
@@ -386,7 +386,7 @@ export default function RiskRadarPage() {
                 <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#0D9488', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Career & Academic Achievers
                 </span>
-                <span style={{ backgroundColor: '#CCFBF1', color: '#0F766E', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
+                <span style={{ backgroundColor: '#CCFBF1', color: '#0F766E', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem' }}>
                   Secure Cohort
                 </span>
               </div>
@@ -444,7 +444,7 @@ export default function RiskRadarPage() {
                 <span style={{ fontSize: '0.74rem', fontWeight: 700, color: '#1677D2', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
                   Academic Backlogs Only
                 </span>
-                <span style={{ backgroundColor: '#EAF3FF', color: '#1677D2', fontWeight: 700, padding: '2px 8px', borderRadius: '999px', fontSize: '0.72rem' }}>
+                <span style={{ backgroundColor: '#EAF3FF', color: '#1677D2', fontWeight: 700, padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem' }}>
                   Theory Remedial
                 </span>
               </div>
@@ -489,40 +489,42 @@ export default function RiskRadarPage() {
         <div style={{ padding: '16px 20px', borderBottom: '1px solid #E2E8F0', backgroundColor: '#F8FAFC', fontWeight: 600, color: '#0F172A', fontSize: '0.92rem' }}>
           Departmental Risk Distribution Overview
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
-          <thead>
-            <tr style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', color: '#64748B' }}>
-              <th style={{ padding: '12px 18px' }}>Department</th>
-              <th style={{ padding: '12px 16px' }}>Enrolled</th>
-              <th style={{ padding: '12px 16px' }}>Avg Success Score</th>
-              <th style={{ padding: '12px 16px' }}>High Academic Risk</th>
-              <th style={{ padding: '12px 16px' }}>High Placement Risk</th>
-            </tr>
-          </thead>
-          <tbody>
-            {(riskData?.departmentBreakdown || [
-              { department: 'Computer Science', total: 420, averageSuccessScore: 77.4, academicRisk: { high: 32 }, placementRisk: { high: 88 } },
-              { department: 'Information Technology', total: 380, averageSuccessScore: 73.8, academicRisk: { high: 45 }, placementRisk: { high: 72 } },
-              { department: 'Data Science', total: 290, averageSuccessScore: 76.1, academicRisk: { high: 28 }, placementRisk: { high: 54 } },
-              { department: 'Electronics & Comm.', total: 330, averageSuccessScore: 71.5, academicRisk: { high: 75 }, placementRisk: { high: 76 } },
-            ]).map((d, i) => (
-              <tr key={i} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                <td style={{ padding: '12px 18px', fontWeight: 600, color: '#0F172A' }}>{d.department}</td>
-                <td style={{ padding: '12px 16px' }}>{d.total}</td>
-                <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1A73E8' }}>{d.averageSuccessScore}</td>
-                <td style={{ padding: '12px 16px', color: '#DC2626', fontWeight: 600 }}>{d.academicRisk?.high || 0} students</td>
-                <td style={{ padding: '12px 16px', color: '#D97706', fontWeight: 600 }}>{d.placementRisk?.high || 0} students</td>
+        <div className="responsive-table-wrapper">
+          <table style={{ width: '100%', minWidth: '640px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.84rem' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#FFFFFF', borderBottom: '1px solid #E2E8F0', color: '#64748B' }}>
+                <th style={{ padding: '12px 18px' }}>Department</th>
+                <th style={{ padding: '12px 16px' }}>Enrolled</th>
+                <th style={{ padding: '12px 16px' }}>Avg Success Score</th>
+                <th style={{ padding: '12px 16px' }}>High Academic Risk</th>
+                <th style={{ padding: '12px 16px' }}>High Placement Risk</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {(riskData?.departmentBreakdown || [
+                { department: 'Computer Science', total: 420, averageSuccessScore: 77.4, academicRisk: { high: 32 }, placementRisk: { high: 88 } },
+                { department: 'Information Technology', total: 380, averageSuccessScore: 73.8, academicRisk: { high: 45 }, placementRisk: { high: 72 } },
+                { department: 'Data Science', total: 290, averageSuccessScore: 76.1, academicRisk: { high: 28 }, placementRisk: { high: 54 } },
+                { department: 'Electronics & Comm.', total: 330, averageSuccessScore: 71.5, academicRisk: { high: 75 }, placementRisk: { high: 76 } },
+              ]).map((d, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                  <td style={{ padding: '12px 18px', fontWeight: 600, color: '#0F172A' }}>{d.department}</td>
+                  <td style={{ padding: '12px 16px' }}>{d.total}</td>
+                  <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1A73E8' }}>{d.averageSuccessScore}</td>
+                  <td style={{ padding: '12px 16px', color: '#DC2626', fontWeight: 600 }}>{d.academicRisk?.high || 0} students</td>
+                  <td style={{ padding: '12px 16px', color: '#D97706', fontWeight: 600 }}>{d.placementRisk?.high || 0} students</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* 5. PLATFORM AI & ML INTELLIGENCE ENGINE REGISTRY (KPMG Challenge 4 Full Model Suite) */}
       <div style={{ backgroundColor: '#FFFFFF', borderRadius: '12px', border: '1px solid #E2E8F0', padding: '1.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.02)' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '1.25rem' }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 9px', borderRadius: '999px', backgroundColor: '#F0FDF4', color: '#16A34A', fontSize: '0.72rem', fontWeight: 700, border: '1px solid #BBF7D0', marginBottom: '6px' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '3px 9px', borderRadius: '6px', backgroundColor: '#F0FDF4', color: '#16A34A', fontSize: '0.72rem', fontWeight: 700, border: '1px solid #BBF7D0', marginBottom: '6px' }}>
               <Cpu size={12} />
               <span>Full ML Model Suite Verified & Active</span>
             </div>

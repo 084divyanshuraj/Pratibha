@@ -111,7 +111,7 @@
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 0.72rem;
   font-weight: 600;
   background: rgba(26, 115, 232, 0.1);
@@ -124,7 +124,7 @@
   align-items: center;
   gap: 4px;
   padding: 3px 8px;
-  border-radius: 999px;
+  border-radius: 6px;
   font-size: 0.72rem;
   font-weight: 600;
   background: rgba(16, 185, 129, 0.1);
@@ -397,7 +397,7 @@
   align-items: center;
   gap: 5px;
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 6px;
   background: #e0f2fe;
   color: #0369a1;
   border: 1px solid #bae6fd;

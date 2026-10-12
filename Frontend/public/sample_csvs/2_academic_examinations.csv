@@ -1,0 +1,31 @@
+studentId,term,subjectCode,subjectName,assessmentType,marksObtained,maxMarks,grade,cgpa,backlog
+STU_0121,2026-S1,CS301,Data Structures and Algorithms,final,66,100,B,7.99,false
+STU_0122,2026-S1,CS302,Database Management Systems,final,73,100,B+,8.26,false
+STU_0123,2026-S1,CS303,Operating Systems,final,77,100,B+,8.24,false
+STU_0124,2026-S1,DS304,Machine Learning Foundations,final,95,100,A+,6.61,false
+STU_0125,2026-S1,CS301,Data Structures and Algorithms,final,66,100,B,9.41,false
+STU_0126,2026-S1,CS302,Database Management Systems,final,86,100,A,7.22,false
+STU_0127,2026-S1,CS303,Operating Systems,final,69,100,B,9.17,false
+STU_0128,2026-S1,DS304,Machine Learning Foundations,final,84,100,A,7.80,false
+STU_0129,2026-S1,CS301,Data Structures and Algorithms,final,69,100,B,7.25,false
+STU_0130,2026-S1,CS302,Database Management Systems,final,66,100,B,7.60,false
+STU_0131,2026-S1,CS303,Operating Systems,final,94,100,A+,7.93,false
+STU_0132,2026-S1,DS304,Machine Learning Foundations,final,89,100,A,9.01,false
+STU_0133,2026-S1,CS301,Data Structures and Algorithms,final,67,100,B,7.26,false
+STU_0134,2026-S1,CS302,Database Management Systems,final,72,100,B+,9.40,false
+STU_0135,2026-S1,CS303,Operating Systems,final,89,100,A,7.92,false
+STU_0136,2026-S1,DS304,Machine Learning Foundations,final,78,100,B+,8.59,false
+STU_0137,2026-S1,CS301,Data Structures and Algorithms,final,89,100,A,8.85,false
+STU_0138,2026-S1,CS302,Database Management Systems,final,93,100,A+,8.76,false
+STU_0139,2026-S1,CS303,Operating Systems,final,95,100,A+,9.52,false
+STU_0140,2026-S1,DS304,Machine Learning Foundations,final,64,100,B,9.09,false
+STU_0141,2026-S1,CS301,Data Structures and Algorithms,final,86,100,A,7.89,false
+STU_0142,2026-S1,CS302,Database Management Systems,final,78,100,B+,6.66,false
+STU_0143,2026-S1,CS303,Operating Systems,final,70,100,B+,7.49,false
+STU_0144,2026-S1,DS304,Machine Learning Foundations,final,63,100,B,8.26,false
+STU_0145,2026-S1,CS301,Data Structures and Algorithms,final,77,100,B+,7.98,false
+STU_0146,2026-S1,CS302,Database Management Systems,final,87,100,A,6.81,false
+STU_0147,2026-S1,CS303,Operating Systems,final,65,100,B,6.52,false
+STU_0148,2026-S1,DS304,Machine Learning Foundations,final,72,100,B+,9.33,false
+STU_0149,2026-S1,CS301,Data Structures and Algorithms,final,78,100,B+,9.57,false
+STU_0150,2026-S1,CS302,Database Management Systems,final,65,100,B,8.58,false

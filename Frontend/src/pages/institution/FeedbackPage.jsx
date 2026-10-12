@@ -435,7 +435,7 @@ export default function FeedbackPage() {
                     fontSize: '0.72rem',
                     fontWeight: 700,
                     padding: '2px 8px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     border: '1px solid #C7D2FE',
                   }}
                 >
@@ -769,7 +769,7 @@ export default function FeedbackPage() {
                   alignItems: 'center',
                   gap: '6px',
                   padding: '6px 12px',
-                  borderRadius: '999px',
+                  borderRadius: '6px',
                   border: `1px solid ${borderColor}`,
                   backgroundColor: bg,
                   color: textColor,
@@ -785,7 +785,7 @@ export default function FeedbackPage() {
                     fontSize: '0.7rem',
                     backgroundColor: isActive ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.06)',
                     padding: '1px 6px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                   }}
                 >
                   {t.count}

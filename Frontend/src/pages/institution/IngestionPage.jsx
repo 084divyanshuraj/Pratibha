@@ -89,6 +89,17 @@ const CATEGORIES = [
   },
 ];
 
+const PILLAR_SAMPLE_FILES = {
+  students: '1_student_roster.csv',
+  academic: '2_academic_examinations.csv',
+  attendance: '3_attendance_telemetry.csv',
+  lms: '4_lms_digital_learning.csv',
+  placement: '5_placement_drives.csv',
+  skills: '6_skill_assessments.csv',
+  engagement: '7_cocurricular_engagement.csv',
+  feedback: '8_feedback_ratings.csv',
+};
+
 export default function IngestionPage() {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
@@ -201,7 +212,25 @@ export default function IngestionPage() {
     }
   };
 
-  const handleDownloadSample = (catKey, withErrors = false) => {
+  const handleDownloadSample = async (catKey, withErrors = false) => {
+    if (!withErrors && PILLAR_SAMPLE_FILES[catKey]) {
+      try {
+        const res = await fetch(`/sample_csvs/${PILLAR_SAMPLE_FILES[catKey]}`);
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.setAttribute('download', `${catKey}_30_students.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          return;
+        }
+      } catch {
+        // Fallback to in-memory generator
+      }
+    }
     const csvContent = generateSampleCsv(catKey, withErrors);
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -334,7 +363,7 @@ export default function IngestionPage() {
 
       {/* Header Banner */}
       <div>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '999px', backgroundColor: '#EBF3FE', color: '#1A73E8', fontSize: '0.76rem', fontWeight: 600, marginBottom: '8px' }}>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 12px', borderRadius: '6px', backgroundColor: '#EBF3FE', color: '#1A73E8', fontSize: '0.76rem', fontWeight: 600, marginBottom: '8px' }}>
           <UploadCloud size={14} />
           <span>Data Integration Studio · 8 Student Performance Pillars (KPMG Challenge 4)</span>
         </div>
@@ -344,7 +373,7 @@ export default function IngestionPage() {
               Batch Data Upload & Integration Studio
             </h1>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="responsive-toolbar-actions">
             <button
               onClick={handleClearDatabase}
               style={{
@@ -365,6 +394,28 @@ export default function IngestionPage() {
               <Trash2 size={14} color="#EF4444" />
               <span>Reset / Clear All Records</span>
             </button>
+            <a
+              href="/pratibha_30_students_all_8_pillars.zip"
+              download="pratibha_30_students_all_8_pillars.zip"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: '1px solid #93C5FD',
+                backgroundColor: '#EFF6FF',
+                color: '#1D4ED8',
+                fontSize: '0.82rem',
+                fontWeight: 600,
+                textDecoration: 'none',
+                cursor: 'pointer',
+              }}
+              title="Download all 8 KPMG pillar CSV files for 30 students in a single ZIP bundle"
+            >
+              <Download size={14} color="#1D4ED8" />
+              <span>Download 30-Student ZIP (All 8 Pillars)</span>
+            </a>
             <button
               onClick={() => handleDownloadSample(selectedCategory, false)}
               style={{
@@ -389,8 +440,8 @@ export default function IngestionPage() {
         </div>
       </div>
 
-      {/* Main 2-Column Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: '340px 1fr', gap: '24px', alignItems: 'start' }}>
+      {/* Main 2-Column Responsive Grid */}
+      <div className="responsive-split-grid">
         {/* Left Column: 8 Pillar Categories */}
         <div style={{ backgroundColor: '#FFFFFF', padding: '16px', borderRadius: '12px', border: '1px solid #E2E8F0', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
           <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '12px', padding: '0 4px' }}>
@@ -466,7 +517,7 @@ export default function IngestionPage() {
                 <Sliders size={16} color="#1A73E8" />
                 <span>Schema Specification: {activeCategoryMeta.name}</span>
               </div>
-              <span style={{ fontSize: '0.72rem', backgroundColor: '#E2E8F0', color: '#334155', padding: '2px 8px', borderRadius: '999px', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.72rem', backgroundColor: '#E2E8F0', color: '#334155', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
                 Target: {activeCategoryMeta.source}
               </span>
             </div>
@@ -690,7 +741,7 @@ export default function IngestionPage() {
                     fontWeight: 600,
                     backgroundColor: importReport.rejectedCount === 0 ? '#DCFCE7' : '#FEF3C7',
                     padding: '4px 10px',
-                    borderRadius: '999px',
+                    borderRadius: '6px',
                     display: 'flex',
                     alignItems: 'center',
                     gap: '5px',
@@ -702,7 +753,7 @@ export default function IngestionPage() {
               </div>
 
               {/* 3 Metric Summary Boxes */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '18px' }}>
+              <div className="metric-summary-grid-3">
                 <div style={{ backgroundColor: '#F0FDF4', padding: '14px', borderRadius: '8px', border: '1px solid #BBF7D0' }}>
                   <div style={{ fontSize: '0.7rem', color: '#166534', fontWeight: 600, textTransform: 'uppercase' }}>Accepted Rows</div>
                   <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#15803D' }}>{importReport.acceptedCount}</div>

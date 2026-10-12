@@ -1,0 +1,31 @@
+studentId,skillCategory,skillName,score,maxScore
+STU_0121,technical,DSA & Problem Solving,87,100
+STU_0122,technical,Full-Stack Web Dev,66,100
+STU_0123,technical,Cloud & DevOps,96,100
+STU_0124,soft_skill,Executive Presentation,74,100
+STU_0125,technical,DSA & Problem Solving,96,100
+STU_0126,technical,Full-Stack Web Dev,74,100
+STU_0127,technical,Cloud & DevOps,62,100
+STU_0128,soft_skill,Executive Presentation,85,100
+STU_0129,technical,DSA & Problem Solving,79,100
+STU_0130,technical,Full-Stack Web Dev,78,100
+STU_0131,technical,Cloud & DevOps,68,100
+STU_0132,soft_skill,Executive Presentation,68,100
+STU_0133,technical,DSA & Problem Solving,80,100
+STU_0134,technical,Full-Stack Web Dev,64,100
+STU_0135,technical,Cloud & DevOps,95,100
+STU_0136,soft_skill,Executive Presentation,87,100
+STU_0137,technical,DSA & Problem Solving,82,100
+STU_0138,technical,Full-Stack Web Dev,88,100
+STU_0139,technical,Cloud & DevOps,77,100
+STU_0140,soft_skill,Executive Presentation,83,100
+STU_0141,technical,DSA & Problem Solving,89,100
+STU_0142,technical,Full-Stack Web Dev,93,100
+STU_0143,technical,Cloud & DevOps,83,100
+STU_0144,soft_skill,Executive Presentation,93,100
+STU_0145,technical,DSA & Problem Solving,93,100
+STU_0146,technical,Full-Stack Web Dev,78,100
+STU_0147,technical,Cloud & DevOps,71,100
+STU_0148,soft_skill,Executive Presentation,81,100
+STU_0149,technical,DSA & Problem Solving,90,100
+STU_0150,technical,Full-Stack Web Dev,89,100

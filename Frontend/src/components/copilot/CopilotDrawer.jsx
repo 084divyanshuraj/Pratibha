@@ -372,6 +372,17 @@ export default function CopilotDrawer({ isOpen, onClose }) {
     ]);
   };
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
@@ -438,7 +449,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
                     backgroundColor: 'rgba(56, 189, 248, 0.16)',
                     color: '#38BDF8',
                     padding: '1px 6px',
-                    borderRadius: '999px',
+                    borderRadius: '4px',
                     fontSize: '0.66rem',
                     fontWeight: 700,
                   }}
@@ -469,7 +480,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
               }}
             >
               <Volume2 size={12} />
-              <span>Voice On Demand</span>
+              <span className="hide-on-mobile">Voice On Demand</span>
             </span>
 
             {/* Reset Chat */}
@@ -481,10 +492,11 @@ export default function CopilotDrawer({ isOpen, onClose }) {
                 border: 'none',
                 color: '#94A3B8',
                 cursor: 'pointer',
-                padding: '5px',
+                padding: '6px',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <RotateCcw size={16} />
@@ -494,18 +506,23 @@ export default function CopilotDrawer({ isOpen, onClose }) {
             <button
               onClick={onClose}
               title="Close Copilot"
+              aria-label="Close Copilot"
+              id="close-copilot-btn"
               style={{
-                background: 'none',
+                background: 'rgba(255, 255, 255, 0.12)',
                 border: 'none',
-                color: '#94A3B8',
+                color: '#FFFFFF',
                 cursor: 'pointer',
-                padding: '5px',
+                padding: '6px',
                 borderRadius: '6px',
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'center',
+                minWidth: '32px',
+                minHeight: '32px',
               }}
             >
-              <X size={20} />
+              <X size={18} />
             </button>
           </div>
         </div>
@@ -526,8 +543,8 @@ export default function CopilotDrawer({ isOpen, onClose }) {
                   style={{
                     backgroundColor: '#F8FAFC',
                     border: '1px solid #E2E8F0',
-                    borderRadius: '999px',
-                    padding: '5px 11px',
+                    borderRadius: '6px',
+                    padding: '6px 12px',
                     fontSize: '0.74rem',
                     color: '#334155',
                     cursor: 'pointer',

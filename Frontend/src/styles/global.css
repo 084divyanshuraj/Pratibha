@@ -413,7 +413,7 @@ a:hover {
   align-items: center;
   gap: var(--space-1);
   padding: 0.2rem 0.55rem;
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-xs);
   font-size: var(--text-caption);
   font-weight: var(--weight-semibold);
   line-height: 1;
@@ -905,4 +905,371 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   transition: background-color 5000000s ease-in-out 0s !important;
 }
+
+/* ==========================================================================
+   MASTER ALL-DEVICE RESPONSIVE SYSTEM (Mobile <640px, Tablet 640-1023px, Desktop >=1024px)
+   ========================================================================== */
+
+/* 1. Touch-friendly scrolling & responsive table wrappers */
+.responsive-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar-track {
+  background: #F1F5F9;
+  border-radius: 999px;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 999px;
+}
+
+.responsive-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+/* 2. Workspace Main Canvas Responsive Padding */
+.main-workspace-canvas {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  color: #0F172A;
+  padding: 1.75rem 2rem 5.5rem;
+  box-sizing: border-box;
+  transition: padding 0.2s ease;
+}
+
+/* 3. Symmetrical Responsive Grid Helpers */
+.responsive-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.responsive-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.responsive-quadrant-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.responsive-pillar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 12px;
+  width: 100%;
+}
+
+.responsive-split-grid {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+}
+
+.responsive-sticky-sidebar {
+  position: sticky;
+  top: 1.25rem;
+}
+
+/* Responsive Symmetrical Action Toolbars */
+.responsive-toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.directory-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.directory-counter-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.80rem;
+  color: #64748B;
+  background-color: #FFFFFF;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+  font-weight: 600;
+  box-sizing: border-box;
+}
+
+.directory-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  box-sizing: border-box;
+  height: 38px;
+}
+
+.directory-action-btn.primary {
+  background-color: #1677D2;
+  color: #FFFFFF;
+  border: none;
+  box-shadow: 0 2px 4px rgba(22, 119, 210, 0.25);
+}
+
+.directory-action-btn.primary:hover {
+  background-color: #1262AF;
+}
+
+.directory-action-btn.secondary {
+  background-color: #FFFFFF;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.directory-action-btn.secondary:hover {
+  background-color: #F8FAFC;
+}
+
+.directory-filter-bar {
+  background-color: #FFFFFF;
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 12px;
+  align-items: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.metric-summary-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+  width: 100%;
+}
+
+.student-header-metrics {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  text-align: right;
+}
+
+/* 4. Visibility Utility Classes */
+.hide-on-mobile {
+  display: block;
+}
+
+.show-on-mobile {
+  display: none;
+}
+
+.hide-on-tablet {
+  display: block;
+}
+
+/* ==========================================================================
+   LAPTOP BREAKPOINT (max-width: 1280px)
+   ========================================================================== */
+@media (max-width: 1280px) {
+  .responsive-pillar-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+}
+
+@media (max-width: 1180px) {
+  .responsive-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+/* ==========================================================================
+   TABLET BREAKPOINT (max-width: 1023px)
+   ========================================================================== */
+@media (max-width: 1023px) {
+  .main-workspace-canvas {
+    padding: 1.25rem 1.25rem 5rem;
+  }
+
+  .responsive-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .responsive-split-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .responsive-sticky-sidebar {
+    position: static !important;
+  }
+
+  .hide-on-tablet {
+    display: none !important;
+  }
+
+  .directory-filter-bar {
+    grid-template-columns: 1fr 1fr;
+    padding: 12px 14px;
+  }
+
+  .directory-search-input-wrap {
+    grid-column: 1 / -1;
+  }
+
+  .directory-header-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .directory-counter-card {
+    grid-column: 1 / -1;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .directory-action-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .student-header-metrics {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    text-align: center;
+    border-top: 1px solid #E2E8F0;
+    padding-top: 12px;
+  }
+
+  .student-header-metrics .print-btn-col {
+    grid-column: 1 / -1;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 860px) {
+  .responsive-pillar-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+}
+
+/* ==========================================================================
+   MOBILE BREAKPOINT (max-width: 640px)
+   ========================================================================== */
+@media (max-width: 640px) {
+  .main-workspace-canvas {
+    padding: 1rem 1rem 5rem;
+  }
+
+  .hide-on-mobile {
+    display: none !important;
+  }
+
+  .show-on-mobile {
+    display: flex !important;
+  }
+
+  .responsive-stat-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .responsive-quadrant-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .responsive-charts-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .responsive-pillar-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .responsive-pillar-grid > *:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+
+  .responsive-toolbar-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .responsive-toolbar-actions > * {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+
+  .directory-filter-bar {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .directory-search-input-wrap {
+    grid-column: auto;
+  }
+
+  .metric-summary-grid-3 {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* Increase touch target sizes for mobile */
+  button, select, input[type="text"], input[type="search"], input[type="email"] {
+    min-height: 38px;
+  }
+
+  /* Prevent card content blowout */
+  .card, [class*="card"] {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+}
+
 

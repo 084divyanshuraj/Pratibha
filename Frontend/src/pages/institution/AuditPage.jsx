@@ -242,7 +242,7 @@ export default function AuditPage() {
               padding: '4px 10px',
               backgroundColor: '#ECFDF5',
               color: '#059669',
-              borderRadius: '999px',
+              borderRadius: '6px',
               border: '1px solid #A7F3D0',
             }}
           >
@@ -330,7 +330,8 @@ export default function AuditPage() {
           boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
         }}
       >
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
+        <div className="responsive-table-wrapper">
+          <table style={{ width: '100%', minWidth: '780px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.85rem' }}>
           <thead>
             <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
               <th style={{ padding: '12px 16px', fontWeight: 600, color: '#475569' }}>Timestamp (UTC)</th>
@@ -419,6 +420,7 @@ export default function AuditPage() {
             })}
           </tbody>
         </table>
+        </div>
 
         {filteredEvents.length === 0 && (
           <div style={{ padding: '3rem', textAlign: 'center', color: '#64748B' }}>

@@ -1,5 +1,13 @@
+import dns from 'dns';
 import mongoose from 'mongoose';
 import { registerDependencyProbe } from '../health/health.service.js';
+
+// Ensure SRV lookups work reliably on Windows/local environments
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch {
+  // Ignore if restricted
+}
 
 /**
  * Maps Mongoose readyState numbers to human-readable safe strings.
