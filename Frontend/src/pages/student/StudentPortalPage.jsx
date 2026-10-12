@@ -68,9 +68,19 @@ export default function StudentPortalPage() {
 
   // College Ingestion Status (true = records found in DB or demo, false = awaiting admin CSV upload)
   const [hasCollegeRecords, setHasCollegeRecords] = useState(isDemoStudent);
+  const [previewBenchmark, setPreviewBenchmark] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
   const [recheckLoading, setRecheckLoading] = useState(false);
   const [recheckFeedback, setRecheckFeedback] = useState('');
   const [recheckCounter, setRecheckCounter] = useState(0);
+
+  // Helper function to extract elegant initials for avatar fallback
+  const getInitials = (name) => {
+    if (!name) return 'RS';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    return name.slice(0, 2).toUpperCase();
+  };
 
   // Self-Declared Student Goals (Accessible anytime, even when awaiting college records)
   const [targetCgpa, setTargetCgpa] = useState(() => localStorage.getItem('pratibha_target_cgpa') || '8.5');
@@ -269,6 +279,22 @@ export default function StudentPortalPage() {
       .finally(() => setLoadingLive(false));
   }, [currentUser, recheckCounter]);
 
+  // Lazy-load sample benchmark analytics when preview mode is toggled
+  useEffect(() => {
+    if (previewBenchmark && !scoreData) {
+      setLoadingLive(true);
+      Promise.all([
+        api.getStudentSuccessScore('STU_0001').catch(() => null),
+        api.getStudentPredictions('STU_0001').catch(() => null),
+      ])
+        .then(([scoreRes, predRes]) => {
+          setScoreData(scoreRes);
+          setPredictionsData(predRes);
+        })
+        .finally(() => setLoadingLive(false));
+    }
+  }, [previewBenchmark, scoreData]);
+
   // Score Drivers (Explainable PRD compliance)
   const scoreDrivers = useMemo(() => {
     if (scoreData?.drivers && scoreData.drivers.length > 0) {
@@ -280,9 +306,11 @@ export default function StudentPortalPage() {
         detail: `Deterministic attribution from sss-v1 normalized domain feature weights`,
       }));
     }
+    const safeCgpa = student.cgpa ?? 8.42;
+    const safeAttendance = student.attendanceRate ?? 88.5;
     return [
-      { title: 'Academic Performance', score: Math.round(student.cgpa * 10), weight: '35%', contribution: '+29.4', detail: 'Consistent SGPA progression across core semester courses' },
-      { title: 'Classroom Attendance', score: Math.round(student.attendanceRate), weight: '20%', contribution: '+17.7', detail: `${student.attendanceRate}% aggregate attendance, compared with 75% limit` },
+      { title: 'Academic Performance', score: Math.round(safeCgpa * 10), weight: '35%', contribution: '+29.4', detail: 'Consistent SGPA progression across core semester courses' },
+      { title: 'Classroom Attendance', score: Math.round(safeAttendance), weight: '20%', contribution: '+17.7', detail: `${safeAttendance}% aggregate attendance, compared with 75% limit` },
       { title: 'Placement Readiness & Tests', score: 76.0, weight: '20%', contribution: '+15.2', detail: 'Aptitude percentile and mock technical coding assessments' },
       { title: 'Digital LMS Activity', score: 82.0, weight: '15%', contribution: '+12.3', detail: 'Regular assignment submissions and digital portal engagements' },
       { title: 'Clubs & Extra-Curriculars', score: 72.0, weight: '10%', contribution: '+3.8', detail: 'Student chapter participation and hackathon entries' },
@@ -429,13 +457,14 @@ export default function StudentPortalPage() {
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* 1. STUDENT PROFILE HEADER CARD */}
+      {/* 1. STUDENT PROFILE HEADER CARD */}
       <div
         style={{
           backgroundColor: '#FFFFFF',
           border: '1px solid #E2E8F0',
           borderRadius: '12px',
           padding: '1.5rem',
-          boxShadow: '0 2px 6px rgba(0, 0, 0, 0.03)',
+          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.03)',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -444,21 +473,47 @@ export default function StudentPortalPage() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-          <img
-            src={student.avatar}
-            alt={student.fullName}
-            style={{
-              width: '80px',
-              height: '80px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              border: '3px solid #0284C7',
-              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.2)',
-            }}
-          />
+          {student.avatar && !avatarError ? (
+            <img
+              src={student.avatar}
+              alt=""
+              referrerPolicy="no-referrer"
+              onError={() => setAvatarError(true)}
+              style={{
+                width: '68px',
+                height: '68px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                border: '2.5px solid #1677D2',
+                boxShadow: '0 4px 12px rgba(22, 119, 210, 0.18)',
+                flexShrink: 0,
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: '68px',
+                height: '68px',
+                borderRadius: '50%',
+                background: 'linear-gradient(135deg, #1677D2 0%, #082B56 100%)',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1.4rem',
+                fontWeight: 700,
+                letterSpacing: '0.5px',
+                boxShadow: '0 4px 12px rgba(8, 43, 86, 0.2)',
+                border: '2.5px solid #FFFFFF',
+                flexShrink: 0,
+              }}
+            >
+              {getInitials(student.fullName)}
+            </div>
+          )}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+              <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
                 {student.fullName}
               </h1>
               {hasCollegeRecords ? (
@@ -473,7 +528,7 @@ export default function StudentPortalPage() {
                     border: '1px solid #A7F3D0',
                   }}
                 >
-                  ✓ Active Ingested Cohort
+                  ✓ Active Cohort
                 </span>
               ) : (
                 <span
@@ -487,7 +542,7 @@ export default function StudentPortalPage() {
                     border: '1px solid #FDE68A',
                   }}
                 >
-                  ⏳ College Records Pending Ingestion
+                  Records Syncing
                 </span>
               )}
               {currentUser?.authProvider === 'firebase_google' && (
@@ -502,17 +557,17 @@ export default function StudentPortalPage() {
                     border: '1px solid #BFDBFE',
                   }}
                 >
-                  Google SSO Active
+                  Google SSO
                 </span>
               )}
             </div>
 
-            <div style={{ fontSize: '0.86rem', color: '#475569', marginTop: '5px' }}>
+            <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '4px' }}>
               ID: <strong style={{ color: '#0F172A' }}>{student.studentId}</strong> · {student.program} · {student.semester}
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '3px', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <Mail size={13} />
-              <span>Campus Email: {student.email}</span>
+              <span>{student.email}</span>
             </div>
           </div>
         </div>
@@ -523,13 +578,13 @@ export default function StudentPortalPage() {
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Cumulative CGPA
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: hasCollegeRecords ? '#082B56' : '#94A3B8' }}>
-              {hasCollegeRecords && student.cgpa != null ? (
+            <div style={{ fontSize: '1.45rem', fontWeight: 700, color: (hasCollegeRecords || previewBenchmark) ? '#082B56' : '#94A3B8' }}>
+              {(hasCollegeRecords || previewBenchmark) && (student.cgpa != null || previewBenchmark) ? (
                 <>
-                  {student.cgpa} <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>/ 10.0</span>
+                  {student.cgpa ?? 8.42} <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>/ 10.0</span>
                 </>
               ) : (
-                <span style={{ fontSize: '0.88rem', color: '#94A3B8', fontWeight: 600 }}>Awaiting CoE</span>
+                <span style={{ fontSize: '0.86rem', color: '#94A3B8', fontWeight: 600 }}>Pending Sync</span>
               )}
             </div>
           </div>
@@ -538,11 +593,11 @@ export default function StudentPortalPage() {
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Aggregate Attendance
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: hasCollegeRecords ? '#059669' : '#94A3B8' }}>
-              {hasCollegeRecords && student.attendanceRate != null ? (
-                `${student.attendanceRate}%`
+            <div style={{ fontSize: '1.45rem', fontWeight: 700, color: (hasCollegeRecords || previewBenchmark) ? '#059669' : '#94A3B8' }}>
+              {(hasCollegeRecords || previewBenchmark) && (student.attendanceRate != null || previewBenchmark) ? (
+                `${student.attendanceRate ?? 88.5}%`
               ) : (
-                <span style={{ fontSize: '0.88rem', color: '#94A3B8', fontWeight: 600 }}>Awaiting Biometrics</span>
+                <span style={{ fontSize: '0.86rem', color: '#94A3B8', fontWeight: 600 }}>Pending Sync</span>
               )}
             </div>
           </div>
@@ -551,8 +606,8 @@ export default function StudentPortalPage() {
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Data Completeness
             </div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 700, color: hasCollegeRecords ? '#1677D2' : '#D97706' }}>
-              {hasCollegeRecords ? `${student.dataCompleteness}%` : '0% (Pending)'}
+            <div style={{ fontSize: '1.45rem', fontWeight: 700, color: (hasCollegeRecords || previewBenchmark) ? '#1677D2' : '#D97706' }}>
+              {(hasCollegeRecords || previewBenchmark) ? `${student.dataCompleteness || 100}%` : '0%'}
             </div>
           </div>
 
@@ -573,6 +628,8 @@ export default function StudentPortalPage() {
               gap: '6px',
               boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
               transition: 'background-color 0.15s ease',
+              height: '38px',
+              boxSizing: 'border-box',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
@@ -648,88 +705,127 @@ export default function StudentPortalPage() {
       {/* =========================================================================
           TAB 1: SUCCESS COCKPIT & RISK RADAR (OVERVIEW)
           ========================================================================= */}
-      {activeTab === 'overview' && !hasCollegeRecords && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* 1. College Ingestion Notice Banner */}
+      {/* =========================================================================
+          TAB 1: SUCCESS COCKPIT & RISK RADAR (OVERVIEW) — AWAITING COLLEGE INGESTION
+          ========================================================================= */}
+      {activeTab === 'overview' && !hasCollegeRecords && !previewBenchmark && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          {/* 1. Sleek Sync Status Header Card */}
           <div
             style={{
-              backgroundColor: '#FFFBEB',
-              border: '1px solid #FCD34D',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid #E2E8F0',
               borderRadius: '12px',
-              padding: '1.5rem',
-              boxShadow: '0 2px 6px rgba(245, 158, 11, 0.08)',
+              padding: '1.25rem 1.5rem',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.04)',
               display: 'flex',
               flexDirection: 'column',
               gap: '1rem',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '1rem',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div
                   style={{
                     width: '44px',
                     height: '44px',
                     borderRadius: '10px',
-                    backgroundColor: '#FEF3C7',
+                    backgroundColor: '#EFF6FF',
+                    border: '1px solid #DBEAFE',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#D97706',
+                    color: '#1677D2',
                     flexShrink: 0,
                   }}
                 >
-                  <AlertCircle size={24} />
+                  <Clock size={22} />
                 </div>
                 <div>
-                  <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#92400E', margin: '0 0 4px 0' }}>
-                    College Academic & Attendance Records Pending Ingestion
+                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#082B56', margin: '0 0 2px 0' }}>
+                    Academic & Attendance Telemetry Syncing
                   </h3>
-                  <p style={{ fontSize: '0.86rem', color: '#B45309', margin: 0, lineHeight: 1.5 }}>
-                    Welcome <strong>{student.fullName}</strong>! Your student account is successfully registered and verified for <strong>{student.program}</strong> ({student.semester}) with Roll No: <strong>{student.studentId}</strong>.
+                  <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0 }}>
+                    Account registered for <strong>{student.program}</strong> ({student.semester}) · Roll No: <strong>{student.studentId}</strong>
                   </p>
                 </div>
               </div>
 
-              {/* Live Re-check Button */}
-              <button
-                type="button"
-                onClick={handleRecheckRecords}
-                disabled={recheckLoading}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 16px',
-                  borderRadius: '8px',
-                  border: '1px solid #D97706',
-                  backgroundColor: '#FFFFFF',
-                  color: '#B45309',
-                  fontWeight: 600,
-                  fontSize: '0.82rem',
-                  cursor: recheckLoading ? 'not-allowed' : 'pointer',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <RefreshCw size={15} className={recheckLoading ? 'spin' : ''} />
-                <span>{recheckLoading ? 'Querying Database...' : 'Check / Refresh College Records'}</span>
-              </button>
-            </div>
+              {/* Symmetrical Dual Actions */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={handleRecheckRecords}
+                  disabled={recheckLoading}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#334155',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    cursor: recheckLoading ? 'not-allowed' : 'pointer',
+                    height: '38px',
+                    boxSizing: 'border-box',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#F8FAFC')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FFFFFF')}
+                >
+                  <RefreshCw size={14} className={recheckLoading ? 'spin' : ''} />
+                  <span>{recheckLoading ? 'Checking...' : 'Check Sync Status'}</span>
+                </button>
 
-            <div style={{ fontSize: '0.84rem', color: '#78350F', lineHeight: 1.6, backgroundColor: '#FFFFFF', padding: '12px 16px', borderRadius: '8px', border: '1px solid #FDE68A' }}>
-              <strong>Why are my marks, attendance, and success score not visible yet?</strong><br />
-              In university enterprise governance, student intelligence is generated from verified records ingested by the <strong>Registrar, Controller of Examinations (CoE), Biometric Attendance Portal, and Training & Placement Cell</strong>. Your institution administrator uploads these records as structured CSV files via the <strong>Admin Ingestion Portal</strong>. As soon as your college uploads your department's CSV sheet, your explainable 360° Success Score, Survival Curve, and AI Risk Radar will automatically appear here.
+                <button
+                  type="button"
+                  onClick={() => setPreviewBenchmark(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #1677D2',
+                    backgroundColor: '#1677D2',
+                    color: '#FFFFFF',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    height: '38px',
+                    boxSizing: 'border-box',
+                    boxShadow: '0 1px 3px rgba(22, 119, 210, 0.25)',
+                    transition: 'background-color 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0D5CA8')}
+                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
+                >
+                  <Sparkles size={14} />
+                  <span>Preview Sample Analytics</span>
+                </button>
+              </div>
             </div>
 
             {recheckFeedback && (
               <div
                 style={{
-                  padding: '10px 14px',
+                  padding: '8px 14px',
                   borderRadius: '6px',
-                  backgroundColor: recheckFeedback.includes('Great news') ? '#ECFDF5' : '#EFF6FF',
-                  color: recheckFeedback.includes('Great news') ? '#065F46' : '#1E40AF',
-                  border: `1px solid ${recheckFeedback.includes('Great news') ? '#A7F3D0' : '#BFDBFE'}`,
-                  fontSize: '0.82rem',
+                  backgroundColor: recheckFeedback.includes('Great news') ? '#ECFDF5' : '#F8FAFC',
+                  color: recheckFeedback.includes('Great news') ? '#065F46' : '#475569',
+                  border: `1px solid ${recheckFeedback.includes('Great news') ? '#A7F3D0' : '#E2E8F0'}`,
+                  fontSize: '0.8rem',
                   fontWeight: 500,
                 }}
               >
@@ -738,121 +834,152 @@ export default function StudentPortalPage() {
             )}
           </div>
 
-          {/* 2. 8-Pillars Institutional Ingestion Readiness Checklist */}
+          {/* 2. Compact 8-Domain Telemetry Checklist (Symmetrical 4-Column Grid) */}
           <div
             style={{
               backgroundColor: '#FFFFFF',
               border: '1px solid #E2E8F0',
               borderRadius: '12px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              padding: '1.25rem 1.5rem',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '8px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '10px',
+                marginBottom: '1rem',
+              }}
+            >
               <div>
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', margin: '0 0 2px 0' }}>
-                  Institutional Telemetry Readiness Tracker (8 Pillars)
+                <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                  Domain Data Checklist (8 Pillars)
                 </h4>
-                <p style={{ fontSize: '0.8rem', color: '#64748B', margin: 0 }}>
-                  Live ingestion status across university administrative and academic domains for Roll No: <strong>{student.studentId}</strong>
+                <p style={{ fontSize: '0.78rem', color: '#64748B', margin: '2px 0 0 0' }}>
+                  Institutional telemetry readiness across academic and campus services
                 </p>
               </div>
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  fontWeight: 600,
-                  padding: '3px 9px',
-                  backgroundColor: '#FEF3C7',
-                  color: '#B45309',
-                  borderRadius: '4px',
-                }}
-              >
-                1 / 8 Verified (Account Onboarded)
-              </span>
+
+              {/* Progress Indicator */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span style={{ fontSize: '0.75rem', fontWeight: 600, color: '#059669' }}>
+                  1 of 8 Connected (12.5%)
+                </span>
+                <div
+                  style={{
+                    width: '100px',
+                    height: '6px',
+                    borderRadius: '3px',
+                    backgroundColor: '#E2E8F0',
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '12.5%',
+                      height: '100%',
+                      backgroundColor: '#059669',
+                      borderRadius: '3px',
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+                gap: '0.75rem',
+              }}
+            >
               {[
-                { title: 'Student Identity & Enrollment', source: 'Registrar ERP', status: 'VERIFIED', icon: CheckCircle2, color: '#059669', badgeBg: '#ECFDF5', badgeColor: '#065F46', detail: `Roll No ${student.studentId} matched to ${student.program}` },
-                { title: 'Academic Examinations (SGPA/CGPA)', source: 'Controller of Examinations', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting semester examination results CSV' },
-                { title: 'Biometric RFID Attendance', source: 'Campus Attendance Portal', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting classroom attendance sessions upload' },
-                { title: 'Digital LMS Platform Activity', source: 'Moodle / Canvas LMS', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting assignment submissions telemetry' },
-                { title: 'Placement Aptitude & Mock Rounds', source: 'Training & Placement Cell (TPO)', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting diagnostic mock tests CSV' },
-                { title: 'Computing Lab & Practical Skills', source: 'Department Computer Labs', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting programming lab performance' },
-                { title: 'Co-Curricular & Club Activities', source: 'Student Affairs Council', status: 'PENDING', icon: Clock, color: '#D97706', badgeBg: '#FEF3C7', badgeColor: '#92400E', detail: 'Awaiting hackathon and event records' },
-                { title: 'Confidential Student Feedback', source: 'Quality Assurance Cell', status: 'READY', icon: CheckCircle2, color: '#2563EB', badgeBg: '#EFF6FF', badgeColor: '#1E40AF', detail: 'Open for student submission in Feedback tab' },
-              ].map((p, idx) => {
-                const IconComp = p.icon;
+                { title: 'Student Identity', status: 'VERIFIED', color: '#059669', bg: '#ECFDF5', border: '#A7F3D0', icon: CheckCircle2 },
+                { title: 'Examination Results', status: 'PENDING', color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: Clock },
+                { title: 'Biometric Attendance', status: 'PENDING', color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: Clock },
+                { title: 'Digital LMS Activity', status: 'PENDING', color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: Clock },
+                { title: 'Placement Mock Tests', status: 'PENDING', color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: Clock },
+                { title: 'Computing Lab Skills', status: 'PENDING', color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: Clock },
+                { title: 'Co-Curricular Records', status: 'PENDING', color: '#B45309', bg: '#FEF3C7', border: '#FDE68A', icon: Clock },
+                { title: 'Student Feedback Cell', status: 'READY', color: '#1D4ED8', bg: '#EFF6FF', border: '#BFDBFE', icon: CheckCircle2 },
+              ].map((domain, idx) => {
+                const IconComp = domain.icon;
                 return (
                   <div
                     key={idx}
                     style={{
                       border: '1px solid #E2E8F0',
                       borderRadius: '8px',
-                      padding: '14px',
-                      backgroundColor: p.status === 'VERIFIED' ? '#F0FDF4' : '#F8FAFC',
+                      padding: '10px 12px',
+                      backgroundColor: '#F8FAFC',
                       display: 'flex',
-                      flexDirection: 'column',
+                      alignItems: 'center',
                       justifyContent: 'space-between',
                       gap: '8px',
                     }}
                   >
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                        <span style={{ fontSize: '0.72rem', color: '#64748B', fontWeight: 600 }}>{p.source}</span>
-                        <span
-                          style={{
-                            fontSize: '0.68rem',
-                            fontWeight: 700,
-                            padding: '2px 7px',
-                            borderRadius: '4px',
-                            backgroundColor: p.badgeBg,
-                            color: p.badgeColor,
-                          }}
-                        >
-                          {p.status}
-                        </span>
-                      </div>
-                      <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#0F172A', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <IconComp size={15} color={p.color} />
-                        <span>{p.title}</span>
-                      </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <IconComp size={15} color={domain.color} />
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600, color: '#1E293B' }}>
+                        {domain.title}
+                      </span>
                     </div>
-                    <div style={{ fontSize: '0.76rem', color: '#64748B', lineHeight: 1.4 }}>
-                      {p.detail}
-                    </div>
+                    <span
+                      style={{
+                        fontSize: '0.68rem',
+                        fontWeight: 700,
+                        padding: '2px 8px',
+                        borderRadius: '4px',
+                        backgroundColor: domain.bg,
+                        color: domain.color,
+                        border: `1px solid ${domain.border}`,
+                      }}
+                    >
+                      {domain.status}
+                    </span>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* 3. Self-Service Target Goals Form */}
+          {/* 3. Symmetrical Semester Targets & Goals Form */}
           <div
             style={{
               backgroundColor: '#FFFFFF',
               border: '1px solid #E2E8F0',
               borderRadius: '12px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              padding: '1.25rem 1.5rem',
+              boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
             }}
           >
             <div style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Target size={20} color="#2563EB" />
-                <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                  Personal Academic Targets & Career Goals (Self-Declared)
+                <Target size={18} color="#1677D2" />
+                <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                  Semester Targets & Career Direction
                 </h4>
               </div>
-              <p style={{ fontSize: '0.8rem', color: '#64748B', margin: '4px 0 0 0' }}>
-                You can define your personal aspirational milestones right now. These goals will be benchmarked against your actual semester telemetry once uploaded.
+              <p style={{ fontSize: '0.78rem', color: '#64748B', margin: '3px 0 0 0' }}>
+                Define personal milestones to benchmark against upcoming academic records.
               </p>
             </div>
 
-            <form onSubmit={handleSaveGoals} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem', alignItems: 'flex-end' }}>
+            <form
+              onSubmit={handleSaveGoals}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+                gap: '0.85rem',
+                alignItems: 'flex-end',
+              }}
+            >
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                  Target CGPA for this Semester
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Target Semester CGPA
                 </label>
                 <input
                   type="text"
@@ -861,19 +988,21 @@ export default function StudentPortalPage() {
                   placeholder="e.g. 8.5"
                   style={{
                     width: '100%',
+                    height: '38px',
                     padding: '8px 12px',
                     borderRadius: '6px',
                     border: '1px solid #CBD5E1',
                     fontSize: '0.84rem',
                     color: '#0F172A',
                     boxSizing: 'border-box',
+                    backgroundColor: '#FFFFFF',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                  Primary Career / Industry Aspiration
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Career & Industry Aspiration
                 </label>
                 <input
                   type="text"
@@ -882,19 +1011,21 @@ export default function StudentPortalPage() {
                   placeholder="e.g. Software Development Engineer"
                   style={{
                     width: '100%',
+                    height: '38px',
                     padding: '8px 12px',
                     borderRadius: '6px',
                     border: '1px solid #CBD5E1',
                     fontSize: '0.84rem',
                     color: '#0F172A',
                     boxSizing: 'border-box',
+                    backgroundColor: '#FFFFFF',
                   }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
-                  Core Focus Skills to Master
+                <label style={{ display: 'block', fontSize: '0.74rem', fontWeight: 600, color: '#475569', marginBottom: '4px' }}>
+                  Core Focus Skills
                 </label>
                 <input
                   type="text"
@@ -903,12 +1034,14 @@ export default function StudentPortalPage() {
                   placeholder="e.g. Data Structures, Cloud Computing"
                   style={{
                     width: '100%',
+                    height: '38px',
                     padding: '8px 12px',
                     borderRadius: '6px',
                     border: '1px solid #CBD5E1',
                     fontSize: '0.84rem',
                     color: '#0F172A',
                     boxSizing: 'border-box',
+                    backgroundColor: '#FFFFFF',
                   }}
                 />
               </div>
@@ -917,21 +1050,25 @@ export default function StudentPortalPage() {
                 <button
                   type="submit"
                   style={{
-                    padding: '9px 18px',
+                    width: '100%',
+                    height: '38px',
+                    padding: '0 16px',
                     borderRadius: '6px',
                     border: 'none',
-                    backgroundColor: '#2563EB',
+                    backgroundColor: goalsSaved ? '#059669' : '#1677D2',
                     color: '#FFFFFF',
                     fontSize: '0.82rem',
                     fontWeight: 600,
                     cursor: 'pointer',
                     display: 'inline-flex',
                     alignItems: 'center',
+                    justifyContent: 'center',
                     gap: '6px',
+                    transition: 'background-color 0.15s ease',
                   }}
                 >
                   <Check size={14} />
-                  <span>{goalsSaved ? 'Goals Saved ✓' : 'Save Aspirational Goals'}</span>
+                  <span>{goalsSaved ? 'Saved ✓' : 'Save Milestones'}</span>
                 </button>
               </div>
             </form>
@@ -940,10 +1077,50 @@ export default function StudentPortalPage() {
       )}
 
       {/* =========================================================================
-          TAB 1: SUCCESS COCKPIT & RISK RADAR (OVERVIEW) — REAL INGESTED COHORT
+          TAB 1: SUCCESS COCKPIT & RISK RADAR (OVERVIEW) — REAL OR BENCHMARK PREVIEW
           ========================================================================= */}
-      {activeTab === 'overview' && hasCollegeRecords && (
+      {activeTab === 'overview' && (hasCollegeRecords || previewBenchmark) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Sample Benchmark Preview Banner */}
+          {previewBenchmark && !hasCollegeRecords && (
+            <div
+              style={{
+                backgroundColor: '#EFF6FF',
+                border: '1px solid #BFDBFE',
+                borderRadius: '8px',
+                padding: '9px 14px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '8px',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.82rem', color: '#1E40AF' }}>
+                <Sparkles size={16} color="#2563EB" />
+                <span>
+                  <strong>Sample Benchmark Preview Active</strong> — Demonstrating explainable analytics (Roll No: STU_0001 benchmark profile).
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPreviewBenchmark(false)}
+                style={{
+                  padding: '4px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #93C5FD',
+                  backgroundColor: '#FFFFFF',
+                  color: '#1D4ED8',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Exit Preview
+              </button>
+            </div>
+          )}
+
           <div
             style={{
               display: 'grid',
@@ -1000,7 +1177,7 @@ export default function StudentPortalPage() {
                       flexShrink: 0,
                     }}
                   >
-                    {student.successScore}
+                    {student.successScore ?? scoreData?.score ?? 78.4}
                   </div>
                   <div>
                     <div style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A' }}>
@@ -1030,8 +1207,8 @@ export default function StudentPortalPage() {
                   <strong>Independent Decoupled Risk Assessment:</strong>
                 </div>
                 <div>
-                  • <strong>Academic Risk: {student.academicRisk}</strong> (Zero backlogs, 8.42 CGPA, reliable submissions).<br />
-                  • <strong>Placement Risk: {student.placementRisk}</strong> (Cognitive aptitude is solid; live coding and system design mock rounds will boost placement conversion).
+                  • <strong>Academic Risk: {student.academicRisk === 'Pending Data' ? (scoreData?.academicRisk ?? 'Low') : student.academicRisk}</strong> (Zero backlogs, 8.42 CGPA, reliable submissions).<br />
+                  • <strong>Placement Risk: {student.placementRisk === 'Pending Data' ? (scoreData?.placementRisk ?? 'Low to Moderate') : student.placementRisk}</strong> (Cognitive aptitude is solid; live coding and system design mock rounds will boost placement conversion).
                 </div>
               </div>
             </div>
@@ -1283,63 +1460,89 @@ export default function StudentPortalPage() {
           ========================================================================= */}
       {activeTab === 'academic' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {!hasCollegeRecords && (
+          {!hasCollegeRecords && !previewBenchmark && (
             <div
               style={{
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #E2E8F0',
                 borderRadius: '12px',
-                padding: '2.5rem 1.5rem',
+                padding: '2rem 1.5rem',
                 textAlign: 'center',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
               }}
             >
               <div
                 style={{
-                  width: '56px',
-                  height: '56px',
+                  width: '46px',
+                  height: '46px',
                   borderRadius: '50%',
                   backgroundColor: '#EFF6FF',
-                  color: '#2563EB',
+                  color: '#1677D2',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 1rem auto',
+                  margin: '0 auto 0.75rem auto',
                 }}
               >
-                <BookOpen size={28} />
+                <BookOpen size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0' }}>
-                Course & Attendance Telemetry Pending Ingestion
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#082B56', margin: '0 0 4px 0' }}>
+                Course & Attendance Telemetry Syncing
               </h3>
-              <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '600px', margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
-                Your department has not yet uploaded the semester course roster or biometric attendance logs for Roll No <strong>{student.studentId}</strong>. Once your college administrator uploads the attendance CSV via the Admin Ingestion Portal, your subject-wise attendance percentages, classes held vs attended, and 75% AICTE safety margins will be automatically populated here.
+              <p style={{ fontSize: '0.84rem', color: '#64748B', maxWidth: '520px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
+                Rosters and biometric attendance logs for Roll No <strong>{student.studentId}</strong> will activate once department records are uploaded.
               </p>
-              <button
-                type="button"
-                onClick={handleRecheckRecords}
-                disabled={recheckLoading}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 18px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: '#2563EB',
-                  color: '#FFFFFF',
-                  fontWeight: 600,
-                  fontSize: '0.84rem',
-                  cursor: recheckLoading ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <RefreshCw size={15} className={recheckLoading ? 'spin' : ''} />
-                <span>{recheckLoading ? 'Querying Database...' : 'Re-Check Course Telemetry'}</span>
-              </button>
+              <div style={{ display: 'inline-flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  onClick={handleRecheckRecords}
+                  disabled={recheckLoading}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#334155',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    cursor: recheckLoading ? 'not-allowed' : 'pointer',
+                    height: '38px',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <RefreshCw size={14} className={recheckLoading ? 'spin' : ''} />
+                  <span>{recheckLoading ? 'Checking...' : 'Check Status'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewBenchmark(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #1677D2',
+                    backgroundColor: '#1677D2',
+                    color: '#FFFFFF',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    height: '38px',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <Sparkles size={14} />
+                  <span>Preview Sample Courses</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {hasCollegeRecords && (
+          {(hasCollegeRecords || previewBenchmark) && (
             <>
               {/* Course Attendance Telemetry */}
               <div
@@ -1528,63 +1731,89 @@ export default function StudentPortalPage() {
           ========================================================================= */}
       {activeTab === 'placement' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {!hasCollegeRecords && (
+          {!hasCollegeRecords && !previewBenchmark && (
             <div
               style={{
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #E2E8F0',
                 borderRadius: '12px',
-                padding: '2.5rem 1.5rem',
+                padding: '2rem 1.5rem',
                 textAlign: 'center',
                 boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
               }}
             >
               <div
                 style={{
-                  width: '56px',
-                  height: '56px',
+                  width: '46px',
+                  height: '46px',
                   borderRadius: '50%',
                   backgroundColor: '#EFF6FF',
-                  color: '#2563EB',
+                  color: '#1677D2',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  margin: '0 auto 1rem auto',
+                  margin: '0 auto 0.75rem auto',
                 }}
               >
-                <Award size={28} />
+                <Award size={22} />
               </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: '#0F172A', margin: '0 0 8px 0' }}>
-                Placement Readiness Assessment Pending Ingestion
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#082B56', margin: '0 0 4px 0' }}>
+                Placement Readiness Assessment Syncing
               </h3>
-              <p style={{ fontSize: '0.88rem', color: '#64748B', maxWidth: '600px', margin: '0 auto 1.5rem auto', lineHeight: 1.6 }}>
-                Your Training & Placement Cell (TPO) has not yet uploaded diagnostic mock interviews, aptitude percentiles, or coding test assessments for Roll No <strong>{student.studentId}</strong>. Once uploaded via the Admin Ingestion Portal, your 2×2 Placement Readiness Matrix and Model 2 (Causal Forest) uplift pathways will be computed.
+              <p style={{ fontSize: '0.84rem', color: '#64748B', maxWidth: '520px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
+                Aptitude and coding diagnostic assessments for Roll No <strong>{student.studentId}</strong> will populate once released by the Training & Placement Cell.
               </p>
-              <button
-                type="button"
-                onClick={handleRecheckRecords}
-                disabled={recheckLoading}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '9px 18px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: '#2563EB',
-                  color: '#FFFFFF',
-                  fontWeight: 600,
-                  fontSize: '0.84rem',
-                  cursor: recheckLoading ? 'not-allowed' : 'pointer',
-                }}
-              >
-                <RefreshCw size={15} className={recheckLoading ? 'spin' : ''} />
-                <span>{recheckLoading ? 'Querying Database...' : 'Re-Check Placement Data'}</span>
-              </button>
+              <div style={{ display: 'inline-flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                <button
+                  type="button"
+                  onClick={handleRecheckRecords}
+                  disabled={recheckLoading}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #CBD5E1',
+                    backgroundColor: '#FFFFFF',
+                    color: '#334155',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    cursor: recheckLoading ? 'not-allowed' : 'pointer',
+                    height: '38px',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <RefreshCw size={14} className={recheckLoading ? 'spin' : ''} />
+                  <span>{recheckLoading ? 'Checking...' : 'Check Status'}</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewBenchmark(true)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1px solid #1677D2',
+                    backgroundColor: '#1677D2',
+                    color: '#FFFFFF',
+                    fontWeight: 600,
+                    fontSize: '0.82rem',
+                    cursor: 'pointer',
+                    height: '38px',
+                    boxSizing: 'border-box',
+                  }}
+                >
+                  <Sparkles size={14} />
+                  <span>Preview Sample Placement Data</span>
+                </button>
+              </div>
             </div>
           )}
 
-          {hasCollegeRecords && (
+          {(hasCollegeRecords || previewBenchmark) && (
             <>
               {/* Assessment Metrics Row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
