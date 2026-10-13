@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   AlertCircle,
   ShieldCheck,
+  Sparkles,
 } from 'lucide-react';
 import BrandLogo from '../../components/common/BrandLogo';
 import { useAuth } from '../../context/AuthContext';
@@ -46,9 +47,67 @@ const INSTITUTION_ROLES = [
   },
 ];
 
+const DEMO_PERSONAS = [
+  {
+    key: 'admin',
+    role: 'institution_admin',
+    portal: 'institution',
+    label: 'Admin (Provost)',
+    name: 'Dr. Sunita Rao',
+    icon: '🏛️',
+    email: 'admin@example.edu',
+    password: 'DemoUser123!',
+    tag: 'Dean & Provost Office',
+    desc: 'Campus-wide intelligence, simulations, and 30 student cohort analytics.',
+    badge: '30 Students Loaded',
+  },
+  {
+    key: 'faculty',
+    role: 'faculty_mentor',
+    portal: 'institution',
+    label: 'Faculty Mentor',
+    name: 'Prof. Rajesh Kumar',
+    icon: '👨‍🏫',
+    email: 'faculty@example.edu',
+    password: 'DemoUser123!',
+    tag: 'CSE Department',
+    desc: 'Assigned mentoring, attendance alerts (<75%), and intervention tasks.',
+    badge: 'Cohort Mentoring',
+  },
+  {
+    key: 'placement',
+    role: 'placement_officer',
+    portal: 'institution',
+    label: 'Placement Officer',
+    name: 'Vikram Malhotra',
+    icon: '💼',
+    email: 'placement@example.edu',
+    password: 'DemoUser123!',
+    tag: 'Corporate & Career Cell',
+    desc: '2x2 placement readiness matrix, corporate drives, and mock bootcamp.',
+    badge: 'Placement Radar',
+  },
+  {
+    key: 'student',
+    role: 'student',
+    portal: 'student',
+    label: 'Student Candidate',
+    name: 'Aarav Sharma (STU_0001)',
+    icon: '🎓',
+    email: 'student@example.edu',
+    password: 'DemoUser123!',
+    tag: 'Enrolled B.Tech CSE',
+    desc: 'Personalized 360° portal with tamper-proof official academic telemetry.',
+    badge: 'Read-Only Telemetry',
+  },
+];
+
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { loginWithCredentials, registerWithCredentials, loginWithGoogle } = useAuth();
+  const { loginWithCredentials, registerWithCredentials, loginWithGoogle, loginWithDemo } = useAuth();
+
+  // Authentication Category: 'demo' (30 Preloaded Students / Instant Launch) vs 'real' (Real Campus Account)
+  const [authCategory, setAuthCategory] = useState('demo');
 
   // Mode: active = register mode, inactive = login mode
   const [isRegisterActive, setIsRegisterActive] = useState(false);
@@ -104,6 +163,25 @@ export default function LoginPage() {
   const [fbAppId, setFbAppId] = useState('');
 
   const containerRef = useRef(null);
+
+  // Switch between Evaluation / Demo Mode and Real Institutional Account
+  const handleCategorySwitch = (cat) => {
+    setAuthCategory(cat);
+    setError('');
+    setSuccessMsg('');
+    if (cat === 'demo') {
+      setIsRegisterActive(false);
+      setAnimClass('');
+      setPortal('institution');
+      setInstitutionRole('institution_admin');
+      setLoginIdentifier('admin@example.edu');
+      setLoginPassword('DemoUser123!');
+    } else {
+      setPortal('institution');
+      setLoginIdentifier('');
+      setLoginPassword('');
+    }
+  };
 
   // Switch to Register with exact diagonal sweep animation
   const handleGoToRegister = (e) => {
@@ -377,6 +455,43 @@ export default function LoginPage() {
       </header>
 
       {/* =========================================================================
+          AUTHENTICATION CATEGORY SWITCHER (EVALUATION / DEMO vs REAL CAMPUS ACCOUNT)
+          ========================================================================= */}
+      <div className="cyber-auth-category-wrapper">
+        <div className="cyber-auth-category-bar" role="tablist" aria-label="Authentication Mode">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={authCategory === 'demo'}
+            className={`cyber-category-pill-btn ${authCategory === 'demo' ? 'active' : ''}`}
+            onClick={() => handleCategorySwitch('demo')}
+            id="btnCategoryDemo"
+          >
+            <span className="cat-pill-icon">🧪</span>
+            <div className="cat-pill-text">
+              <span className="cat-pill-title">Evaluation Mode</span>
+              <span className="cat-pill-subtitle">30 Students Preloaded • 1-Click Launch</span>
+            </div>
+          </button>
+
+          <button
+            type="button"
+            role="tab"
+            aria-selected={authCategory === 'real'}
+            className={`cyber-category-pill-btn ${authCategory === 'real' ? 'active' : ''}`}
+            onClick={() => handleCategorySwitch('real')}
+            id="btnCategoryReal"
+          >
+            <span className="cat-pill-icon">🔐</span>
+            <div className="cat-pill-text">
+              <span className="cat-pill-title">Real Institutional Account</span>
+              <span className="cat-pill-subtitle">Production Login & Verified Sign Up</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* =========================================================================
           MAIN CYBER CARD WITH DIAGONAL SWEEP (EXACT MATCH FOR IMAGES 1, 2, 3)
           ========================================================================= */}
       <div
@@ -390,31 +505,109 @@ export default function LoginPage() {
             LOGIN SIDE: FORM BOX (LEFT)
             ======================================================= */}
         <div className="cyber-form-box login">
-          <h2 className="cyber-form-title anim-slide">Login</h2>
+          <h2 className="cyber-form-title anim-slide">
+            {authCategory === 'demo' ? 'Evaluation Mode' : 'Campus Login'}
+          </h2>
 
-          {/* Portal Switcher Tabs */}
-          <div className="cyber-portal-tabs anim-slide" role="tablist">
-            <button
-              type="button"
-              role="tab"
-              aria-selected={portal === 'institution'}
-              className={`cyber-portal-tab ${portal === 'institution' ? 'active' : ''}`}
-              onClick={() => handlePortalSwitch('institution')}
-            >
-              <Building2 size={13} />
-              <span>Institution Portal</span>
-            </button>
-            <button
-              type="button"
-              role="tab"
-              aria-selected={portal === 'student'}
-              className={`cyber-portal-tab ${portal === 'student' ? 'active' : ''}`}
-              onClick={() => handlePortalSwitch('student')}
-            >
-              <GraduationCap size={13} />
-              <span>Student Portal</span>
-            </button>
-          </div>
+          {/* Mode Explanatory Banner */}
+          {authCategory === 'demo' ? (
+            <div className="cyber-mode-banner demo anim-slide">
+              <div className="cyber-mode-badge">
+                <Sparkles size={12} />
+                <span>Evaluation Sandbox • 30 Students Preloaded</span>
+              </div>
+              <p className="cyber-mode-desc">
+                Instant review across 4 personas. Preloaded with 30 synthetic student records (STU_0001–STU_0030) across 8 pillars & decoupled risk models.
+              </p>
+            </div>
+          ) : (
+            <div className="cyber-mode-banner real anim-slide">
+              <div className="cyber-mode-badge real-badge">
+                <ShieldCheck size={12} />
+                <span>Verified Campus Production Authentication</span>
+              </div>
+              <p className="cyber-mode-desc">
+                Strict credential verification. Arbitrary unauthorized logins are disabled. Student telemetry is linked and tamper-proof.
+              </p>
+            </div>
+          )}
+
+          {/* If Demo Mode: Show 4 One-Click Launch Persona Cards */}
+          {authCategory === 'demo' && (
+            <div className="cyber-demo-personas-grid anim-slide">
+              {DEMO_PERSONAS.map((dp) => {
+                const isSelected = loginIdentifier.toLowerCase() === dp.email.toLowerCase();
+                return (
+                  <div
+                    key={dp.key}
+                    className={`cyber-demo-persona-card ${isSelected ? 'selected' : ''}`}
+                    onClick={() => {
+                      setPortal(dp.portal);
+                      if (dp.portal === 'institution') setInstitutionRole(dp.role);
+                      setLoginIdentifier(dp.email);
+                      setLoginPassword(dp.password);
+                      setError('');
+                    }}
+                    title={dp.desc}
+                  >
+                    <div className="dp-card-header">
+                      <div className="dp-card-title-group">
+                        <span className="dp-card-icon" aria-hidden="true">{dp.icon}</span>
+                        <div>
+                          <div className="dp-card-role">{dp.label}</div>
+                          <div style={{ fontSize: '0.62rem', color: '#cbd5e1' }}>{dp.name}</div>
+                        </div>
+                      </div>
+                      <span className="dp-card-badge">{dp.badge}</span>
+                    </div>
+                    <div className="dp-card-email">
+                      <code>{dp.email}</code>
+                    </div>
+                    <button
+                      type="button"
+                      className="dp-launch-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handle1ClickDemo(dp.key);
+                      }}
+                      disabled={loading}
+                      id={`btnLaunchDemo_${dp.key}`}
+                    >
+                      🚀 1-Click Launch
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Portal Switcher Tabs (Shown for Real Mode) */}
+          {authCategory === 'real' && (
+            <div className="cyber-portal-tabs anim-slide" role="tablist">
+              <button
+                type="button"
+                role="tab"
+                aria-selected={portal === 'institution'}
+                className={`cyber-portal-tab ${portal === 'institution' ? 'active' : ''}`}
+                onClick={() => handlePortalSwitch('institution')}
+                id="tabPortalInstitution"
+              >
+                <Building2 size={13} />
+                <span>Institution Portal</span>
+              </button>
+              <button
+                type="button"
+                role="tab"
+                aria-selected={portal === 'student'}
+                className={`cyber-portal-tab ${portal === 'student' ? 'active' : ''}`}
+                onClick={() => handlePortalSwitch('student')}
+                id="tabPortalStudent"
+              >
+                <GraduationCap size={13} />
+                <span>Student Portal</span>
+              </button>
+            </div>
+          )}
 
           {/* Alerts */}
           {error && (
@@ -424,9 +617,15 @@ export default function LoginPage() {
             </div>
           )}
 
+          {authCategory === 'demo' && (
+            <div className="cyber-demo-divider anim-slide">
+              <span>Or Sign In Manually</span>
+            </div>
+          )}
+
           <form onSubmit={handleLoginSubmit} id="loginForm">
-            {/* Institution Post / Persona Selector */}
-            {portal === 'institution' && (
+            {/* Institution Post / Persona Selector (Only when in Real mode & Institution portal) */}
+            {authCategory === 'real' && portal === 'institution' && (
               <div className="cyber-role-selector-wrap anim-slide">
                 <div className="cyber-role-selector-label">
                   <span>Institutional Post / Persona:</span>
@@ -471,7 +670,9 @@ export default function LoginPage() {
                 autoComplete="username"
                 placeholder=" "
               />
-              <label htmlFor="loginUsername">Username / Email</label>
+              <label htmlFor="loginUsername">
+                {authCategory === 'demo' ? 'Demo Email / Username' : 'Username / Email'}
+              </label>
               <div className="cyber-input-icon">
                 <User size={16} />
               </div>
@@ -510,17 +711,19 @@ export default function LoginPage() {
                 <span>Remember me</span>
               </label>
 
-              <button
-                type="button"
-                className="cyber-forgot-link"
-                onClick={() => {
-                  setForgotSent(false);
-                  setForgotEmail(loginIdentifier || '');
-                  setShowForgotModal(true);
-                }}
-              >
-                Forgot password?
-              </button>
+              {authCategory === 'real' && (
+                <button
+                  type="button"
+                  className="cyber-forgot-link"
+                  onClick={() => {
+                    setForgotSent(false);
+                    setForgotEmail(loginIdentifier || '');
+                    setShowForgotModal(true);
+                  }}
+                >
+                  Forgot password?
+                </button>
+              )}
             </div>
 
             {/* Pill Button: Login */}
@@ -530,11 +733,17 @@ export default function LoginPage() {
               disabled={loading || googleLoading}
               id="btnLoginSubmit"
             >
-              <span>{loading ? 'Entering...' : 'Login'}</span>
+              <span>
+                {loading
+                  ? 'Verifying...'
+                  : authCategory === 'demo'
+                  ? 'Login with Demo Credentials'
+                  : 'Login to Campus Cockpit'}
+              </span>
             </button>
 
-            {/* Google Authentication Button (Only for Student Portal) */}
-            {portal === 'student' && (
+            {/* Google Authentication Button (Only for Student Portal in Real Mode) */}
+            {authCategory === 'real' && portal === 'student' && (
               <>
                 <div className="cyber-divider anim-slide">
                   <span>or continue with</span>
@@ -559,15 +768,31 @@ export default function LoginPage() {
 
             {/* Switch to Sign Up */}
             <div className="cyber-switch-link anim-slide">
-              <span>Don't have an account?</span>
-              <button
-                type="button"
-                className="cyber-switch-btn"
-                onClick={handleGoToRegister}
-                id="btnSwitchToRegister"
-              >
-                Sign Up
-              </button>
+              {authCategory === 'real' ? (
+                <>
+                  <span>Don't have an account?</span>
+                  <button
+                    type="button"
+                    className="cyber-switch-btn"
+                    onClick={handleGoToRegister}
+                    id="btnSwitchToRegister"
+                  >
+                    Sign Up
+                  </button>
+                </>
+              ) : (
+                <>
+                  <span>Need a real campus account?</span>
+                  <button
+                    type="button"
+                    className="cyber-switch-btn"
+                    onClick={() => handleCategorySwitch('real')}
+                    id="btnSwitchToRealFromDemo"
+                  >
+                    Switch to Real Account
+                  </button>
+                </>
+              )}
             </div>
           </form>
         </div>
@@ -577,15 +802,33 @@ export default function LoginPage() {
             ======================================================= */}
         <div className="cyber-info-box login">
           <h2 className="anim-slide">
-            WELCOME<br />BACK!
+            {authCategory === 'demo' ? (
+              <>
+                EVALUATION<br />SANDBOX
+              </>
+            ) : (
+              <>
+                WELCOME<br />BACK!
+              </>
+            )}
           </h2>
+          <p className="cyber-info-subtitle anim-slide">
+            {authCategory === 'demo'
+              ? '30 synthetic student records across 8 pillars ready for instant evaluation.'
+              : 'Secure outcome-based intelligence platform for modern higher education.'}
+          </p>
         </div>
 
         {/* =======================================================
             REGISTER SIDE: WELCOME INFO (LEFT DIAGONAL PANEL)
             ======================================================= */}
         <div className="cyber-info-box register">
-          <h2 className="anim-slide">WELCOME!</h2>
+          <h2 className="anim-slide">
+            CAMPUS<br />ACCESS
+          </h2>
+          <p className="cyber-info-subtitle anim-slide">
+            Register your institution or student credentials to access personalized predictive intelligence.
+          </p>
         </div>
 
         {/* =======================================================

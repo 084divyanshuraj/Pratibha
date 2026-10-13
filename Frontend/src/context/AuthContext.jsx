@@ -5,12 +5,37 @@ import { signInWithGoogleFirebase } from '../services/firebase';
 
 const AuthContext = createContext(null);
 
-const DEMO_CREDENTIALS = {
-  admin: { email: 'admin@example.edu', password: 'DemoUser123!' },
-  faculty: { email: 'faculty@example.edu', password: 'DemoUser123!' },
-  placement: { email: 'placement@example.edu', password: 'DemoUser123!' },
-  student: { email: 'student@example.edu', password: 'DemoUser123!' },
+export const DEMO_CREDENTIALS = {
+  admin: { email: 'admin@example.edu', password: 'DemoUser123!', username: 'admin' },
+  faculty: { email: 'faculty@example.edu', password: 'DemoUser123!', username: 'faculty' },
+  placement: { email: 'placement@example.edu', password: 'DemoUser123!', username: 'placement' },
+  student: { email: 'student@example.edu', password: 'DemoUser123!', username: 'student' },
 };
+
+export function getRegisteredAccounts() {
+  try {
+    const raw = localStorage.getItem('pratibha_registered_accounts');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveRegisteredAccount(account) {
+  try {
+    const accounts = getRegisteredAccounts();
+    const existingIdx = accounts.findIndex(
+      (a) => (a.email && a.email.toLowerCase() === account.email.toLowerCase()) ||
+             (a.username && a.username.toLowerCase() === account.username.toLowerCase())
+    );
+    if (existingIdx !== -1) {
+      accounts[existingIdx] = { ...accounts[existingIdx], ...account };
+    } else {
+      accounts.push(account);
+    }
+    localStorage.setItem('pratibha_registered_accounts', JSON.stringify(accounts));
+  } catch {}
+}
 
 export const DEMO_PROFILES = {
   admin: {
@@ -130,8 +155,16 @@ export function AuthProvider({ children }) {
   };
 
   const loginWithCredentials = async (identifier, password, selectedPortal = 'institution', specificRole = null, rememberMe = true) => {
-    const rawTrimmed = identifier.trim();
+    const rawTrimmed = (identifier || '').trim();
     const lowerIdentifier = rawTrimmed.toLowerCase();
+    const enteredPassword = (password || '').trim();
+
+    if (!rawTrimmed) {
+      throw new Error('Please enter your email or username.');
+    }
+    if (!enteredPassword) {
+      throw new Error('Please enter your password.');
+    }
 
     // Determine fallback role based on specificRole or identifier pattern
     let resolvedRole = specificRole;
@@ -160,8 +193,9 @@ export function AuthProvider({ children }) {
       defaultDepartment = 'Computer Science & Engineering';
     }
 
+    // 1. Try real server backend authentication first if Express is online
     try {
-      const res = await api.login(rawTrimmed, password);
+      const res = await api.login(rawTrimmed, enteredPassword);
       if (res?.accessToken) {
         sessionStorage.setItem('pratibha_token', res.accessToken);
         if (rememberMe) {
@@ -195,31 +229,59 @@ export function AuthProvider({ children }) {
       setActivePortal(profile.portal);
       return profile;
     } catch (err) {
-      // Re-throw validation or auth errors so the login UI can display them
-      if (err.status && err.status < 500) {
+      // If server explicitly responded with an auth failure
+      if (err.status && err.status === 401) {
+        throw new Error('Authentication failed: Invalid credentials or incorrect password.');
+      }
+      if (err.status && err.status < 500 && err.message) {
         throw err;
       }
 
-      // Offline mock fallback if network is completely down
-      let matched = Object.values(DEMO_PROFILES).find(
-        (p) => p.email.toLowerCase() === lowerIdentifier || (p.role === resolvedRole && p.portal === selectedPortal)
-      );
+      // 2. Client-side authentication validation (Offline / Demo / Registered Local Vault)
 
-      if (!matched) {
-        matched = {
-          id: `DEMO-USR-${Math.floor(100 + Math.random() * 900)}`,
-          name: resolvedRole === 'faculty_mentor' ? 'Prof. Rajesh Kumar' : resolvedRole === 'placement_officer' ? 'Vikram Malhotra' : resolvedRole === 'student' ? 'Aarav Sharma' : 'Dr. Sunita Rao',
-          role: resolvedRole,
-          portal: selectedPortal,
-          roleLabel: defaultRoleLabel,
-          email: rawTrimmed,
-          department: defaultDepartment,
-        };
+      // CATEGORY 1: Pre-Configured Demo Accounts (Exact credentials check)
+      const demoAccountMatch = Object.entries(DEMO_PROFILES).find(([key, p]) => {
+        const cred = DEMO_CREDENTIALS[key];
+        const emailMatches = p.email.toLowerCase() === lowerIdentifier;
+        const keyMatches = key.toLowerCase() === lowerIdentifier;
+        const usernameMatches = (cred?.username || '').toLowerCase() === lowerIdentifier;
+        return emailMatches || keyMatches || usernameMatches;
+      });
+
+      if (demoAccountMatch) {
+        const [demoKey, demoProfile] = demoAccountMatch;
+        const requiredPassword = DEMO_CREDENTIALS[demoKey]?.password || 'DemoUser123!';
+        if (enteredPassword !== requiredPassword) {
+          throw new Error(`Incorrect password for demo account "${rawTrimmed}". Expected demo password: ${requiredPassword}`);
+        }
+        setCurrentUser(demoProfile);
+        setActivePortal(demoProfile.portal);
+        sessionStorage.setItem('pratibha_demo_user', JSON.stringify(demoProfile));
+        return demoProfile;
       }
 
-      setCurrentUser(matched);
-      setActivePortal(matched.portal);
-      return matched;
+      // CATEGORY 2: Registered Real User Accounts
+      const registeredList = getRegisteredAccounts();
+      const registeredUser = registeredList.find(
+        (u) =>
+          (u.email && u.email.toLowerCase() === lowerIdentifier) ||
+          (u.username && u.username.toLowerCase() === lowerIdentifier)
+      );
+
+      if (registeredUser) {
+        if (registeredUser.password !== enteredPassword) {
+          throw new Error(`Incorrect password for account "${rawTrimmed}". Please try again.`);
+        }
+        setCurrentUser(registeredUser);
+        setActivePortal(registeredUser.portal || selectedPortal);
+        sessionStorage.setItem('pratibha_demo_user', JSON.stringify(registeredUser));
+        return registeredUser;
+      }
+
+      // STRICT SECURITY REJECTION: Never synthesize a fake user for arbitrary credentials!
+      throw new Error(
+        `Account not found for "${rawTrimmed}". Please verify your credentials, click "Sign Up" to register, or use Evaluation Mode.`
+      );
     }
   };
 
@@ -280,6 +342,7 @@ export function AuthProvider({ children }) {
         id: user.id || `USR_${Date.now()}`,
         name: user.displayName || finalDisplayName || username || email.split('@')[0],
         username: user.username || username,
+        password: password.trim(),
         role: finalRole,
         portal: isStudentPortal ? 'student' : 'institution',
         roleLabel: user.roleLabel || defaultRoleLabel,
@@ -290,6 +353,10 @@ export function AuthProvider({ children }) {
         studentId: user.studentId || finalStudentId || (isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
         isNewUser: true,
       };
+
+      // Persist in registered accounts vault for reliable future logins
+      saveRegisteredAccount(profile);
+
       setCurrentUser(profile);
       setActivePortal(isStudentPortal ? 'student' : 'institution');
       return profile;
@@ -298,9 +365,10 @@ export function AuthProvider({ children }) {
         throw err;
       }
       const profile = {
-        id: `DEMO-REG-${Math.floor(100 + Math.random() * 900)}`,
+        id: `REG-${Math.floor(100 + Math.random() * 900)}`,
         name: finalDisplayName || username || email.split('@')[0],
         username,
+        password: password.trim(),
         role: assignedRole,
         portal: selectedPortal,
         roleLabel: defaultRoleLabel,
@@ -308,9 +376,13 @@ export function AuthProvider({ children }) {
         department: defaultDepartment,
         program: 'B.Tech',
         semester: extraData.semester || 'Semester 1',
-        studentId: finalStudentId || (isStudentPortal ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
+        studentId: finalStudentId || (selectedPortal === 'student' ? `STU_${String(Math.floor(10 + Math.random() * 90)).padStart(4, '0')}` : null),
         isNewUser: true,
       };
+
+      // Persist in registered accounts vault for reliable future logins
+      saveRegisteredAccount(profile);
+
       setCurrentUser(profile);
       setActivePortal(selectedPortal);
       return profile;

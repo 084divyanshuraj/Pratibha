@@ -549,23 +549,108 @@ const MOCK_STUDENTS = [
     avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80',
     email: 'harsh.patel@campus.edu',
   },
+  {
+    id: 's26',
+    studentId: 'STU_0026',
+    firstName: 'Ananya',
+    lastName: 'Deshmukh',
+    fullName: 'Ananya Deshmukh',
+    department: 'Computer Science',
+    program: 'B.Tech',
+    semester: 6,
+    cgpa: 9.1,
+    attendanceRate: 94,
+    successScore: 92.5,
+    academicRisk: 'low',
+    placementRisk: 'low',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    email: 'ananya.deshmukh@campus.edu',
+  },
+  {
+    id: 's27',
+    studentId: 'STU_0027',
+    firstName: 'Rohan',
+    lastName: 'Chatterjee',
+    fullName: 'Rohan Chatterjee',
+    department: 'Information Technology',
+    program: 'B.Tech',
+    semester: 7,
+    cgpa: 7.2,
+    attendanceRate: 78,
+    successScore: 71.0,
+    academicRisk: 'medium',
+    placementRisk: 'medium',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    email: 'rohan.chatterjee@campus.edu',
+  },
+  {
+    id: 's28',
+    studentId: 'STU_0028',
+    firstName: 'Tanvi',
+    lastName: 'Bansal',
+    fullName: 'Tanvi Bansal',
+    department: 'Data Science',
+    program: 'B.Tech',
+    semester: 5,
+    cgpa: 8.5,
+    attendanceRate: 89,
+    successScore: 83.4,
+    academicRisk: 'low',
+    placementRisk: 'high', // Decoupled divergence!
+    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
+    email: 'tanvi.bansal@campus.edu',
+  },
+  {
+    id: 's29',
+    studentId: 'STU_0029',
+    firstName: 'Devendra',
+    lastName: 'Yadav',
+    fullName: 'Devendra Yadav',
+    department: 'Electronics & Comm.',
+    program: 'B.Tech',
+    semester: 8,
+    cgpa: 5.9,
+    attendanceRate: 61,
+    successScore: 49.8,
+    academicRisk: 'high',
+    placementRisk: 'high',
+    avatar: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80',
+    email: 'devendra.yadav@campus.edu',
+  },
+  {
+    id: 's30',
+    studentId: 'STU_0030',
+    firstName: 'Sneha',
+    lastName: 'Menon',
+    fullName: 'Sneha Menon',
+    department: 'Mechanical',
+    program: 'B.Tech',
+    semester: 4,
+    cgpa: 8.7,
+    attendanceRate: 91,
+    successScore: 86.8,
+    academicRisk: 'low',
+    placementRisk: 'low',
+    avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+    email: 'sneha.menon@campus.edu',
+  },
 ];
 
 const MOCK_OVERVIEW_KPIS = {
-  totalStudents: 121,
-  averageSuccessScore: 78.9,
+  totalStudents: 30,
+  averageSuccessScore: 78.4,
   scoreDistribution: {
-    critical: 10,    // < 60
-    moderate: 7,     // 60 - 75
-    good: 88,        // 75 - 85
-    excellent: 16,   // > 85
+    critical: 4,    // < 60
+    moderate: 6,     // 60 - 75
+    good: 15,        // 75 - 85
+    excellent: 5,   // > 85
   },
-  academicRisk: { low: 94, medium: 18, high: 8 },
-  placementRisk: { low: 59, medium: 41, high: 20 },
+  academicRisk: { low: 18, medium: 8, high: 4 },
+  placementRisk: { low: 14, medium: 9, high: 7 },
   decoupledDivergence: {
-    count: 12,
-    percentage: 9.9,
-    explanation: '12 students have strong academic standing (CGPA >= 7.5) but high placement risk due to soft-skills/mock interview gaps.',
+    count: 4,
+    percentage: 13.3,
+    explanation: '4 students have strong academic standing (CGPA >= 7.5) but high placement risk due to soft-skills/mock interview gaps.',
   },
   categoryCoverage: {
     academic: 100,
@@ -855,19 +940,8 @@ export const api = {
       }
       return res;
     } catch (err) {
-      // If server returned 401, 400, 403, 404, propagate error so user gets clear feedback!
-      if (err.status && err.status < 500) {
-        throw err;
-      }
-      // Offline fallback: resolve demo profile only if backend service is unreachable
-      return {
-        accessToken: 'demo-offline-jwt-token',
-        user: {
-          email: identifier,
-          displayName: identifier.split('@')[0],
-          role: identifier.includes('admin') ? 'admin' : identifier.includes('student') ? 'student' : 'faculty',
-        },
-      };
+      // Propagate error to AuthContext so strict client-side credential verification (Demo & Registered Vault) executes!
+      throw err;
     }
   },
 
