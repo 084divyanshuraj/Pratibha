@@ -31,12 +31,12 @@ export default function LandingPage() {
   }, [location]);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#1A0912' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#251D23' }}>
       {/* Top Navigation */}
       <PublicNavbar />
 
       {/* =========================================================================
-          HERO SECTION — Deep Crimson & Warm Bronze (Royal Academic Theme)
+          HERO SECTION — Softened Obsidian & Warm Bronze (Royal Academic Theme)
           ========================================================================= */}
       <section
         style={{
@@ -44,7 +44,7 @@ export default function LandingPage() {
           minHeight: '85vh',
           display: 'flex',
           alignItems: 'center',
-          backgroundImage: `linear-gradient(to right, rgba(26, 9, 18, 0.95) 32%, rgba(26, 9, 18, 0.72) 65%, rgba(26, 9, 18, 0.90) 100%), url('/assets/images/campus_crimson_hero.jpg')`,
+          backgroundImage: `linear-gradient(to right, rgba(37, 29, 35, 0.94) 32%, rgba(37, 29, 35, 0.72) 65%, rgba(37, 29, 35, 0.90) 100%), url('/assets/images/campus_crimson_hero.jpg')`,
           backgroundSize: 'cover',
           backgroundPosition: 'center 35%',
           backgroundRepeat: 'no-repeat',
@@ -243,7 +243,7 @@ export default function LandingPage() {
         id="impact"
         style={{
           padding: '5.5rem 1.5rem',
-          backgroundColor: '#240D18',
+          backgroundColor: '#2A2027',
           borderBottom: '1px solid rgba(217, 119, 6, 0.20)',
         }}
       >
@@ -289,7 +289,7 @@ export default function LandingPage() {
             {/* Photo Card 1: Coding & Data Science Lab */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.95)',
+                backgroundColor: 'rgba(48, 36, 45, 0.95)',
                 borderRadius: '16px',
                 border: '1px solid rgba(245, 158, 11, 0.25)',
                 overflow: 'hidden',
@@ -320,7 +320,7 @@ export default function LandingPage() {
                     left: '12px',
                     padding: '5px 12px',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(26, 9, 18, 0.88)',
+                    backgroundColor: 'rgba(35, 27, 33, 0.88)',
                     backdropFilter: 'blur(8px)',
                     border: '1px solid rgba(245, 158, 11, 0.45)',
                     color: '#FDE68A',
@@ -348,7 +348,7 @@ export default function LandingPage() {
             {/* Photo Card 2: Faculty Mentorship */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.95)',
+                backgroundColor: 'rgba(48, 36, 45, 0.95)',
                 borderRadius: '16px',
                 border: '1px solid rgba(245, 158, 11, 0.25)',
                 overflow: 'hidden',
@@ -379,7 +379,7 @@ export default function LandingPage() {
                     left: '12px',
                     padding: '5px 12px',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(26, 9, 18, 0.88)',
+                    backgroundColor: 'rgba(35, 27, 33, 0.88)',
                     backdropFilter: 'blur(8px)',
                     border: '1px solid rgba(245, 158, 11, 0.45)',
                     color: '#FDE68A',
@@ -407,7 +407,7 @@ export default function LandingPage() {
             {/* Photo Card 3: Placement Convocation */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.95)',
+                backgroundColor: 'rgba(48, 36, 45, 0.95)',
                 borderRadius: '16px',
                 border: '1px solid rgba(245, 158, 11, 0.25)',
                 overflow: 'hidden',
@@ -438,7 +438,7 @@ export default function LandingPage() {
                     left: '12px',
                     padding: '5px 12px',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(26, 9, 18, 0.88)',
+                    backgroundColor: 'rgba(35, 27, 33, 0.88)',
                     backdropFilter: 'blur(8px)',
                     border: '1px solid rgba(245, 158, 11, 0.45)',
                     color: '#FDE68A',
@@ -473,8 +473,8 @@ export default function LandingPage() {
         id="about"
         style={{
           padding: '6rem 1.5rem',
-          backgroundColor: '#1A0912',
-          backgroundImage: 'radial-gradient(ellipse at 50% 12%, rgba(225, 29, 72, 0.12) 0%, rgba(26, 9, 18, 0) 70%)',
+          backgroundColor: '#251D23',
+          backgroundImage: 'radial-gradient(ellipse at 50% 12%, rgba(225, 29, 72, 0.08) 0%, rgba(37, 29, 35, 0) 70%)',
           color: '#FFFFFF',
           borderBottom: '1px solid rgba(217, 119, 6, 0.20)',
           position: 'relative',
@@ -529,7 +529,7 @@ export default function LandingPage() {
               marginBottom: '3.5rem',
               padding: '1.25rem',
               borderRadius: '16px',
-              backgroundColor: 'rgba(38, 14, 25, 0.65)',
+              backgroundColor: 'rgba(48, 36, 45, 0.65)',
               border: '1px solid rgba(245, 158, 11, 0.22)',
               backdropFilter: 'blur(10px)',
             }}
@@ -640,7 +640,7 @@ export default function LandingPage() {
             {/* Card 1: 7-Domain Holistic Diagnostic */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.92)',
+                backgroundColor: 'rgba(48, 36, 45, 0.92)',
                 border: '1px solid rgba(245, 158, 11, 0.30)',
                 borderRadius: '18px',
                 padding: '2.25rem',
@@ -704,7 +704,7 @@ export default function LandingPage() {
               {/* Interactive Telemetry Box */}
               <div
                 style={{
-                  backgroundColor: 'rgba(26, 9, 18, 0.85)',
+                  backgroundColor: 'rgba(35, 27, 33, 0.85)',
                   border: '1px solid rgba(245, 158, 11, 0.20)',
                   borderRadius: '12px',
                   padding: '1.1rem',
@@ -762,7 +762,7 @@ export default function LandingPage() {
             {/* Card 2: Decoupled Risk Engines */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.92)',
+                backgroundColor: 'rgba(48, 36, 45, 0.92)',
                 border: '1px solid rgba(16, 185, 129, 0.30)',
                 borderRadius: '18px',
                 padding: '2.25rem',
@@ -826,7 +826,7 @@ export default function LandingPage() {
               {/* Interactive Telemetry Box */}
               <div
                 style={{
-                  backgroundColor: 'rgba(26, 9, 18, 0.85)',
+                  backgroundColor: 'rgba(35, 27, 33, 0.85)',
                   border: '1px solid rgba(16, 185, 129, 0.20)',
                   borderRadius: '12px',
                   padding: '1.1rem',
@@ -864,7 +864,7 @@ export default function LandingPage() {
             {/* Card 3: Ethical & Explainable AI */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.92)',
+                backgroundColor: 'rgba(48, 36, 45, 0.92)',
                 border: '1px solid rgba(244, 63, 94, 0.30)',
                 borderRadius: '18px',
                 padding: '2.25rem',
@@ -928,7 +928,7 @@ export default function LandingPage() {
               {/* Interactive Telemetry Box */}
               <div
                 style={{
-                  backgroundColor: 'rgba(26, 9, 18, 0.85)',
+                  backgroundColor: 'rgba(35, 27, 33, 0.85)',
                   border: '1px solid rgba(244, 63, 94, 0.20)',
                   borderRadius: '12px',
                   padding: '1.1rem',

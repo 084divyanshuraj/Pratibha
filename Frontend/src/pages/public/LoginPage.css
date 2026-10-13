@@ -7,11 +7,11 @@
 :root {
   --neon-cyan: #F59E0B;
   --neon-glow: rgba(245, 158, 11, 0.55);
-  --teal-dark: #2A0E1C;
+  --teal-dark: #32252E;
   --teal-mid: #9F1239;
   --teal-bright: #FDA4AF;
-  --card-dark: #1A0912;
-  --card-bg-subtle: #260E1A;
+  --card-dark: #251D23;
+  --card-bg-subtle: #2E222A;
   --speed: 1s;
 }
 
@@ -19,7 +19,7 @@
 .pratibha-cyber-page {
   min-height: 100vh;
   width: 100%;
-  background: radial-gradient(circle at 50% 30%, #2A0E1C 0%, #1A0912 65%, #10050B 100%);
+  background: radial-gradient(circle at 50% 30%, #32252E 0%, #251D23 65%, #191317 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,7 +36,7 @@
   position: absolute;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(38, 14, 25, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(48, 36, 45, 0.05) 50%, transparent 70%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -402,14 +402,14 @@
 .cyber-input-box input:-webkit-autofill:active {
   -webkit-text-fill-color: #ffffff !important;
   color: #ffffff !important;
-  -webkit-box-shadow: 0 0 0 1000px #1A0912 inset !important;
-  box-shadow: 0 0 0 1000px #1A0912 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #251D23 inset !important;
+  box-shadow: 0 0 0 1000px #251D23 inset !important;
   transition: background-color 5000000s ease-in-out 0s !important;
   caret-color: #ffffff !important;
 }
 
 .cyber-input-box input:autofill {
-  background-color: #1A0912 !important;
+  background-color: #251D23 !important;
   color: #ffffff !important;
 }
 
@@ -894,12 +894,12 @@
 
 .cyber-mode-banner.demo {
   border-color: rgba(56, 189, 248, 0.5);
-  background: linear-gradient(135deg, rgba(38, 14, 25, 0.65), rgba(12, 58, 107, 0.35));
+  background: linear-gradient(135deg, rgba(48, 36, 45, 0.65), rgba(12, 58, 107, 0.35));
 }
 
 .cyber-mode-banner.real {
   border-color: rgba(16, 185, 129, 0.45);
-  background: linear-gradient(135deg, rgba(6, 32, 24, 0.65), rgba(38, 14, 25, 0.45));
+  background: linear-gradient(135deg, rgba(6, 32, 24, 0.65), rgba(48, 36, 45, 0.45));
 }
 
 .cyber-mode-badge {

@@ -9,9 +9,9 @@
      1. COLOR TOKENS
      ========================================================================== */
 
-  /* Brand Palette: Deep Crimson & Warm Bronze (Royal Academic Authority) */
-  --color-navy: #2A0E1C; /* Rich Velvet Wine / Royal Obsidian Crimson */
-  --color-navy-deep: #1A0912; /* Deep Obsidian Midnight Crimson */
+  /* Brand Palette: Softened Obsidian & Warm Bronze (Royal Academic Authority) */
+  --color-navy: #32252E; /* Elegant Soft Mahogany / Warm Plum Obsidian */
+  --color-navy-deep: #251D23; /* Refined Warm Obsidian Charcoal (Less deep, clean & modern) */
   --color-blue-primary: #9F1239; /* Royal Deep Crimson Primary */
   --color-blue-bright: #E11D48; /* Vibrant Luminous Rose Crimson */
   --color-blue-surface: #FFF1F2; /* Soft Rose Champagne Tint */
@@ -26,7 +26,7 @@
   --color-blue-primary-hover: #881337;
   --color-blue-primary-active: #700F2C;
   --color-blue-bright-hover: #BE123C;
-  --color-navy-hover: #3B1428;
+  --color-navy-hover: #42313D;
 
   /* Neutrals & Typography */
   --color-text-main: #1C1917;

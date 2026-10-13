@@ -186,7 +186,7 @@ export default function DomainConstellation() {
                 borderRadius: '50%',
                 background: isSelected
                   ? 'radial-gradient(circle, #E11D48 0%, #881337 100%)'
-                  : 'radial-gradient(circle, rgba(217, 119, 6, 0.45) 0%, rgba(42, 14, 28, 0.95) 100%)',
+                  : 'radial-gradient(circle, rgba(217, 119, 6, 0.45) 0%, rgba(50, 37, 46, 0.95) 100%)',
                 border: isSelected
                   ? '2px solid #FDE68A'
                   : '1.5px solid rgba(245, 158, 11, 0.65)',
@@ -226,7 +226,7 @@ export default function DomainConstellation() {
                   position: 'absolute',
                   top: '100%',
                   marginTop: '12px',
-                  backgroundColor: 'rgba(26, 9, 18, 0.96)',
+                  backgroundColor: 'rgba(37, 29, 35, 0.96)',
                   border: '1px solid rgba(245, 158, 11, 0.45)',
                   borderRadius: 'var(--radius-sm)',
                   padding: '8px 12px',

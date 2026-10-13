@@ -46,7 +46,7 @@ export default function PublicNavbar() {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(26, 9, 18, 0.94)',
+        backgroundColor: 'rgba(37, 29, 35, 0.94)',
         backdropFilter: 'blur(14px)',
         borderBottom: '1px solid rgba(217, 119, 6, 0.22)',
         padding: '0.85rem 2rem',

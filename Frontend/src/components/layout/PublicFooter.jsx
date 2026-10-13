@@ -63,7 +63,7 @@ export default function PublicFooter() {
   return (
     <footer
       style={{
-        backgroundColor: '#1A0912',
+        backgroundColor: '#251D23',
         color: 'rgba(255, 255, 255, 0.75)',
         borderTop: '1px solid rgba(217, 119, 6, 0.22)',
         padding: '3.5rem 1.5rem 2rem',
@@ -470,7 +470,7 @@ export default function PublicFooter() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(15, 4, 10, 0.85)',
+            backgroundColor: 'rgba(25, 18, 23, 0.85)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
@@ -482,7 +482,7 @@ export default function PublicFooter() {
         >
           <div
             style={{
-              backgroundColor: '#240D18',
+              backgroundColor: '#32252E',
               border: '1px solid rgba(245, 158, 11, 0.35)',
               borderRadius: '16px',
               padding: '1.75rem',
@@ -550,7 +550,7 @@ export default function PublicFooter() {
                 <div
                   key={idx}
                   style={{
-                    backgroundColor: 'rgba(38, 14, 25, 0.85)',
+                    backgroundColor: 'rgba(48, 36, 45, 0.85)',
                     border: '1px solid rgba(245, 158, 11, 0.16)',
                     borderRadius: '10px',
                     padding: '0.9rem 1.1rem',
