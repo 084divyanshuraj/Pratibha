@@ -812,11 +812,6 @@ export default function LoginPage() {
               </>
             )}
           </h2>
-          <p className="cyber-info-subtitle anim-slide">
-            {authCategory === 'demo'
-              ? '30 synthetic student records across 8 pillars ready for instant evaluation.'
-              : 'Secure outcome-based intelligence platform for modern higher education.'}
-          </p>
         </div>
 
         {/* =======================================================
@@ -826,9 +821,6 @@ export default function LoginPage() {
           <h2 className="anim-slide">
             CAMPUS<br />ACCESS
           </h2>
-          <p className="cyber-info-subtitle anim-slide">
-            Register your institution or student credentials to access personalized predictive intelligence.
-          </p>
         </div>
 
         {/* =======================================================
