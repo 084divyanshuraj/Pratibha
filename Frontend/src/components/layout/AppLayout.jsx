@@ -219,14 +219,16 @@ export default function AppLayout({ children }) {
     }
 
     if (currentUser?.role === 'placement_officer') {
-      const eligibleCount = totalStudents != null ? Math.round(totalStudents * 0.72) : 88;
+      const eligibleCount = liveKpis?.placementEligibleCount != null
+        ? liveKpis.placementEligibleCount
+        : (totalStudents != null ? Math.round(totalStudents * 0.73) : 22);
       return [
         {
           title: 'Placement Matrix',
           items: [
             { path: '/institution/overview', label: 'Placement Overview', icon: BarChart3, badge: 'TPO' },
             { path: '/institution/segments', label: 'Placement Readiness Matrix', icon: Layers, badge: 'Tier-1' },
-            { path: '/institution/students', label: 'Eligible Candidates Roster', icon: Users, badge: `${eligibleCount} Eligible` },
+            { path: '/institution/students?filter=placement_eligible', label: 'Eligible Candidates Roster', icon: Users, badge: `${eligibleCount} Eligible` },
           ],
         },
         {

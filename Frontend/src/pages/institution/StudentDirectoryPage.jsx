@@ -79,8 +79,15 @@ export default function StudentDirectoryPage() {
         let list = res?.students || [];
         setTotalCount(res?.pagination?.total ?? list.length);
 
-        // Apply risk filters
-        if (riskFilter === 'double_risk' || riskFilter === 'urgent') {
+        const isTpoDefault = role === 'placement_officer' && !riskFilter && !personaChip && !department && !segmentFilter && !search;
+        const isPlacementEligible = riskFilter === 'placement_eligible' || personaChip === 'placement_eligible' || isTpoDefault;
+
+        // Apply risk & eligibility filters
+        if (personaChip === 'all_cohort' || riskFilter === 'all') {
+          // Explicitly show full batch without filter
+        } else if (isPlacementEligible) {
+          list = list.filter((s) => s.academicRisk !== 'high' && (Number(s.cgpa) || 7) >= 6.5);
+        } else if (riskFilter === 'double_risk' || riskFilter === 'urgent') {
           list = list.filter((s) => s.academicRisk === 'high' && s.placementRisk === 'high');
         } else if (riskFilter === 'divergent') {
           list = list.filter((s) => s.placementRisk === 'high' && s.academicRisk !== 'high');
@@ -308,7 +315,16 @@ export default function StudentDirectoryPage() {
 
         <div className="directory-header-actions">
           <div className="directory-counter-card">
-            <span>Showing <strong>{students.length}</strong> of <strong>{totalCount || students.length}</strong> Students</span>
+            <span>
+              Showing <strong>{students.length}</strong> of <strong>{totalCount || students.length}</strong>{' '}
+              {role === 'placement_officer' && (personaChip === 'placement_eligible' || (!riskFilter && !personaChip && !department && !search && !segmentFilter))
+                ? 'Eligible Candidates (8 Ineligible Excluded)'
+                : role === 'placement_officer' && personaChip === 'tier1_eligible'
+                ? 'Tier-1 Candidates'
+                : role === 'placement_officer' && riskFilter === 'divergent'
+                ? 'Divergent Candidates'
+                : 'Students'}
+            </span>
             <div style={{ width: '1px', height: '14px', backgroundColor: '#CBD5E1' }} />
             <label style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 500 }}>Rows:</label>
             <select
@@ -345,14 +361,16 @@ export default function StudentDirectoryPage() {
             <Download size={14} />
             <span>{role === 'placement_officer' ? 'Export Recruiter Roster' : role === 'faculty_mentor' ? 'Export Mentee Report' : 'Export Roster CSV'}</span>
           </button>
-          <button
-            onClick={handleOpenAddModal}
-            className="directory-action-btn primary"
-            title="Create a new student profile in directory"
-          >
-            <UserPlus size={14} />
-            <span>+ Add Student</span>
-          </button>
+          {role === 'institution_admin' && (
+            <button
+              onClick={handleOpenAddModal}
+              className="directory-action-btn primary"
+              title="Create a new student profile in directory"
+            >
+              <UserPlus size={14} />
+              <span>+ Add Student</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -405,25 +423,50 @@ export default function StudentDirectoryPage() {
         {role === 'placement_officer' && (
           <>
             <button
-              onClick={() => setPersonaChip(personaChip === 'tier1_eligible' ? '' : 'tier1_eligible')}
+              onClick={() => {
+                setPersonaChip('placement_eligible');
+                setRiskFilter('');
+                setSegmentFilter('');
+              }}
               style={{
                 padding: '6px 12px',
                 borderRadius: '6px',
                 fontSize: '0.76rem',
                 fontWeight: 600,
                 border: '1px solid #BFDBFE',
-                backgroundColor: personaChip === 'tier1_eligible' ? '#2563EB' : '#EFF6FF',
-                color: personaChip === 'tier1_eligible' ? '#FFFFFF' : '#1D4ED8',
+                backgroundColor: (personaChip === 'placement_eligible' || (!riskFilter && !personaChip && !department && !search && !segmentFilter)) ? '#2563EB' : '#EFF6FF',
+                color: (personaChip === 'placement_eligible' || (!riskFilter && !personaChip && !department && !search && !segmentFilter)) ? '#FFFFFF' : '#1D4ED8',
                 cursor: 'pointer',
                 transition: 'all 0.15s ease',
               }}
             >
-              💼 Tier-1 Placement Eligible (CGPA ≥ 7.5, 0 Backlogs)
+              🎓 Placement Eligible Candidates (22)
+            </button>
+            <button
+              onClick={() => {
+                setPersonaChip(personaChip === 'tier1_eligible' ? 'placement_eligible' : 'tier1_eligible');
+                setRiskFilter('');
+                setSegmentFilter('');
+              }}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '0.76rem',
+                fontWeight: 600,
+                border: '1px solid #BBF7D0',
+                backgroundColor: personaChip === 'tier1_eligible' ? '#16A34A' : '#F0FDF4',
+                color: personaChip === 'tier1_eligible' ? '#FFFFFF' : '#15803D',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              ⭐ Tier-1 Corporate Ready (14)
             </button>
             <button
               onClick={() => {
                 setRiskFilter(riskFilter === 'divergent' ? '' : 'divergent');
-                setPersonaChip('');
+                setPersonaChip(riskFilter === 'divergent' ? 'placement_eligible' : '');
+                setSegmentFilter('');
               }}
               style={{
                 padding: '6px 12px',
@@ -437,7 +480,29 @@ export default function StudentDirectoryPage() {
                 transition: 'all 0.15s ease',
               }}
             >
-              🚨 Mock Interview Deficit (Divergent Cluster)
+              ⚡ Mock Interview Deficit / Divergent (6)
+            </button>
+            <button
+              onClick={() => {
+                setPersonaChip('all_cohort');
+                setRiskFilter('');
+                setSegmentFilter('');
+                setDepartment('');
+                setSearch('');
+              }}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '6px',
+                fontSize: '0.76rem',
+                fontWeight: 600,
+                border: '1px solid #E2E8F0',
+                backgroundColor: personaChip === 'all_cohort' ? '#0F172A' : '#F8FAFC',
+                color: personaChip === 'all_cohort' ? '#FFFFFF' : '#475569',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              👥 Full Batch (30)
             </button>
           </>
         )}
@@ -878,49 +943,53 @@ export default function StudentDirectoryPage() {
                       <Eye size={13} />
                       <span>360°</span>
                     </button>
-                    <button
-                      onClick={(e) => handleOpenEditModal(student, e)}
-                      style={{
-                        backgroundColor: '#F8FAFC',
-                        border: '1px solid #CBD5E1',
-                        borderRadius: '6px',
-                        padding: '5px 8px',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        color: '#475569',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '3px',
-                        transition: 'all 120ms ease',
-                      }}
-                      title="Edit student profile and telemetry"
-                    >
-                      <Edit3 size={12} />
-                      <span>Edit</span>
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setStudentToDelete(student);
-                      }}
-                      style={{
-                        backgroundColor: '#FEF2F2',
-                        border: '1px solid #FECACA',
-                        borderRadius: '6px',
-                        padding: '5px 7px',
-                        fontSize: '0.74rem',
-                        fontWeight: 600,
-                        color: '#DC2626',
-                        cursor: 'pointer',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        transition: 'all 120ms ease',
-                      }}
-                      title="Delete student and cascade all records"
-                    >
-                      <Trash2 size={12} />
-                    </button>
+                    {role === 'institution_admin' && (
+                      <>
+                        <button
+                          onClick={(e) => handleOpenEditModal(student, e)}
+                          style={{
+                            backgroundColor: '#F8FAFC',
+                            border: '1px solid #CBD5E1',
+                            borderRadius: '6px',
+                            padding: '5px 8px',
+                            fontSize: '0.74rem',
+                            fontWeight: 600,
+                            color: '#475569',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '3px',
+                            transition: 'all 120ms ease',
+                          }}
+                          title="Edit student profile and telemetry"
+                        >
+                          <Edit3 size={12} />
+                          <span>Edit</span>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setStudentToDelete(student);
+                          }}
+                          style={{
+                            backgroundColor: '#FEF2F2',
+                            border: '1px solid #FECACA',
+                            borderRadius: '6px',
+                            padding: '5px 7px',
+                            fontSize: '0.74rem',
+                            fontWeight: 600,
+                            color: '#DC2626',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            transition: 'all 120ms ease',
+                          }}
+                          title="Delete student and cascade all records"
+                        >
+                          <Trash2 size={12} />
+                        </button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>

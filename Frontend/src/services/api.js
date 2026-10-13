@@ -711,14 +711,18 @@ export function normalizeStudent(s, idx = 0) {
     ? Number(s.successScore)
     : +(cg * 5 + att * 0.4).toFixed(1);
 
-  // University 75% statutory attendance rule & CGPA < 6.5
+  // University statutory eligibility rule: CGPA < 6.5 or critical attendance shortfall (<70%) or backlogs
   let aRisk = s.academicRisk ? String(s.academicRisk).toLowerCase() : '';
-  if (att < 75 || cg < 6.5 || (s.backlogs && Number(s.backlogs) > 0)) {
+  if (!aRisk) {
+    if (att < 70 || cg < 6.5 || (s.backlogs && Number(s.backlogs) > 0)) {
+      aRisk = 'high';
+    } else if (att < 80 || cg < 7.5) {
+      aRisk = 'medium';
+    } else {
+      aRisk = 'low';
+    }
+  } else if (cg < 6.5 || (s.backlogs && Number(s.backlogs) > 0) || att < 70) {
     aRisk = 'high';
-  } else if (!aRisk || aRisk === 'high') {
-    aRisk = (att < 80 || cg < 7.5) ? 'medium' : 'low';
-  } else if (aRisk !== 'medium' && aRisk !== 'low') {
-    aRisk = (att < 80 || cg < 7.5) ? 'medium' : 'low';
   }
 
   let pRisk = s.placementRisk ? String(s.placementRisk).toLowerCase() : '';
@@ -856,8 +860,12 @@ export function computeLocalOverviewKpis() {
     feedback: customCoverage.feedback ?? +(students.filter(s => s.feedback != null || s.feedbackScore != null).length / total * 100 || 75.0).toFixed(1),
   };
 
-  const covVals = Object.values(dynamicCategoryCoverage);
-  const dynCompleteness = +(covVals.reduce((a, b) => a + b, 0) / covVals.length).toFixed(1);
+  const placementEligibleCount = students.filter(
+    (s) => (s.academicRisk || '').toLowerCase() !== 'high' && (Number(s.cgpa) || 7) >= 6.5
+  ).length;
+  const tier1ReadyCount = students.filter(
+    (s) => (s.academicRisk || '').toLowerCase() !== 'high' && (s.placementRisk || '').toLowerCase() !== 'high'
+  ).length;
 
   return {
     totalStudents: total,
@@ -866,6 +874,8 @@ export function computeLocalOverviewKpis() {
     scoreDistribution: distribution,
     academicRisk,
     placementRisk,
+    placementEligibleCount,
+    tier1ReadyCount,
     decoupledDivergence: {
       count: divergenceCount,
       percentage: divPct,
