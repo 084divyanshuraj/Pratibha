@@ -738,18 +738,39 @@ export function normalizeStudent(s, idx = 0) {
 
 export function getActiveStudents() {
   const isDemo = isDemoSession();
-  if (isDemo) {
-    try {
-      const raw = localStorage.getItem('pratibha_custom_students');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map((s, idx) => normalizeStudent(s, idx));
-      }
-    } catch {}
+  const user = getCurrentSessionUser();
+  const isStudent = user?.role === 'student' || user?.portal === 'student';
+
+  // 1. First priority: Check active college roster uploaded in Data Ingestion
+  try {
+    const raw = localStorage.getItem('pratibha_custom_students');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed) && parsed.length > 0) return parsed.map((s, idx) => normalizeStudent(s, idx));
+    }
+  } catch {}
+
+  // 2. If student or demo user, fallback to the seeded student roster
+  if (isStudent || isDemo) {
+    // If student, also check any active tenant roster if admin uploaded under a tenant
+    if (isStudent) {
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (k && k.startsWith('pratibha_tenant_') && k.endsWith('_students')) {
+            const rawTenant = localStorage.getItem(k);
+            if (rawTenant) {
+              const parsed = JSON.parse(rawTenant);
+              if (Array.isArray(parsed) && parsed.length > 0) return parsed.map((s, idx) => normalizeStudent(s, idx));
+            }
+          }
+        }
+      } catch {}
+    }
     return MOCK_STUDENTS.map((s, idx) => normalizeStudent(s, idx));
   }
 
-  // REAL USER / TENANT SESSION (e.g. @ram123):
+  // 3. REAL INSTITUTION ADMIN / TENANT SESSION (e.g. @ram123):
   // Strictly isolate data. Only show students uploaded or created by this real user.
   // Defaults to EMPTY ARRAY [] if no records have been imported yet.
   const tenantKey = getTenantStorageKey();
@@ -768,6 +789,8 @@ export function saveActiveStudents(students) {
   const key = isDemo ? 'pratibha_custom_students' : getTenantStorageKey();
   try {
     localStorage.setItem(key, JSON.stringify(students));
+    // ALWAYS mirror to 'pratibha_custom_students' so registered students can query the college roster
+    localStorage.setItem('pratibha_custom_students', JSON.stringify(students));
   } catch {}
 }
 
