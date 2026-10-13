@@ -794,54 +794,7 @@ export default function AppLayout({ children }) {
             </span>
           </div>
 
-          {/* Right: Status Pill & Persona Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                fontSize: '0.72rem',
-                color: backendLive ? '#059669' : '#D97706',
-                backgroundColor: backendLive ? '#ECFDF5' : '#FFFBEB',
-                border: `1px solid ${backendLive ? '#A7F3D0' : '#FDE68A'}`,
-                padding: '3px 8px',
-                borderRadius: '6px',
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-              }}
-              title={backendLive ? 'Backend Express API is connected and responding' : 'Operating with deterministic synthetic intelligence records'}
-            >
-              <span
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  borderRadius: '50%',
-                  backgroundColor: backendLive ? '#10B981' : '#F59E0B',
-                }}
-              />
-              <span className="hide-on-mobile">{backendLive ? 'Live Service' : 'Synthetic'}</span>
-            </div>
-
-            {/* Current Role Badge */}
-            <span
-              style={{
-                fontSize: '0.74rem',
-                padding: '3px 9px',
-                borderRadius: '6px',
-                backgroundColor: '#F1F5F9',
-                border: '1px solid #CBD5E1',
-                color: '#1E293B',
-                fontWeight: 600,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {isMobile
-                ? (currentUser?.role === 'institution_admin' ? 'Admin' : currentUser?.role === 'faculty_mentor' ? 'Faculty' : currentUser?.role === 'placement_officer' ? 'TPO' : (isStudent ? 'Student' : 'Staff'))
-                : (currentUser?.roleLabel || 'Admin')}
-            </span>
-
-          </div>
+          
         </header>
 
         {/* SCROLLABLE MAIN CONTENT AREA (WITH AMPLE BOTTOM CLEARANCE FOR MASCOT) */}
