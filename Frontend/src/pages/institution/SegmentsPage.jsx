@@ -125,7 +125,7 @@ export default function SegmentsPage() {
               </div>
 
               <button
-                onClick={() => navigate('/institution/students')}
+                onClick={() => navigate(`/institution/students?segment=${seg.key}`)}
                 style={{
                   backgroundColor: '#F8FAFC',
                   border: '1px solid #E2E8F0',
@@ -140,7 +140,7 @@ export default function SegmentsPage() {
                   gap: '4px',
                 }}
               >
-                <span>View Students</span>
+                <span>View Students ({seg.studentCount})</span>
                 <ArrowRight size={13} />
               </button>
             </div>

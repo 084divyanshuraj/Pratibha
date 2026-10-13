@@ -32,18 +32,20 @@ export default function StudentDirectoryPage() {
   const [department, setDepartment] = useState(searchParams.get('dept') || '');
   const [riskFilter, setRiskFilter] = useState(searchParams.get('risk') || searchParams.get('filter') || '');
   const [personaChip, setPersonaChip] = useState(searchParams.get('personaChip') || '');
+  const [segmentFilter, setSegmentFilter] = useState(searchParams.get('segment') || '');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Sync state when URL query parameters change (e.g. from Risk Radar buttons)
+  // Sync state when URL query parameters change (e.g. from Risk Radar buttons or Segments)
   useEffect(() => {
     setDepartment(searchParams.get('dept') || '');
     const rf = searchParams.get('risk') || searchParams.get('filter') || '';
     setRiskFilter(rf);
     setPersonaChip(searchParams.get('personaChip') || '');
+    setSegmentFilter(searchParams.get('segment') || '');
     setCurrentPage(1);
   }, [searchParams]);
 
@@ -72,7 +74,7 @@ export default function StudentDirectoryPage() {
 
   const fetchStudents = () => {
     setLoading(true);
-    api.getStudents({ search, department, risk: riskFilter, personaChip, limit: 'all' })
+    api.getStudents({ search, department, risk: riskFilter, personaChip, segment: segmentFilter, limit: 'all' })
       .then((res) => {
         let list = res?.students || [];
         setTotalCount(res?.pagination?.total ?? list.length);
@@ -92,6 +94,19 @@ export default function StudentDirectoryPage() {
           list = list.filter((s) => s.placementRisk === 'high');
         } else if (riskFilter === 'high') {
           list = list.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
+        }
+
+        // Apply Segment Archetypes
+        if (segmentFilter === 'critical_attendance_shortfall') {
+          list = list.filter((s) => (Number(s.attendanceRate) || Number(s.attendancePercentage) || 0) < 70);
+        } else if (segmentFilter === 'high_academic_low_placement') {
+          list = list.filter((s) => (Number(s.cgpa) || 0) >= 7.5 && s.placementRisk === 'high');
+        } else if (segmentFilter === 'academic_remediation_priority') {
+          list = list.filter((s) => s.academicRisk === 'high');
+        } else if (segmentFilter === 'placement_at_risk_cohort') {
+          list = list.filter((s) => s.placementRisk === 'high');
+        } else if (segmentFilter === 'tier1_ready_cohort') {
+          list = list.filter((s) => (Number(s.cgpa) || 0) >= 8.0 && s.placementRisk === 'low');
         }
 
         // Apply Persona Chips
@@ -121,7 +136,7 @@ export default function StudentDirectoryPage() {
     const handleUpdate = () => fetchStudents();
     window.addEventListener('pratibha_data_updated', handleUpdate);
     return () => window.removeEventListener('pratibha_data_updated', handleUpdate);
-  }, [search, department, riskFilter, personaChip, pageSize, currentPage]);
+  }, [search, department, riskFilter, personaChip, segmentFilter, pageSize, currentPage]);
 
   // Export CSV Handler
   const handleExportCsv = () => {
@@ -521,12 +536,60 @@ export default function StudentDirectoryPage() {
           </span>
         )}
 
-        {(department || riskFilter || personaChip || search) && (
+        {segmentFilter && (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '3px 10px',
+              borderRadius: '6px',
+              backgroundColor: '#EFF6FF',
+              color: '#1D4ED8',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              border: '1px solid #BFDBFE',
+            }}
+          >
+            {segmentFilter === 'critical_attendance_shortfall' && '🚨 Critical Attendance Shortfall (<70%)'}
+            {segmentFilter === 'high_academic_low_placement' && '⚡ High Academic, Low Placement Readiness'}
+            {segmentFilter === 'academic_remediation_priority' && '📚 Academic Remediation Priority'}
+            {segmentFilter === 'placement_at_risk_cohort' && '💼 Placement At-Risk Cohort'}
+            {segmentFilter === 'tier1_ready_cohort' && '⭐ Tier-1 Placement Ready Cohort'}
+            <button
+              onClick={() => {
+                setSegmentFilter('');
+                setSearchParams((prev) => {
+                  const next = new URLSearchParams(prev);
+                  next.delete('segment');
+                  return next;
+                });
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                padding: '0 2px',
+                display: 'flex',
+                alignItems: 'center',
+                fontWeight: 'bold',
+                fontSize: '0.9rem',
+              }}
+              title="Remove segment filter"
+            >
+              ×
+            </button>
+          </span>
+        )}
+
+        {(department || riskFilter || personaChip || segmentFilter || search) && (
           <button
             onClick={() => {
               setDepartment('');
               setRiskFilter('');
               setPersonaChip('');
+              setSegmentFilter('');
               setSearch('');
               setSearchParams({});
               setCurrentPage(1);

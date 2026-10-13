@@ -1181,7 +1181,11 @@ export const api = {
       );
     }
     if (params.department && params.department !== 'All Departments') {
-      filtered = filtered.filter((st) => st.department === params.department);
+      const normDept = params.department.trim().toLowerCase().replace(/\.$/, '');
+      filtered = filtered.filter((st) => {
+        const sDept = (st.department || '').trim().toLowerCase().replace(/\.$/, '');
+        return sDept === normDept || sDept.startsWith(normDept) || normDept.startsWith(sDept);
+      });
     }
     if (params.risk || params.filter) {
       const r = params.risk || params.filter;
@@ -1199,6 +1203,20 @@ export const api = {
         filtered = filtered.filter((s) => s.placementRisk === 'high');
       } else if (r === 'high') {
         filtered = filtered.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
+      }
+    }
+    if (params.segment) {
+      const seg = params.segment;
+      if (seg === 'critical_attendance_shortfall') {
+        filtered = filtered.filter((s) => (Number(s.attendanceRate) || Number(s.attendancePercentage) || 0) < 70);
+      } else if (seg === 'high_academic_low_placement') {
+        filtered = filtered.filter((s) => (Number(s.cgpa) || 0) >= 7.5 && s.placementRisk === 'high');
+      } else if (seg === 'academic_remediation_priority') {
+        filtered = filtered.filter((s) => s.academicRisk === 'high');
+      } else if (seg === 'placement_at_risk_cohort') {
+        filtered = filtered.filter((s) => s.placementRisk === 'high');
+      } else if (seg === 'tier1_ready_cohort') {
+        filtered = filtered.filter((s) => (Number(s.cgpa) || 0) >= 8.0 && s.placementRisk === 'low');
       }
     }
     if (params.personaChip) {
@@ -1504,18 +1522,19 @@ export const api = {
     }
 
     const students = getActiveStudents();
-    const attendanceShortfall = students.filter((s) => (s.attendanceRate || 0) < 70).length;
-    const divergent = students.filter((s) => (s.cgpa || 0) >= 7.5 && s.placementRisk === 'high').length;
+    const hasData = students.length > 0;
+    const attendanceShortfall = students.filter((s) => (Number(s.attendanceRate) || Number(s.attendancePercentage) || 0) < 70).length;
+    const divergent = students.filter((s) => (Number(s.cgpa) || 0) >= 7.5 && s.placementRisk === 'high').length;
     const academicHigh = students.filter((s) => s.academicRisk === 'high').length;
     const placementHigh = students.filter((s) => s.placementRisk === 'high').length;
-    const tier1 = students.filter((s) => (s.cgpa || 0) >= 8.0 && s.placementRisk === 'low').length;
+    const tier1 = students.filter((s) => (Number(s.cgpa) || 0) >= 8.0 && s.placementRisk === 'low').length;
 
     return [
       {
         key: 'critical_attendance_shortfall',
         name: 'Critical Attendance Shortfall',
         description: 'Students with attendance below 70%, triggering mandatory institutional welfare review.',
-        studentCount: attendanceShortfall || 12,
+        studentCount: hasData ? attendanceShortfall : 12,
         riskDriver: 'Attendance Consistency',
         urgency: 'high',
       },
@@ -1523,7 +1542,7 @@ export const api = {
         key: 'high_academic_low_placement',
         name: 'High Academic, Low Placement Readiness',
         description: 'Strong academic performers (CGPA >= 7.5) exhibiting placement & interview shortfalls.',
-        studentCount: divergent || 15,
+        studentCount: hasData ? divergent : 15,
         riskDriver: 'Placement & Communication Skills',
         urgency: 'medium',
       },
@@ -1531,7 +1550,7 @@ export const api = {
         key: 'academic_remediation_priority',
         name: 'Academic Remediation Priority',
         description: 'Students with critical CGPA and exam backlogs requiring faculty tutoring.',
-        studentCount: academicHigh || 9,
+        studentCount: hasData ? academicHigh : 9,
         riskDriver: 'Exam & SGPA Shortfall',
         urgency: 'high',
       },
@@ -1539,7 +1558,7 @@ export const api = {
         key: 'placement_at_risk_cohort',
         name: 'Placement At-Risk Cohort',
         description: 'Students scoring below benchmark in coding or technical mock interviews.',
-        studentCount: placementHigh || 24,
+        studentCount: hasData ? placementHigh : 24,
         riskDriver: 'Technical & Aptitude Assessments',
         urgency: 'medium',
       },
@@ -1547,7 +1566,7 @@ export const api = {
         key: 'tier1_ready_cohort',
         name: 'Tier-1 Placement Ready Cohort',
         description: 'High CGPA scholars with optimal soft skills ready for premier placement drives.',
-        studentCount: tier1 || 42,
+        studentCount: hasData ? tier1 : 42,
         riskDriver: 'High Distinction Benchmark',
         urgency: 'low',
       },
