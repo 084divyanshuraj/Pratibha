@@ -501,50 +501,6 @@ export default function StudentPortalPage() {
               <h1 style={{ fontSize: '1.45rem', fontWeight: 700, color: '#082B56', margin: 0, letterSpacing: '-0.3px' }}>
                 {student.fullName}
               </h1>
-              {hasCollegeRecords ? (
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    padding: '3px 9px',
-                    backgroundColor: '#ECFDF5',
-                    color: '#059669',
-                    borderRadius: '6px',
-                    border: '1px solid #A7F3D0',
-                  }}
-                >
-                  ✓ Active Cohort
-                </span>
-              ) : (
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    padding: '3px 9px',
-                    backgroundColor: '#FEF3C7',
-                    color: '#B45309',
-                    borderRadius: '6px',
-                    border: '1px solid #FDE68A',
-                  }}
-                >
-                  Records Syncing
-                </span>
-              )}
-              {currentUser?.authProvider === 'firebase_google' && (
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 600,
-                    padding: '3px 9px',
-                    backgroundColor: '#EFF6FF',
-                    color: '#1D4ED8',
-                    borderRadius: '6px',
-                    border: '1px solid #BFDBFE',
-                  }}
-                >
-                  Google SSO
-                </span>
-              )}
             </div>
 
             <div style={{ fontSize: '0.84rem', color: '#475569', marginTop: '4px' }}>
@@ -1131,18 +1087,6 @@ export default function StudentPortalPage() {
                   <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase' }}>
                     Personal Pratibha Success Score
                   </div>
-                  <span
-                    style={{
-                      fontSize: '0.7rem',
-                      fontWeight: 600,
-                      padding: '2px 8px',
-                      backgroundColor: '#E0F2FE',
-                      color: '#0369A1',
-                      borderRadius: '4px',
-                    }}
-                  >
-                    Explainable Model v1.0
-                  </span>
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem', margin: '1.5rem 0' }}>
@@ -1256,22 +1200,9 @@ export default function StudentPortalPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <ShieldAlert size={18} color="#DC2626" />
                     <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#991B1B' }}>
-                      Model 1: Debarment & Dropout Forecast
+                      Debarment & Attendance Forecast
                     </span>
                   </div>
-                  <span
-                    style={{
-                      fontSize: '0.66rem',
-                      fontFamily: 'monospace',
-                      fontWeight: 600,
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      backgroundColor: '#FEE2E2',
-                      color: '#991B1B',
-                    }}
-                  >
-                    Cox-PH-v1.2
-                  </span>
                 </div>
                 <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '12px' }}>
                   Time-to-event survival modeling evaluates semester credit loss & attendance debarment horizon.
@@ -1322,22 +1253,9 @@ export default function StudentPortalPage() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Sparkles size={18} color="#16A34A" />
                     <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}>
-                      Model 2: Personalized Causal Uplift
+                      Personalized Growth & Recommendations
                     </span>
                   </div>
-                  <span
-                    style={{
-                      fontSize: '0.66rem',
-                      fontFamily: 'monospace',
-                      fontWeight: 600,
-                      padding: '2px 6px',
-                      borderRadius: '4px',
-                      backgroundColor: '#DCFCE7',
-                      color: '#15803D',
-                    }}
-                  >
-                    CausalForest-v2.1
-                  </span>
                 </div>
                 <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '8px' }}>
                   Optimal counterfactual treatment effect identified for maximum metric boost.
@@ -1395,7 +1313,7 @@ export default function StudentPortalPage() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <MessageSquare size={18} color="#2563EB" />
                 <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1E40AF' }}>
-                  Model 3: Student Voice & Burnout NLP Radar (RoBERTa-EdSentiment-v1)
+                  Student Voice & Well-Being Feedback
                 </span>
               </div>
               <span

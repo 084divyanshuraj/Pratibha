@@ -329,7 +329,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                   {student.academicRisk || 'Low'} Risk
                 </span>
               </div>
-              <div style={{ fontSize: '0.64rem', color: '#64748B', marginTop: '3px' }}>LightGBM (~91%)</div>
+              <div style={{ fontSize: '0.64rem', color: '#64748B', marginTop: '3px' }}>Evaluated Metric</div>
             </div>
 
             {/* Placement Risk */}
@@ -353,13 +353,13 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                   {student.placementRisk || 'Medium'} Risk
                 </span>
               </div>
-              <div style={{ fontSize: '0.64rem', color: '#64748B', marginTop: '3px' }}>LogReg (~69%)</div>
+              <div style={{ fontSize: '0.64rem', color: '#64748B', marginTop: '3px' }}>Evaluated Metric</div>
             </div>
 
-            {/* Dropout Forecast (M1) */}
+            {/* Dropout Forecast */}
             <div style={{ backgroundColor: '#FFFFFF', padding: '8px 10px', borderRadius: '8px', border: '1px solid #E2E8F0' }}>
               <div style={{ fontSize: '0.68rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
-                Dropout Forecast (M1)
+                Dropout Forecast
               </div>
               <div style={{ marginTop: '5px' }}>
                 <span
@@ -611,11 +611,8 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                             <ShieldAlert size={18} color="#DC2626" />
                             <div>
                               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#991B1B' }}>
-                                Model 1: Dropout & Debarment Trajectory
+                                Dropout & Debarment Trajectory
                               </div>
-                              <span style={{ fontSize: '0.68rem', color: '#B91C1C', fontFamily: 'monospace' }}>
-                                Engine: {predictionsData.targets.dropout_forecast.modelVersion || 'Cox-PH-v1.2'}
-                              </span>
                             </div>
                           </div>
                           <span
@@ -692,10 +689,7 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                       <div style={{ backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', borderRadius: '8px', padding: '12px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                           <span style={{ fontSize: '0.80rem', fontWeight: 700, color: '#0F172A' }}>
-                            LightGBM TreeSHAP Feature Attributions
-                          </span>
-                          <span style={{ fontSize: '0.66rem', color: '#64748B', fontFamily: 'monospace' }}>
-                            academic-risk-lgbm-v1
+                            Key Academic Risk Feature Attributions
                           </span>
                         </div>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -806,11 +800,8 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                             <Sparkles size={18} color="#16A34A" />
                             <div>
                               <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#14532D' }}>
-                                Model 2: Causal Uplift Recommender
+                                Causal Uplift Recommender
                               </div>
-                              <span style={{ fontSize: '0.68rem', color: '#166534', fontFamily: 'monospace' }}>
-                                Engine: {predictionsData.targets.causal_uplift.modelVersion || 'CausalForest-v2.1'}
-                              </span>
                             </div>
                           </div>
                           <span
@@ -936,11 +927,8 @@ export default function StudentDrawer({ student, isOpen, onClose }) {
                           <MessageSquare size={18} color="#2563EB" />
                           <div>
                             <div style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1E3A8A' }}>
-                              Model 3: Student Voice & Burnout NLP Radar
+                              Student Voice & Burnout Radar
                             </div>
-                            <span style={{ fontSize: '0.68rem', color: '#1D4ED8', fontFamily: 'monospace' }}>
-                              Engine: {predictionsData?.targets?.sentiment_nlp?.modelVersion || 'RoBERTa-EdSentiment-v1'}
-                            </span>
                           </div>
                         </div>
                         <span

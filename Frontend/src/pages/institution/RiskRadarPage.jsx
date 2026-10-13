@@ -597,7 +597,7 @@ export default function RiskRadarPage() {
               Dropout & Debarment Trajectory Forecasting
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
-              Engine: <code style={{ color: '#991B1B', fontWeight: 600 }}>Cox-PH-v1.2</code> • Time-to-event longitudinal survival hazard modeling
+              Methodology: Time-to-event longitudinal survival hazard modeling
             </div>
             <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#475569' }}>
               <strong>Outputs:</strong> Hazard Multiplier (e.g. 2.4x), Survival Rate %, Projected Debarment Week, 10-Week S(t) Curve.
@@ -614,7 +614,7 @@ export default function RiskRadarPage() {
               Causal Uplift & Remedial Efficacy Recommender
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
-              Engine: <code style={{ color: '#15803D', fontWeight: 600 }}>CausalForest-v2.1</code> • Generalized Random Forest counterfactual uplift
+              Methodology: Generalized Random Forest counterfactual uplift
             </div>
             <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#475569' }}>
               <strong>Outputs:</strong> Optimal Intervention Type, Predicted Uplift Delta % (+18.2%), 95% Confidence Interval, Recovery Horizon.
@@ -631,7 +631,7 @@ export default function RiskRadarPage() {
               Student Voice & Burnout NLP Radar
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
-              Engine: <code style={{ color: '#1D4ED8', fontWeight: 600 }}>RoBERTa-EdSentiment-v1</code> • Aspect-based sentiment & fatigue detection
+              Methodology: Aspect-based sentiment & fatigue detection
             </div>
             <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#475569' }}>
               <strong>Outputs:</strong> Burnout Risk % (0-100), Academic Rigor Pace, Fatigue Level, Thematic Hashtags, FERPA/DPDP Redaction.
@@ -648,7 +648,7 @@ export default function RiskRadarPage() {
               Prescriptive Resource Allocation Optimizer
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
-              Engine: <code style={{ color: '#7E22CE', fontWeight: 600 }}>PuLP-MILP-v1.0</code> • Knapsack multi-constraint capacity & budget solver
+              Methodology: Knapsack multi-constraint capacity & budget solver
             </div>
             <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#475569' }}>
               <strong>Outputs:</strong> Optimal Seat Allocations, Budget Utilization, Reach Gain (+23.4%), Predicted Cohort Delta (+13.2%).
@@ -665,7 +665,7 @@ export default function RiskRadarPage() {
               Decoupled Academic & Placement Risk
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
-              Engine: <code style={{ color: '#EA580C', fontWeight: 600 }}>academic-risk-lgbm-v1 + TreeSHAP</code> • Independent gradient boosted trees
+              Methodology: Independent gradient boosted trees & TreeSHAP attributions
             </div>
             <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#475569' }}>
               <strong>Outputs:</strong> Independent Academic Risk %, Independent Placement Risk %, Exact TreeSHAP feature waterfall.
@@ -682,7 +682,7 @@ export default function RiskRadarPage() {
               Explainable Student Success Score
             </div>
             <div style={{ fontSize: '0.74rem', color: '#64748B', marginTop: '2px' }}>
-              Formula: <code style={{ color: '#0F172A', fontWeight: 600 }}>sss-v1</code> • Dynamic weight redistribution across 7 domains
+              Methodology: Dynamic weight redistribution across 7 domains
             </div>
             <div style={{ marginTop: '8px', fontSize: '0.72rem', color: '#475569' }}>
               <strong>Outputs:</strong> Readiness Rating (0–100 scale), Domain Weight Vector, Exact Factor Drivers, Data Completeness %.
@@ -707,28 +707,28 @@ export default function RiskRadarPage() {
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '10px', fontSize: '0.76rem' }}>
               <div style={{ backgroundColor: '#1E293B', padding: '10px', borderRadius: '6px' }}>
-                <strong style={{ color: '#F87171' }}>Model 1 (Cox-PH Survival):</strong>
+                <strong style={{ color: '#F87171' }}>Survival Forecasting:</strong>
                 <div style={{ marginTop: '4px' }}>• Hazard Multiplier: <strong>{testResult.predictions?.targets?.dropout_forecast?.hazardMultiplier || '1.0x'}</strong></div>
                 <div>• Debarment: <strong>{testResult.predictions?.targets?.dropout_forecast?.projectedDebarmentWeek || 'None Projected'}</strong></div>
                 <div>• Survival: <strong>{testResult.predictions?.targets?.dropout_forecast?.survivalRatePct || 92}%</strong></div>
               </div>
 
               <div style={{ backgroundColor: '#1E293B', padding: '10px', borderRadius: '6px' }}>
-                <strong style={{ color: '#4ADE80' }}>Model 2 (Causal Uplift):</strong>
+                <strong style={{ color: '#4ADE80' }}>Causal Uplift:</strong>
                 <div style={{ marginTop: '4px' }}>• Uplift: <strong>+{testResult.predictions?.targets?.causal_uplift?.predictedUpliftPct || 16.5}%</strong></div>
                 <div>• Action: <strong>{testResult.predictions?.targets?.causal_uplift?.optimalIntervention}</strong></div>
                 <div>• Horizon: <strong>{testResult.predictions?.targets?.causal_uplift?.estimatedRecoveryWeeks || 3} Wks</strong></div>
               </div>
 
               <div style={{ backgroundColor: '#1E293B', padding: '10px', borderRadius: '6px' }}>
-                <strong style={{ color: '#60A5FA' }}>Model 3 (RoBERTa NLP):</strong>
+                <strong style={{ color: '#60A5FA' }}>Student Voice NLP:</strong>
                 <div style={{ marginTop: '4px' }}>• Burnout Risk: <strong>{testResult.predictions?.targets?.sentiment_nlp?.burnoutRiskPct || 24}%</strong></div>
                 <div>• State: <strong>{testResult.predictions?.targets?.sentiment_nlp?.sentimentLabel}</strong></div>
                 <div>• Tags: <strong>{(testResult.predictions?.targets?.sentiment_nlp?.detectedThemes || []).slice(0, 2).join(' ')}</strong></div>
               </div>
 
               <div style={{ backgroundColor: '#1E293B', padding: '10px', borderRadius: '6px' }}>
-                <strong style={{ color: '#FBBF24' }}>Success Score (sss-v1):</strong>
+                <strong style={{ color: '#FBBF24' }}>Success Score:</strong>
                 <div style={{ marginTop: '4px' }}>• Composite Score: <strong>{testResult.score?.score || testResult.student.cgpa * 10} / 100</strong></div>
                 <div>• Band: <strong>{testResult.score?.rating_band || 'GOOD'}</strong></div>
                 <div>• Completeness: <strong>100% (7 Domains)</strong></div>
