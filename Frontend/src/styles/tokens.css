@@ -9,60 +9,65 @@
      1. COLOR TOKENS
      ========================================================================== */
 
-  /* Brand Palette */
-  --color-navy: #082B56;
-  --color-navy-deep: #061A33;
-  --color-blue-primary: #1677D2;
-  --color-blue-bright: #258BFA;
-  --color-blue-surface: #EAF3FF;
+  /* Brand Palette: Deep Crimson & Warm Bronze (Royal Academic Authority) */
+  --color-navy: #2A0E1C; /* Rich Velvet Wine / Royal Obsidian Crimson */
+  --color-navy-deep: #1A0912; /* Deep Obsidian Midnight Crimson */
+  --color-blue-primary: #9F1239; /* Royal Deep Crimson Primary */
+  --color-blue-bright: #E11D48; /* Vibrant Luminous Rose Crimson */
+  --color-blue-surface: #FFF1F2; /* Soft Rose Champagne Tint */
   --color-white: #FFFFFF;
 
+  /* Bronze & Champagne Gold Accents (Talent & Brilliance - "Pratibha") */
+  --color-bronze: #D97706; /* Polished Warm Bronze */
+  --color-bronze-gold: #F59E0B; /* Luminous Champagne Gold */
+  --color-bronze-surface: #FEF3C7; /* Soft Amber Glow */
+
   /* Interactive States */
-  --color-blue-primary-hover: #1262AF;
-  --color-blue-primary-active: #0E4F8E;
-  --color-blue-bright-hover: #1A7CE6;
-  --color-navy-hover: #0B3971;
+  --color-blue-primary-hover: #881337;
+  --color-blue-primary-active: #700F2C;
+  --color-blue-bright-hover: #BE123C;
+  --color-navy-hover: #3B1428;
 
   /* Neutrals & Typography */
-  --color-text-main: #172033;
-  --color-text-secondary: #667085;
-  --color-text-muted: #94A3B8;
+  --color-text-main: #1C1917;
+  --color-text-secondary: #57534E;
+  --color-text-muted: #78716C;
   --color-text-inverse: #FFFFFF;
-  --color-text-inverse-muted: #CBD5E1;
+  --color-text-inverse-muted: #F5D0FE;
 
   /* Surfaces & Structural Borders */
-  --color-border: #E4E9F0;
-  --color-border-subtle: #F1F5F9;
-  --color-border-strong: #CBD5E1;
-  --color-bg-page: #F6F8FC;
+  --color-border: #E7E5E4;
+  --color-border-subtle: #F5F5F4;
+  --color-border-strong: #D6D3D1;
+  --color-bg-page: #FAF8F8;
   --color-bg-card: #FFFFFF;
-  --color-bg-alt: #F8FAFC;
+  --color-bg-alt: #F5F5F4;
 
   /* Functional Status & Risk Tokens */
-  --color-status-success: #0D9488;
+  --color-status-success: #059669;
   --color-status-warning: #D97706;
   --color-status-danger: #DC2626;
-  --color-status-neutral: #64748B;
+  --color-status-neutral: #57534E;
 
   /* Surface Tints for Badges & Alerts */
-  --color-status-success-bg: rgba(13, 148, 136, 0.10);
-  --color-status-success-border: rgba(13, 148, 136, 0.28);
+  --color-status-success-bg: rgba(5, 150, 105, 0.10);
+  --color-status-success-border: rgba(5, 150, 105, 0.28);
   --color-status-warning-bg: rgba(217, 119, 6, 0.10);
   --color-status-warning-border: rgba(217, 119, 6, 0.28);
   --color-status-danger-bg: rgba(220, 38, 38, 0.10);
   --color-status-danger-border: rgba(220, 38, 38, 0.28);
-  --color-status-neutral-bg: rgba(100, 116, 139, 0.10);
-  --color-status-neutral-border: rgba(100, 116, 139, 0.22);
-  --color-blue-surface-border: rgba(22, 119, 210, 0.20);
+  --color-status-neutral-bg: rgba(87, 83, 78, 0.10);
+  --color-status-neutral-border: rgba(87, 83, 78, 0.22);
+  --color-blue-surface-border: rgba(159, 18, 57, 0.20);
 
   /* Chart Visualizer Palette */
-  --chart-color-1: #1677D2; /* Primary Blue */
-  --chart-color-2: #0D9488; /* Emerald Teal */
-  --chart-color-3: #D97706; /* Amber */
-  --chart-color-4: #8B5CF6; /* Violet */
-  --chart-color-5: #258BFA; /* Sky Blue */
+  --chart-color-1: #9F1239; /* Royal Crimson */
+  --chart-color-2: #D97706; /* Warm Bronze */
+  --chart-color-3: #059669; /* Emerald */
+  --chart-color-4: #F59E0B; /* Gold */
+  --chart-color-5: #E11D48; /* Bright Crimson */
   --chart-color-6: #DC2626; /* Crimson Risk */
-  --chart-grid-stroke: #E2E8F0;
+  --chart-grid-stroke: #E7E5E4;
 
   /* ==========================================================================
      2. TYPOGRAPHY TOKENS

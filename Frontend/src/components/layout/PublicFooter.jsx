@@ -59,9 +59,9 @@ export default function PublicFooter() {
   return (
     <footer
       style={{
-        backgroundColor: '#051329',
+        backgroundColor: '#1A0912',
         color: 'rgba(255, 255, 255, 0.75)',
-        borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+        borderTop: '1px solid rgba(217, 119, 6, 0.18)',
         padding: '3rem 1.25rem 2rem',
         marginTop: 'auto',
       }}

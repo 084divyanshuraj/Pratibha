@@ -5,13 +5,13 @@
  */
 
 :root {
-  --neon-cyan: #00a2ff;
-  --neon-glow: rgba(0, 162, 255, 0.55);
-  --teal-dark: #061c37;
-  --teal-mid: #0c3a6b;
-  --teal-bright: #00d4ff;
-  --card-dark: #070d18;
-  --card-bg-subtle: #0d1527;
+  --neon-cyan: #F59E0B;
+  --neon-glow: rgba(245, 158, 11, 0.55);
+  --teal-dark: #2A0E1C;
+  --teal-mid: #9F1239;
+  --teal-bright: #FDA4AF;
+  --card-dark: #1A0912;
+  --card-bg-subtle: #260E1A;
   --speed: 1s;
 }
 
@@ -19,7 +19,7 @@
 .pratibha-cyber-page {
   min-height: 100vh;
   width: 100%;
-  background: radial-gradient(circle at 50% 30%, #0c1a30 0%, #050b14 65%, #02050a 100%);
+  background: radial-gradient(circle at 50% 30%, #2A0E1C 0%, #1A0912 65%, #10050B 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -36,7 +36,7 @@
   position: absolute;
   width: 650px;
   height: 650px;
-  background: radial-gradient(circle, rgba(0, 162, 255, 0.12) 0%, rgba(6, 28, 55, 0.05) 50%, transparent 70%);
+  background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(38, 14, 25, 0.05) 50%, transparent 70%);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -80,7 +80,7 @@
 }
 
 .pratibha-cyber-nav-link:hover {
-  color: #00d4ff;
+  color: #FDA4AF;
   text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
 }
 
@@ -98,8 +98,8 @@
   border-radius: 14px;
   box-shadow:
     0 0 15px var(--neon-cyan),
-    0 0 45px rgba(0, 162, 255, 0.4),
-    inset 0 0 25px rgba(0, 162, 255, 0.12);
+    0 0 45px rgba(245, 158, 11, 0.4),
+    inset 0 0 25px rgba(245, 158, 11, 0.12);
   overflow: hidden;
   z-index: 10;
   margin: 10px 0 15px 0;
@@ -210,7 +210,7 @@
   box-sizing: border-box;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(0, 162, 255, 0.3) transparent;
+  scrollbar-color: rgba(245, 158, 11, 0.3) transparent;
 }
 
 .cyber-form-box::-webkit-scrollbar {
@@ -218,7 +218,7 @@
 }
 
 .cyber-form-box::-webkit-scrollbar-thumb {
-  background: rgba(0, 162, 255, 0.3);
+  background: rgba(245, 158, 11, 0.3);
   border-radius: 4px;
 }
 
@@ -239,14 +239,14 @@
   color: #ffffff;
   margin-bottom: 12px;
   letter-spacing: -0.02em;
-  text-shadow: 0 0 12px rgba(0, 162, 255, 0.4);
+  text-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
 }
 
 /* Portal Switcher Tabs */
 .cyber-portal-tabs {
   display: flex;
   background: rgba(13, 21, 39, 0.75);
-  border: 1px solid rgba(0, 162, 255, 0.35);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   border-radius: 8px;
   padding: 3px;
   gap: 4px;
@@ -271,19 +271,19 @@
 }
 
 .cyber-portal-tab.active {
-  background: linear-gradient(90deg, #0c3a6b, #0088cc);
+  background: linear-gradient(90deg, #9F1239, #0088cc);
   color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 162, 255, 0.5);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
 }
 
 /* Institutional Post / Role Persona Selector */
 .cyber-role-selector-wrap {
   margin-bottom: 10px;
   background: rgba(13, 21, 39, 0.7);
-  border: 1px solid rgba(0, 162, 255, 0.25);
+  border: 1px solid rgba(245, 158, 11, 0.25);
   border-radius: 10px;
   padding: 8px 10px;
-  box-shadow: inset 0 0 12px rgba(0, 162, 255, 0.05);
+  box-shadow: inset 0 0 12px rgba(245, 158, 11, 0.05);
 }
 
 .cyber-role-selector-label {
@@ -302,10 +302,10 @@
   color: #38bdf8;
   font-size: 0.65rem;
   font-weight: 600;
-  background: rgba(0, 162, 255, 0.12);
+  background: rgba(245, 158, 11, 0.12);
   padding: 2px 6px;
   border-radius: 4px;
-  border: 1px solid rgba(0, 162, 255, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.3);
 }
 
 .cyber-role-selector-grid {
@@ -331,17 +331,17 @@
 }
 
 .cyber-role-card:hover {
-  background: rgba(0, 162, 255, 0.18);
-  border-color: rgba(0, 162, 255, 0.45);
+  background: rgba(245, 158, 11, 0.18);
+  border-color: rgba(245, 158, 11, 0.45);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
 .cyber-role-card.active {
-  background: linear-gradient(135deg, rgba(12, 58, 107, 0.9) 0%, rgba(0, 162, 255, 0.35) 100%);
-  border-color: #00d4ff;
+  background: linear-gradient(135deg, rgba(12, 58, 107, 0.9) 0%, rgba(245, 158, 11, 0.35) 100%);
+  border-color: #FDA4AF;
   color: #ffffff;
-  box-shadow: 0 0 12px rgba(0, 162, 255, 0.45);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.45);
 }
 
 .cyber-role-card-icon {
@@ -362,7 +362,7 @@
 .cyber-role-desc-banner {
   margin-top: 6px;
   padding: 4px 8px;
-  background: rgba(0, 162, 255, 0.08);
+  background: rgba(245, 158, 11, 0.08);
   border-radius: 6px;
   font-size: 0.65rem;
   color: #93c5fd;
@@ -402,14 +402,14 @@
 .cyber-input-box input:-webkit-autofill:active {
   -webkit-text-fill-color: #ffffff !important;
   color: #ffffff !important;
-  -webkit-box-shadow: 0 0 0 1000px #070d18 inset !important;
-  box-shadow: 0 0 0 1000px #070d18 inset !important;
+  -webkit-box-shadow: 0 0 0 1000px #1A0912 inset !important;
+  box-shadow: 0 0 0 1000px #1A0912 inset !important;
   transition: background-color 5000000s ease-in-out 0s !important;
   caret-color: #ffffff !important;
 }
 
 .cyber-input-box input:autofill {
-  background-color: #070d18 !important;
+  background-color: #1A0912 !important;
   color: #ffffff !important;
 }
 
@@ -431,13 +431,13 @@
 .cyber-input-box input:autofill ~ label {
   top: -4px;
   font-size: 0.72rem;
-  color: #00d4ff;
+  color: #FDA4AF;
   text-shadow: 0 0 6px rgba(0, 212, 255, 0.6);
 }
 
 .cyber-input-box input:focus {
   border-bottom-color: var(--neon-cyan);
-  box-shadow: 0 2px 8px rgba(0, 162, 255, 0.35);
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35);
 }
 
 .cyber-input-icon {
@@ -510,7 +510,7 @@
 }
 
 .cyber-forgot-link:hover {
-  color: #00d4ff;
+  color: #FDA4AF;
   text-decoration: underline;
 }
 
@@ -522,13 +522,13 @@
   margin-top: 16px;
   border-radius: 8px;
   border: 1.5px solid var(--neon-cyan);
-  background: linear-gradient(90deg, #062b54 0%, #0077b6 50%, #00a2ff 100%);
+  background: linear-gradient(90deg, #062b54 0%, #0077b6 50%, #F59E0B 100%);
   color: #ffffff;
   font-size: 0.94rem;
   font-weight: 600;
   cursor: pointer;
   overflow: hidden;
-  box-shadow: 0 0 16px rgba(0, 162, 255, 0.45);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.45);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -537,8 +537,8 @@
 }
 
 .cyber-btn:hover:not(:disabled) {
-  background: linear-gradient(90deg, #0077b6 0%, #00a2ff 50%, #00d4ff 100%);
-  box-shadow: 0 0 24px rgba(0, 162, 255, 0.75);
+  background: linear-gradient(90deg, #0077b6 0%, #F59E0B 50%, #FDA4AF 100%);
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.75);
   transform: translateY(-1px);
 }
 
@@ -566,9 +566,9 @@
 
 .cyber-google-btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.12);
-  border-color: #00d4ff;
+  border-color: #FDA4AF;
   color: #ffffff;
-  box-shadow: 0 0 16px rgba(0, 162, 255, 0.4);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
   transform: translateY(-1px);
 }
 
@@ -614,7 +614,7 @@
 }
 
 .cyber-switch-btn:hover {
-  color: #00d4ff;
+  color: #FDA4AF;
   text-decoration: underline;
 }
 
@@ -679,8 +679,8 @@
 /* Demo Notice Banner */
 .cyber-demo-banner {
   margin-top: 8px;
-  background: rgba(0, 162, 255, 0.08);
-  border: 1px solid rgba(0, 162, 255, 0.22);
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.22);
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 0.7rem;
@@ -823,11 +823,11 @@
   display: flex;
   background: rgba(6, 17, 34, 0.88);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 162, 255, 0.45);
+  border: 1px solid rgba(245, 158, 11, 0.45);
   border-radius: 50px;
   padding: 4px;
   gap: 6px;
-  box-shadow: 0 0 20px rgba(0, 162, 255, 0.22), inset 0 0 10px rgba(0, 162, 255, 0.08);
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.22), inset 0 0 10px rgba(245, 158, 11, 0.08);
 }
 
 .cyber-category-pill-btn {
@@ -846,14 +846,14 @@
 
 .cyber-category-pill-btn:hover {
   color: #e2e8f0;
-  background: rgba(0, 162, 255, 0.08);
+  background: rgba(245, 158, 11, 0.08);
 }
 
 .cyber-category-pill-btn.active {
   background: linear-gradient(135deg, rgba(12, 58, 107, 0.95), rgba(0, 136, 204, 0.9));
   border-color: rgba(0, 212, 255, 0.6);
   color: #ffffff;
-  box-shadow: 0 0 16px rgba(0, 162, 255, 0.5);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.5);
 }
 
 .cat-pill-icon {
@@ -887,19 +887,19 @@
 .cyber-mode-banner {
   margin-bottom: 10px;
   background: rgba(13, 21, 39, 0.8);
-  border: 1px solid rgba(0, 162, 255, 0.3);
+  border: 1px solid rgba(245, 158, 11, 0.3);
   border-radius: 8px;
   padding: 8px 10px;
 }
 
 .cyber-mode-banner.demo {
   border-color: rgba(56, 189, 248, 0.5);
-  background: linear-gradient(135deg, rgba(6, 28, 55, 0.65), rgba(12, 58, 107, 0.35));
+  background: linear-gradient(135deg, rgba(38, 14, 25, 0.65), rgba(12, 58, 107, 0.35));
 }
 
 .cyber-mode-banner.real {
   border-color: rgba(16, 185, 129, 0.45);
-  background: linear-gradient(135deg, rgba(6, 32, 24, 0.65), rgba(6, 28, 55, 0.45));
+  background: linear-gradient(135deg, rgba(6, 32, 24, 0.65), rgba(38, 14, 25, 0.45));
 }
 
 .cyber-mode-badge {
@@ -935,7 +935,7 @@
 
 .cyber-demo-persona-card {
   background: rgba(11, 23, 42, 0.85);
-  border: 1px solid rgba(0, 162, 255, 0.28);
+  border: 1px solid rgba(245, 158, 11, 0.28);
   border-radius: 8px;
   padding: 8px 10px;
   cursor: pointer;
@@ -949,13 +949,13 @@
   border-color: rgba(0, 212, 255, 0.6);
   background: rgba(12, 58, 107, 0.4);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 162, 255, 0.15);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
 }
 
 .cyber-demo-persona-card.selected {
-  border-color: #00d4ff;
-  background: linear-gradient(135deg, rgba(12, 58, 107, 0.7), rgba(0, 162, 255, 0.25));
-  box-shadow: 0 0 12px rgba(0, 162, 255, 0.35);
+  border-color: #FDA4AF;
+  background: linear-gradient(135deg, rgba(12, 58, 107, 0.7), rgba(245, 158, 11, 0.25));
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
 }
 
 .dp-card-header {
@@ -988,9 +988,9 @@
   font-weight: 600;
   padding: 1px 5px;
   border-radius: 4px;
-  background: rgba(0, 162, 255, 0.2);
+  background: rgba(245, 158, 11, 0.2);
   color: #38bdf8;
-  border: 1px solid rgba(0, 162, 255, 0.35);
+  border: 1px solid rgba(245, 158, 11, 0.35);
   white-space: nowrap;
 }
 
@@ -1006,7 +1006,7 @@
   padding: 4px 6px;
   border-radius: 6px;
   border: 1px solid rgba(0, 212, 255, 0.4);
-  background: linear-gradient(90deg, #0c3a6b, #0088cc);
+  background: linear-gradient(90deg, #9F1239, #0088cc);
   color: #ffffff;
   font-size: 0.68rem;
   font-weight: 700;
@@ -1019,7 +1019,7 @@
 }
 
 .dp-launch-btn:hover {
-  background: linear-gradient(90deg, #0088cc, #00d4ff);
+  background: linear-gradient(90deg, #0088cc, #FDA4AF);
   box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
   transform: translateY(-1px);
 }
@@ -1040,7 +1040,7 @@
 .cyber-demo-divider::after {
   content: '';
   flex: 1;
-  border-bottom: 1px solid rgba(0, 162, 255, 0.2);
+  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
 }
 
 .cyber-demo-divider span {

@@ -6,7 +6,11 @@
 
 export const IMAGES = {
   // Campus & Academic Photography
-  campusHero: '/assets/images/campus_night_hero.jpg',
+  campusHero: '/assets/images/campus_crimson_hero.jpg',
+  campusCrimsonHero: '/assets/images/campus_crimson_hero.jpg',
+  studentsLab: '/assets/images/students_lab_collaboration.jpg',
+  facultyMentorship: '/assets/images/faculty_mentorship.jpg',
+  placementSuccess: '/assets/images/placement_success.jpg',
   campusDay: '/assets/images/campus_day_login.jpg',
   libraryStudy: 'https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=800&auto=format&fit=crop&q=80',
   campusQuad: 'https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=800&auto=format&fit=crop&q=80',

@@ -39,8 +39,8 @@ export default function BrandLogo({ variant = 'dark', size = 'default', showTagl
           objectFit: 'contain',
           display: 'block',
           filter: isDark
-            ? 'drop-shadow(0 0 10px rgba(0, 162, 255, 0.45)) drop-shadow(0 2px 5px rgba(0,0,0,0.4))'
-            : 'drop-shadow(0 2px 4px rgba(6, 26, 51, 0.15))',
+            ? 'drop-shadow(0 0 10px rgba(245, 158, 11, 0.5)) drop-shadow(0 2px 5px rgba(0,0,0,0.4))'
+            : 'drop-shadow(0 2px 4px rgba(42, 14, 28, 0.15))',
           transition: 'transform 0.2s ease, filter 0.2s ease',
         }}
         onMouseEnter={(e) => {

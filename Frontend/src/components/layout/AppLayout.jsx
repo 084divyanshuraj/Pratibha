@@ -317,7 +317,7 @@ export default function AppLayout({ children }) {
       )}
 
       {/* =========================================================================
-          1. CHATGPT ARCHITECTURE WITH PRATIBHA DEEP BRAND NAVY SIDEBAR (#082B56)
+          1. CHATGPT ARCHITECTURE WITH PRATIBHA DEEP BRAND NAVY SIDEBAR (#1F0D17)
           ========================================================================= */}
       <aside
         style={{
@@ -327,8 +327,8 @@ export default function AppLayout({ children }) {
           transition: 'width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease',
           height: isMobile ? '100dvh' : '100vh',
           maxHeight: isMobile ? '100dvh' : '100vh',
-          backgroundColor: '#082B56',
-          borderRight: isSidebarCollapsed ? 'none' : '1px solid #061F3E',
+          backgroundColor: '#1F0D17',
+          borderRight: isSidebarCollapsed ? 'none' : '1px solid #2E1222',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
@@ -455,7 +455,7 @@ export default function AppLayout({ children }) {
                         textDecoration: 'none',
                         color: isActive ? '#FFFFFF' : 'rgba(255, 255, 255, 0.72)',
                         backgroundColor: isActive ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
-                        border: isActive ? '1px solid rgba(56, 189, 248, 0.3)' : '1px solid transparent',
+                        border: isActive ? '1px solid rgba(245, 158, 11, 0.3)' : '1px solid transparent',
                         fontSize: '0.84rem',
                         fontWeight: isActive ? 600 : 500,
                         boxShadow: isActive ? '0 2px 6px rgba(0, 0, 0, 0.18)' : 'none',
@@ -475,7 +475,7 @@ export default function AppLayout({ children }) {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                        <Icon size={17} color={isActive ? '#38BDF8' : 'rgba(255, 255, 255, 0.65)'} />
+                        <Icon size={17} color={isActive ? '#F59E0B' : 'rgba(255, 255, 255, 0.65)'} />
                         <span>{item.label}</span>
                       </div>
 
@@ -485,10 +485,10 @@ export default function AppLayout({ children }) {
                             fontSize: '0.68rem',
                             padding: '2px 7px',
                             borderRadius: '4px',
-                            backgroundColor: isActive ? 'rgba(56, 189, 248, 0.22)' : 'rgba(255, 255, 255, 0.10)',
-                            color: isActive ? '#BAE6FD' : 'rgba(255, 255, 255, 0.85)',
+                            backgroundColor: isActive ? 'rgba(245, 158, 11, 0.22)' : 'rgba(255, 255, 255, 0.10)',
+                            color: isActive ? '#FDE68A' : 'rgba(255, 255, 255, 0.85)',
                             fontWeight: 600,
-                            border: isActive ? '1px solid rgba(56, 189, 248, 0.35)' : '1px solid rgba(255, 255, 255, 0.15)',
+                            border: isActive ? '1px solid rgba(245, 158, 11, 0.35)' : '1px solid rgba(255, 255, 255, 0.15)',
                           }}
                         >
                           {item.badge}
@@ -512,7 +512,7 @@ export default function AppLayout({ children }) {
             padding: '10px 12px',
             borderTop: '1px solid rgba(255, 255, 255, 0.10)',
             position: 'relative',
-            backgroundColor: '#082B56',
+            backgroundColor: '#1F0D17',
             width: '100%',
             boxSizing: 'border-box',
           }}
@@ -654,7 +654,7 @@ export default function AppLayout({ children }) {
                   width: '34px',
                   height: '34px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(56, 189, 248, 0.22)',
+                  backgroundColor: 'rgba(245, 158, 11, 0.22)',
                   color: '#FFFFFF',
                   display: 'flex',
                   alignItems: 'center',
@@ -662,7 +662,7 @@ export default function AppLayout({ children }) {
                   fontWeight: 700,
                   fontSize: '0.84rem',
                   flexShrink: 0,
-                  border: '1.5px solid rgba(56, 189, 248, 0.55)',
+                  border: '1.5px solid rgba(245, 158, 11, 0.55)',
                 }}
               >
                 {userInitials}
@@ -743,7 +743,7 @@ export default function AppLayout({ children }) {
                 style={{
                   background: 'transparent',
                   border: 'none',
-                  color: '#082B56',
+                  color: '#1F0D17',
                   cursor: 'pointer',
                   padding: '6px',
                   borderRadius: '6px',
@@ -765,7 +765,7 @@ export default function AppLayout({ children }) {
             )}
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.86rem', minWidth: 0, overflow: 'hidden' }}>
-              <span style={{ fontWeight: 800, color: '#082B56', letterSpacing: '-0.2px', flexShrink: 0 }}>PRATIBHA</span>
+              <span style={{ fontWeight: 800, color: '#1F0D17', letterSpacing: '-0.2px', flexShrink: 0 }}>PRATIBHA</span>
               <span style={{ color: '#CBD5E1', flexShrink: 0 }}>/</span>
               <span style={{ color: '#334155', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>
                 {findActiveTitle()}
@@ -817,7 +817,7 @@ export default function AppLayout({ children }) {
           right: isMobile ? '16px' : '28px',
           backgroundColor: '#0F172A',
           color: '#FFFFFF',
-          border: isCopilotHovered ? '1.5px solid rgba(56, 189, 248, 0.65)' : '1.5px solid rgba(56, 189, 248, 0.35)',
+          border: isCopilotHovered ? '1.5px solid rgba(245, 158, 11, 0.65)' : '1.5px solid rgba(245, 158, 11, 0.35)',
           borderRadius: '12px',
           height: isMobile ? '50px' : '56px',
           minWidth: isMobile ? '50px' : '56px',
@@ -828,8 +828,8 @@ export default function AppLayout({ children }) {
           gap: isCopilotHovered ? '10px' : '0px',
           cursor: 'pointer',
           boxShadow: isCopilotHovered
-            ? '0 12px 32px rgba(15, 23, 42, 0.6), 0 0 24px rgba(56, 189, 248, 0.4)'
-            : '0 8px 24px rgba(15, 23, 42, 0.45), 0 0 16px rgba(56, 189, 248, 0.25)',
+            ? '0 12px 32px rgba(15, 23, 42, 0.6), 0 0 24px rgba(245, 158, 11, 0.4)'
+            : '0 8px 24px rgba(15, 23, 42, 0.45), 0 0 16px rgba(245, 158, 11, 0.25)',
           transition: 'all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1)',
           zIndex: 80,
           overflow: 'hidden',
@@ -858,8 +858,8 @@ export default function AppLayout({ children }) {
               display: 'inline-flex',
               alignItems: 'center',
               gap: '4px',
-              backgroundColor: 'rgba(56, 189, 248, 0.16)',
-              color: '#38BDF8',
+              backgroundColor: 'rgba(245, 158, 11, 0.16)',
+              color: '#F59E0B',
               padding: '3px 8px',
               borderRadius: '4px',
               fontSize: '0.68rem',
@@ -909,15 +909,15 @@ function CuteCopilotAvatar({ size = 38, isHovered = false }) {
         }}
       >
         {/* Left Ear */}
-        <circle cx="8.5" cy="8.5" r="5" fill="#1E293B" stroke="#38BDF8" strokeWidth="1" />
+        <circle cx="8.5" cy="8.5" r="5" fill="#1E293B" stroke="#F59E0B" strokeWidth="1" />
         <circle cx="8.5" cy="8.5" r="2.6" fill="#F472B6" />
 
         {/* Right Ear */}
-        <circle cx="27.5" cy="8.5" r="5" fill="#1E293B" stroke="#38BDF8" strokeWidth="1" />
+        <circle cx="27.5" cy="8.5" r="5" fill="#1E293B" stroke="#F59E0B" strokeWidth="1" />
         <circle cx="27.5" cy="8.5" r="2.6" fill="#F472B6" />
 
         {/* Head */}
-        <circle cx="18" cy="19" r="13.2" fill="#FFFFFF" stroke="#38BDF8" strokeWidth="1.1" />
+        <circle cx="18" cy="19" r="13.2" fill="#FFFFFF" stroke="#F59E0B" strokeWidth="1.1" />
 
         {/* Panda Eye Patches */}
         <ellipse cx="12.8" cy="18" rx="3.6" ry="4.2" transform="rotate(-15 12.8 18)" fill="#1E293B" />
@@ -925,9 +925,9 @@ function CuteCopilotAvatar({ size = 38, isHovered = false }) {
 
         {/* Sparkly Pupils with Highlights */}
         <circle cx="13" cy="17.2" r="1.5" fill="#FFFFFF" />
-        <circle cx="14.2" cy="18.8" r="0.7" fill="#38BDF8" />
+        <circle cx="14.2" cy="18.8" r="0.7" fill="#F59E0B" />
         <circle cx="23" cy="17.2" r="1.5" fill="#FFFFFF" />
-        <circle cx="24.2" cy="18.8" r="0.7" fill="#38BDF8" />
+        <circle cx="24.2" cy="18.8" r="0.7" fill="#F59E0B" />
 
         {/* Rosy Blush Cheeks */}
         <ellipse cx="8.5" cy="22.2" rx="2.3" ry="1.3" fill="#FB7185" opacity="0.85" />
@@ -946,7 +946,7 @@ function CuteCopilotAvatar({ size = 38, isHovered = false }) {
         />
 
         {/* Cute Graduation Mortarboard Cap */}
-        <polygon points="18,3 25,6.6 18,10.2 11,6.6" fill="#0284C7" stroke="#38BDF8" strokeWidth="0.8" />
+        <polygon points="18,3 25,6.6 18,10.2 11,6.6" fill="#0284C7" stroke="#F59E0B" strokeWidth="0.8" />
         <polygon points="15.5,9.2 20.5,9.2 19.5,11.8 16.5,11.8" fill="#0369A1" />
         <path d="M18 6.6 Q22 7.6 23.8 10.6" stroke="#FBBF24" strokeWidth="0.9" strokeLinecap="round" fill="none" />
         <circle cx="23.8" cy="11.2" r="0.7" fill="#FBBF24" />

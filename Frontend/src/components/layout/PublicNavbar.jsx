@@ -46,9 +46,9 @@ export default function PublicNavbar() {
         position: 'sticky',
         top: 0,
         zIndex: 50,
-        backgroundColor: 'rgba(6, 26, 51, 0.92)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(228, 233, 240, 0.12)',
+        backgroundColor: 'rgba(26, 9, 18, 0.94)',
+        backdropFilter: 'blur(14px)',
+        borderBottom: '1px solid rgba(217, 119, 6, 0.22)',
         padding: '0.85rem 2rem',
       }}
     >
@@ -90,14 +90,14 @@ export default function PublicNavbar() {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'rgba(255, 255, 255, 0.85)',
+                color: 'rgba(255, 255, 255, 0.88)',
                 fontSize: '0.92rem',
                 fontWeight: 500,
                 padding: 0,
                 transition: 'color var(--transition-fast)',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#F59E0B')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.88)')}
             >
               Home
             </button>
@@ -109,14 +109,14 @@ export default function PublicNavbar() {
                 background: 'none',
                 border: 'none',
                 cursor: 'pointer',
-                color: 'rgba(255, 255, 255, 0.85)',
+                color: 'rgba(255, 255, 255, 0.88)',
                 fontSize: '0.92rem',
                 fontWeight: 500,
                 padding: 0,
                 transition: 'color var(--transition-fast)',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--color-blue-bright)')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.85)')}
+              onMouseEnter={(e) => (e.currentTarget.style.color = '#F59E0B')}
+              onMouseLeave={(e) => (e.currentTarget.style.color = 'rgba(255, 255, 255, 0.88)')}
             >
               About
             </button>
@@ -130,24 +130,24 @@ export default function PublicNavbar() {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
-                backgroundColor: 'rgba(8, 43, 86, 0.55)',
+                backgroundColor: 'rgba(159, 18, 57, 0.35)',
                 color: '#FFFFFF',
-                border: '1px solid rgba(255, 255, 255, 0.35)',
+                border: '1px solid rgba(245, 158, 11, 0.45)',
                 padding: '0.55rem 1.25rem',
                 borderRadius: 'var(--radius-sm)',
                 fontSize: '0.88rem',
-                fontWeight: 500,
+                fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all var(--transition-fast)',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = 'var(--color-blue-primary)';
-                e.currentTarget.style.borderColor = 'var(--color-blue-bright)';
-                e.currentTarget.style.boxShadow = '0 0 12px rgba(37, 139, 250, 0.4)';
+                e.currentTarget.style.backgroundColor = '#9F1239';
+                e.currentTarget.style.borderColor = '#F59E0B';
+                e.currentTarget.style.boxShadow = '0 0 16px rgba(245, 158, 11, 0.35)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(8, 43, 86, 0.55)';
-                e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.35)';
+                e.currentTarget.style.backgroundColor = 'rgba(159, 18, 57, 0.35)';
+                e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.45)';
                 e.currentTarget.style.boxShadow = 'none';
               }}
             >
