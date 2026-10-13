@@ -425,43 +425,46 @@ export function AuthProvider({ children }) {
       delete sanitizedData.placementRisk;
       delete sanitizedData.successScore;
       delete sanitizedData.dataCompleteness;
-      if (currentUser?.studentId) sanitizedData.studentId = currentUser.studentId;
-      if (currentUser?.department) sanitizedData.department = currentUser.department;
-      if (currentUser?.program) sanitizedData.program = currentUser.program;
-      if (currentUser?.semester) sanitizedData.semester = currentUser.semester;
-    }
+    // Protect institutional records from tampering ONLY if officially verified
+    if (currentUser?.isOfficiallyVerified && currentUser?.studentId) sanitizedData.studentId = currentUser.studentId;
+    if (currentUser?.isOfficiallyVerified && currentUser?.department) sanitizedData.department = currentUser.department;
+    if (currentUser?.isOfficiallyVerified && currentUser?.program) sanitizedData.program = currentUser.program;
+    if (currentUser?.isOfficiallyVerified && currentUser?.semester) sanitizedData.semester = currentUser.semester;
+  }
 
+  try {
+    const serverResponse = await api.updateProfile(sanitizedData);
+    const serverUser = serverResponse?.data || serverResponse || {};
+    const merged = {
+      ...currentUser,
+      ...serverUser,
+      ...sanitizedData,
+      name: sanitizedData.name || sanitizedData.displayName || currentUser?.name,
+      displayName: sanitizedData.displayName || sanitizedData.name || currentUser?.displayName,
+    };
+    saveRegisteredAccount(merged);
+    setCurrentUser(merged);
     try {
-      const serverResponse = await api.updateProfile(sanitizedData);
-      const serverUser = serverResponse?.data || serverResponse || {};
-      const merged = {
-        ...currentUser,
-        ...serverUser,
-        ...sanitizedData,
-        name: sanitizedData.name || sanitizedData.displayName || currentUser?.name,
-        displayName: sanitizedData.displayName || sanitizedData.name || currentUser?.displayName,
-      };
-      setCurrentUser(merged);
-      try {
-        sessionStorage.setItem('pratibha_demo_user', JSON.stringify(merged));
-        localStorage.setItem(`pratibha_profile_${merged.email || merged.id}`, JSON.stringify(merged));
-      } catch {}
-      return merged;
-    } catch {
-      const merged = {
-        ...currentUser,
-        ...sanitizedData,
-        name: sanitizedData.name || sanitizedData.displayName || currentUser?.name,
-        displayName: sanitizedData.displayName || sanitizedData.name || currentUser?.displayName,
-      };
-      setCurrentUser(merged);
-      try {
-        sessionStorage.setItem('pratibha_demo_user', JSON.stringify(merged));
-        localStorage.setItem(`pratibha_profile_${merged.email || merged.id}`, JSON.stringify(merged));
-      } catch {}
-      return merged;
-    }
-  };
+      sessionStorage.setItem('pratibha_demo_user', JSON.stringify(merged));
+      localStorage.setItem(`pratibha_profile_${merged.email || merged.id}`, JSON.stringify(merged));
+    } catch {}
+    return merged;
+  } catch {
+    const merged = {
+      ...currentUser,
+      ...sanitizedData,
+      name: sanitizedData.name || sanitizedData.displayName || currentUser?.name,
+      displayName: sanitizedData.displayName || sanitizedData.name || currentUser?.displayName,
+    };
+    saveRegisteredAccount(merged);
+    setCurrentUser(merged);
+    try {
+      sessionStorage.setItem('pratibha_demo_user', JSON.stringify(merged));
+      localStorage.setItem(`pratibha_profile_${merged.email || merged.id}`, JSON.stringify(merged));
+    } catch {}
+    return merged;
+  }
+};
 
   const logout = () => {
     setCurrentUser(null);

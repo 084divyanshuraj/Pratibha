@@ -229,12 +229,13 @@ export default function ProfilePage() {
       avatar: avatar || null,
       skills,
       careerGoals: careerGoals.trim(),
-      // Strict Tamper-Proofing for Students: Lock official institutional metrics
-      studentId: isStudent ? (officialRecord?.studentId || currentUser?.studentId || studentId) : studentId.trim(),
-      department: isStudent ? (officialRecord?.department || currentUser?.department || department) : department.trim(),
-      program: isStudent ? (officialRecord?.program || currentUser?.program || program) : program.trim(),
-      semester: isStudent ? (officialRecord?.semester || currentUser?.semester || semester) : semester,
+      // Strict Tamper-Proofing for Students: Lock official institutional metrics ONLY if verified
+      studentId: isStudent ? (officialRecord?.studentId || (studentId ? studentId.trim().toUpperCase() : currentUser?.studentId)) : studentId.trim(),
+      department: isStudent ? (officialRecord?.department || (department ? department.trim() : currentUser?.department)) : department.trim(),
+      program: isStudent ? (officialRecord?.program || (program ? program.trim() : currentUser?.program)) : program.trim(),
+      semester: isStudent ? (officialRecord?.semester || semester || currentUser?.semester) : semester,
       designation: isStudent ? (officialRecord?.program ? `Student (${officialRecord.program})` : designation) : designation.trim(),
+      isOfficiallyVerified: Boolean(officialRecord),
     };
 
     try {
@@ -559,23 +560,40 @@ export default function ProfilePage() {
 
               {isStudent && (
                 <div className="profile-input-group">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '4px' }}>
                     <label htmlFor="pfStudentId">Student Roll No. / Institutional ID</label>
-                    <span className="profile-lock-tag">
-                      <Lock size={11} /> Locked
-                    </span>
+                    {officialRecord ? (
+                      <span className="profile-lock-tag" title="Verified against institutional exam database">
+                        <Lock size={11} /> Verified & Locked
+                      </span>
+                    ) : (
+                      <span style={{ fontSize: '0.72rem', color: '#D97706', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                        ⚠️ Awaiting Roster Match
+                      </span>
+                    )}
                   </div>
-                  <div className="profile-input-box locked">
-                    <Lock size={15} className="profile-field-icon" />
+                  <div className={`profile-input-box ${officialRecord ? 'locked' : ''}`}>
+                    {officialRecord ? (
+                      <Lock size={15} className="profile-field-icon" />
+                    ) : (
+                      <GraduationCap size={16} className="profile-field-icon" />
+                    )}
                     <input
                       type="text"
                       id="pfStudentId"
                       value={studentId}
-                      disabled
-                      readOnly
-                      title="Assigned by Institutional Examination Office. Cannot be modified."
+                      onChange={(e) => !officialRecord && setStudentId(e.target.value.toUpperCase())}
+                      disabled={Boolean(officialRecord)}
+                      readOnly={Boolean(officialRecord)}
+                      placeholder="e.g. STU_0136"
+                      title={officialRecord ? "Assigned by Institutional Examination Office. Cannot be modified." : "Enter your official roll number from college records"}
                     />
                   </div>
+                  {!officialRecord && (
+                    <span style={{ color: 'var(--text-muted, #64748B)', fontSize: '0.74rem', marginTop: '4px', display: 'block' }}>
+                      Enter your official ID from college roster (e.g. <strong>STU_0136</strong>) & click Save to link semester telemetry.
+                    </span>
+                  )}
                 </div>
               )}
             </div>

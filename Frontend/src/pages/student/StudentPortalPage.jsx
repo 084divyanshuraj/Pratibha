@@ -703,8 +703,26 @@ export default function StudentPortalPage() {
                   <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#082B56', margin: '0 0 2px 0' }}>
                     Academic & Attendance Telemetry Syncing
                   </h3>
-                  <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0 }}>
-                    Account registered for <strong>{student.program}</strong> ({student.semester}) · Roll No: <strong>{student.studentId}</strong>
+                  <p style={{ fontSize: '0.84rem', color: '#64748B', margin: 0, display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: '6px' }}>
+                    <span>Account registered for <strong>{student.program}</strong> ({student.semester}) · Roll No: <strong>{student.studentId}</strong></span>
+                    {!hasCollegeRecords && (
+                      <>
+                        <span style={{ color: '#D97706', fontSize: '0.78rem', fontWeight: 600 }}>
+                          (Awaiting Roster Match)
+                        </span>
+                        <a
+                          href="#/student/profile"
+                          style={{
+                            color: '#1677D2',
+                            fontSize: '0.78rem',
+                            fontWeight: 600,
+                            textDecoration: 'underline',
+                          }}
+                        >
+                          Update Roll No in Profile →
+                        </a>
+                      </>
+                    )}
                   </p>
                 </div>
               </div>
