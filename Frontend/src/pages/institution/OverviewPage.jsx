@@ -135,7 +135,7 @@ export default function OverviewPage() {
                   cursor: 'pointer',
                 }}
               >
-                My CSE Mentees (28)
+                My CSE Mentees
               </button>
               <button
                 onClick={() => navigate('/institution/risk-radar')}
@@ -150,7 +150,7 @@ export default function OverviewPage() {
                   cursor: 'pointer',
                 }}
               >
-                Attendance Alerts (14)
+                Attendance Alerts
               </button>
             </>
           ) : role === 'placement_officer' ? (
@@ -183,7 +183,7 @@ export default function OverviewPage() {
                   cursor: 'pointer',
                 }}
               >
-                Mock Interview Priority (148)
+                Mock Interview Priority ({kpis?.decoupledDivergence?.count ?? 4})
               </button>
             </>
           ) : (
@@ -310,7 +310,7 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
-            {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '121'}
+            {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '30'}
           </div>
           <div style={{ fontSize: '0.76rem', color: (kpis?.totalStudents || 0) > 0 ? '#059669' : '#64748B', fontWeight: 600, marginTop: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
             <span>{(kpis?.totalStudents || 0) > 0 ? `Active Across ${kpis?.departmentCount || 1} Department${kpis?.departmentCount === 1 ? '' : 's'}` : 'Awaiting Student Ingestion'}</span>
@@ -340,7 +340,7 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
-            {kpis?.averageSuccessScore != null ? kpis.averageSuccessScore : '74.9'}
+            {kpis?.averageSuccessScore != null ? kpis.averageSuccessScore : '78.4'}
             <span style={{ fontSize: '1rem', color: '#94A3B8', fontWeight: 400 }}>/100</span>
           </div>
           <div style={{ fontSize: '0.76rem', color: '#64748B', marginTop: '4px' }}>
@@ -372,9 +372,9 @@ export default function OverviewPage() {
             </div>
           </div>
           <div style={{ fontSize: '2rem', fontWeight: 700, color: '#082B56', marginTop: '8px' }}>
-            {kpis?.decoupledDivergence?.count != null ? kpis.decoupledDivergence.count : '148'}
+            {kpis?.decoupledDivergence?.count != null ? kpis.decoupledDivergence.count : '4'}
             <span style={{ fontSize: '0.85rem', fontWeight: 500, color: '#D97706', marginLeft: '6px' }}>
-              ({kpis?.decoupledDivergence?.percentage != null ? kpis.decoupledDivergence.percentage : '10.4'}%)
+              ({kpis?.decoupledDivergence?.percentage != null ? kpis.decoupledDivergence.percentage : '13.3'}%)
             </span>
           </div>
           <div style={{ fontSize: '0.76rem', color: '#B45309', marginTop: '4px', fontWeight: 500 }}>
@@ -427,7 +427,7 @@ export default function OverviewPage() {
               </p>
             </div>
             <span style={{ fontSize: '0.74rem', backgroundColor: '#F8FAFC', border: '1px solid #E2E8F0', padding: '3px 8px', borderRadius: '6px', color: '#64748B', fontWeight: 600 }}>
-              N = {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '121'}
+              N = {kpis?.totalStudents != null ? kpis.totalStudents.toLocaleString() : '30'}
             </span>
           </div>
 
@@ -539,7 +539,7 @@ export default function OverviewPage() {
             { name: 'Engagement', key: 'engagement', pct: kpis?.categoryCoverage?.engagement != null ? kpis.categoryCoverage.engagement : 66.7 },
             { name: 'Feedback', key: 'feedback', pct: kpis?.categoryCoverage?.feedback != null ? kpis.categoryCoverage.feedback : 75.0 },
           ].map((pillar) => {
-            const total = kpis?.totalStudents || 120;
+            const total = kpis?.totalStudents || 30;
             const observed = Math.round((pillar.pct / 100) * total);
             const statusLabel = pillar.pct >= 90 ? 'Optimal' : pillar.pct >= 75 ? 'Adequate' : 'Needs Ingestion';
             const statusBg = pillar.pct >= 90 ? '#ECFDF5' : pillar.pct >= 75 ? '#EFF6FF' : '#FFFBEB';

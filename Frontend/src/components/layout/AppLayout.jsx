@@ -255,10 +255,17 @@ export default function AppLayout({ children }) {
         ],
       },
       {
-        title: 'Data & Feedback',
+        title: 'Intervention & Policy',
+        items: [
+          { path: '/institution/sandbox', label: 'Policy Simulation Sandbox', icon: FlaskConical, badge: 'Simulator' },
+        ],
+      },
+      {
+        title: 'Data & Governance',
         items: [
           { path: '/institution/ingestion', label: 'Data Integration Studio', icon: UploadCloud, badge: '7 Domains' },
           { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
+          { path: '/institution/audit', label: 'Governance Audit Trail', icon: ShieldCheck, badge: null },
         ],
       },
     ];
