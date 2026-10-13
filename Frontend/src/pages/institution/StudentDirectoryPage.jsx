@@ -30,13 +30,22 @@ export default function StudentDirectoryPage() {
   const [students, setStudents] = useState([]);
   const [search, setSearch] = useState('');
   const [department, setDepartment] = useState(searchParams.get('dept') || '');
-  const [riskFilter, setRiskFilter] = useState(searchParams.get('risk') || '');
-  const [personaChip, setPersonaChip] = useState('');
+  const [riskFilter, setRiskFilter] = useState(searchParams.get('risk') || searchParams.get('filter') || '');
+  const [personaChip, setPersonaChip] = useState(searchParams.get('personaChip') || '');
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pageSize, setPageSize] = useState(50);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+
+  // Sync state when URL query parameters change (e.g. from Risk Radar buttons)
+  useEffect(() => {
+    setDepartment(searchParams.get('dept') || '');
+    const rf = searchParams.get('risk') || searchParams.get('filter') || '';
+    setRiskFilter(rf);
+    setPersonaChip(searchParams.get('personaChip') || '');
+    setCurrentPage(1);
+  }, [searchParams]);
 
   // CRUD State
   const [showModal, setShowModal] = useState(false);
@@ -63,28 +72,46 @@ export default function StudentDirectoryPage() {
 
   const fetchStudents = () => {
     setLoading(true);
-    api.getStudents({ search, department, limit: pageSize === 'all' ? 'all' : pageSize, page: currentPage })
+    api.getStudents({ search, department, risk: riskFilter, personaChip, limit: 'all' })
       .then((res) => {
         let list = res?.students || [];
         setTotalCount(res?.pagination?.total ?? list.length);
 
         // Apply risk filters
-        if (riskFilter === 'high') {
-          list = list.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
+        if (riskFilter === 'double_risk' || riskFilter === 'urgent') {
+          list = list.filter((s) => s.academicRisk === 'high' && s.placementRisk === 'high');
         } else if (riskFilter === 'divergent') {
-          list = list.filter((s) => s.cgpa >= 7.5 && s.placementRisk === 'high');
+          list = list.filter((s) => s.placementRisk === 'high' && s.academicRisk !== 'high');
+        } else if (riskFilter === 'achievers') {
+          list = list.filter((s) => s.academicRisk !== 'high' && s.placementRisk !== 'high');
+        } else if (riskFilter === 'academic_only') {
+          list = list.filter((s) => s.academicRisk === 'high' && s.placementRisk !== 'high');
+        } else if (riskFilter === 'academic_high') {
+          list = list.filter((s) => s.academicRisk === 'high');
+        } else if (riskFilter === 'placement_high') {
+          list = list.filter((s) => s.placementRisk === 'high');
+        } else if (riskFilter === 'high') {
+          list = list.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
         }
 
         // Apply Persona Chips
         if (personaChip === 'mentees') {
-          list = list.filter((s) => s.department === 'Computer Science' && s.cgpa <= 8.5);
+          list = list.filter((s) => s.department === 'Computer Science' && (s.cgpa == null || s.cgpa <= 8.5));
         } else if (personaChip === 'attendance_warning') {
-          list = list.filter((s) => s.attendanceRate < 75);
+          list = list.filter((s) => (s.attendanceRate < 75 || s.attendancePercentage < 75));
         } else if (personaChip === 'tier1_eligible') {
-          list = list.filter((s) => s.cgpa >= 7.5 && (s.backlogs ?? 0) === 0);
+          list = list.filter((s) => s.academicRisk !== 'high' && s.placementRisk !== 'high');
         }
 
-        setStudents(list);
+        setTotalCount(list.length);
+
+        if (pageSize !== 'all') {
+          const limit = Number(pageSize);
+          const start = (currentPage - 1) * limit;
+          setStudents(list.slice(start, start + limit));
+        } else {
+          setStudents(list);
+        }
       })
       .finally(() => setLoading(false));
   };
@@ -444,13 +471,65 @@ export default function StudentDirectoryPage() {
           </>
         )}
 
-        {(department || riskFilter || personaChip) && (
+        {riskFilter && (
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '3px 10px',
+              borderRadius: '6px',
+              backgroundColor: riskFilter === 'double_risk' ? '#FEE2E2' : riskFilter === 'divergent' ? '#FEF3C7' : riskFilter === 'achievers' ? '#CCFBF1' : '#EAF3FF',
+              color: riskFilter === 'double_risk' ? '#DC2626' : riskFilter === 'divergent' ? '#B45309' : riskFilter === 'achievers' ? '#0F766E' : '#1677D2',
+              fontSize: '0.74rem',
+              fontWeight: 700,
+              border: `1px solid ${riskFilter === 'double_risk' ? '#FECACA' : riskFilter === 'divergent' ? '#FDE68A' : riskFilter === 'achievers' ? '#99F6E4' : '#BFDBFE'}`,
+            }}
+          >
+            {riskFilter === 'double_risk' && '🚨 Comprehensive Double Risk Active'}
+            {riskFilter === 'divergent' && '⚡ Decoupled Divergence Active'}
+            {riskFilter === 'achievers' && '⭐ Career & Academic Achievers Active'}
+            {riskFilter === 'academic_only' && '📚 Academic Backlogs Only Active'}
+            {riskFilter === 'academic_high' && '📕 High Academic Risk Active'}
+            {riskFilter === 'placement_high' && '💼 High Placement Risk Active'}
+            {riskFilter === 'high' && '⚠ High Risk Cohort Active'}
+            <button
+              onClick={() => {
+                setRiskFilter('');
+                setSearchParams((prev) => {
+                  const next = new URLSearchParams(prev);
+                  next.delete('risk');
+                  next.delete('filter');
+                  return next;
+                });
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'inherit',
+                cursor: 'pointer',
+                padding: '0 2px',
+                display: 'flex',
+                alignItems: 'center',
+                fontWeight: 'bold',
+                fontSize: '0.9rem',
+              }}
+              title="Remove filter"
+            >
+              ×
+            </button>
+          </span>
+        )}
+
+        {(department || riskFilter || personaChip || search) && (
           <button
             onClick={() => {
               setDepartment('');
               setRiskFilter('');
               setPersonaChip('');
               setSearch('');
+              setSearchParams({});
+              setCurrentPage(1);
             }}
             style={{
               padding: '4px 10px',
@@ -514,6 +593,9 @@ export default function StudentDirectoryPage() {
             <option value="Information Technology">Information Technology</option>
             <option value="Data Science">Data Science</option>
             <option value="Electronics & Comm.">Electronics & Comm.</option>
+            <option value="Electronics & Comm">Electronics & Comm</option>
+            <option value="Mechanical Eng">Mechanical Eng</option>
+            <option value="Mechanical">Mechanical</option>
           </select>
         </div>
 
@@ -538,8 +620,13 @@ export default function StudentDirectoryPage() {
             }}
           >
             <option value="">All Risk Profiles</option>
-            <option value="high">High Risk (Either Target)</option>
-            <option value="divergent">Decoupled Divergent (High CGPA + Placement Risk)</option>
+            <option value="double_risk">🚨 Comprehensive Double Risk</option>
+            <option value="divergent">⚡ Decoupled Divergent (High CGPA + Placement Risk)</option>
+            <option value="academic_only">📚 Academic Backlogs Only (High Academic Risk)</option>
+            <option value="achievers">⭐ Career & Academic Achievers (Low Risk Both)</option>
+            <option value="high">High Risk (Either Academic or Placement)</option>
+            <option value="academic_high">High Academic Risk Only</option>
+            <option value="placement_high">High Placement Risk Only</option>
           </select>
         </div>
       </div>

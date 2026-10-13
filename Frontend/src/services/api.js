@@ -701,6 +701,41 @@ export function getTenantStorageKey() {
   return `pratibha_tenant_${cleanId}_students`;
 }
 
+export function normalizeStudent(s, idx = 0) {
+  if (!s) return s;
+  const cg = s.cgpa != null && s.cgpa !== '' ? Number(s.cgpa) : 7.5;
+  const att = s.attendanceRate != null && s.attendanceRate !== ''
+    ? Number(s.attendanceRate)
+    : (s.attendancePercentage != null && s.attendancePercentage !== '' ? Number(s.attendancePercentage) : 85);
+  const score = s.successScore != null && s.successScore !== ''
+    ? Number(s.successScore)
+    : +(cg * 5 + att * 0.4).toFixed(1);
+
+  // University 75% statutory attendance rule & CGPA < 6.5
+  let aRisk = s.academicRisk ? String(s.academicRisk).toLowerCase() : '';
+  if (att < 75 || cg < 6.5 || (s.backlogs && Number(s.backlogs) > 0)) {
+    aRisk = 'high';
+  } else if (!aRisk || aRisk === 'high') {
+    aRisk = (att < 80 || cg < 7.5) ? 'medium' : 'low';
+  } else if (aRisk !== 'medium' && aRisk !== 'low') {
+    aRisk = (att < 80 || cg < 7.5) ? 'medium' : 'low';
+  }
+
+  let pRisk = s.placementRisk ? String(s.placementRisk).toLowerCase() : '';
+  if (!pRisk || (pRisk !== 'high' && pRisk !== 'medium' && pRisk !== 'low')) {
+    pRisk = (cg >= 7.5 && (idx % 6 === 3 || idx % 6 === 5)) ? 'high' : (cg < 6.5 ? 'high' : 'low');
+  }
+
+  return {
+    ...s,
+    cgpa: cg,
+    attendanceRate: att,
+    successScore: score,
+    academicRisk: aRisk,
+    placementRisk: pRisk,
+  };
+}
+
 export function getActiveStudents() {
   const isDemo = isDemoSession();
   if (isDemo) {
@@ -708,10 +743,10 @@ export function getActiveStudents() {
       const raw = localStorage.getItem('pratibha_custom_students');
       if (raw) {
         const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.map((s, idx) => normalizeStudent(s, idx));
       }
     } catch {}
-    return MOCK_STUDENTS;
+    return MOCK_STUDENTS.map((s, idx) => normalizeStudent(s, idx));
   }
 
   // REAL USER / TENANT SESSION (e.g. @ram123):
@@ -722,7 +757,7 @@ export function getActiveStudents() {
     const raw = localStorage.getItem(tenantKey);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed)) return parsed;
+      if (Array.isArray(parsed)) return parsed.map((s, idx) => normalizeStudent(s, idx));
     }
   } catch {}
   return [];
@@ -1061,39 +1096,59 @@ export const api = {
   async getRiskSummary(filters = {}) {
     try {
       const query = new URLSearchParams(filters).toString();
-      return await fetchClient(`/analytics/risk-summary${query ? `?${query}` : ''}`);
+      const res = await fetchClient(`/analytics/risk-summary${query ? `?${query}` : ''}`);
+      if (res && res.departmentBreakdown && res.doubleRiskCount != null) return res;
     } catch (err) {
-      console.warn('Backend /analytics/risk-summary unavailable, fallback active:', err.message);
-      const students = getActiveStudents();
-      const depts = {};
-      students.forEach((s) => {
-        const d = s.department || 'General';
-        if (!depts[d]) {
-          depts[d] = { department: d, total: 0, sumScore: 0, academicRisk: { high: 0 }, placementRisk: { high: 0 } };
-        }
-        depts[d].total += 1;
-        depts[d].sumScore += Number(s.successScore) || 75;
-        if (s.academicRisk === 'high') depts[d].academicRisk.high += 1;
-        if (s.placementRisk === 'high') depts[d].placementRisk.high += 1;
-      });
-      const breakdown = Object.values(depts).map((d) => ({
-        department: d.department,
-        total: d.total,
-        averageSuccessScore: +(d.sumScore / d.total).toFixed(1),
-        academicRisk: d.academicRisk,
-        placementRisk: d.placementRisk,
-      }));
-      return {
-        departmentBreakdown: breakdown.length > 0 ? breakdown : [
-          { department: 'Computer Science', total: 30, averageSuccessScore: 78.5, academicRisk: { high: 2 }, placementRisk: { high: 3 } },
-          { department: 'Information Technology', total: 30, averageSuccessScore: 79.2, academicRisk: { high: 2 }, placementRisk: { high: 5 } },
-          { department: 'Data Science', total: 30, averageSuccessScore: 81.1, academicRisk: { high: 1 }, placementRisk: { high: 3 } },
-          { department: 'Electronics & Comm.', total: 30, averageSuccessScore: 80.4, academicRisk: { high: 2 }, placementRisk: { high: 4 } },
-          { department: 'Mechanical', total: 30, averageSuccessScore: 80.8, academicRisk: { high: 2 }, placementRisk: { high: 5 } },
-        ],
-        decoupledDivergence: computeLocalOverviewKpis().decoupledDivergence,
-      };
+      console.warn('Backend /analytics/risk-summary unavailable, dynamic engine active:', err.message);
     }
+    const students = getActiveStudents();
+    const depts = {};
+    students.forEach((s) => {
+      const d = s.department || 'General';
+      if (!depts[d]) {
+        depts[d] = { department: d, total: 0, sumScore: 0, academicRisk: { high: 0 }, placementRisk: { high: 0 } };
+      }
+      depts[d].total += 1;
+      depts[d].sumScore += Number(s.successScore) || 75;
+      if (s.academicRisk === 'high') depts[d].academicRisk.high += 1;
+      if (s.placementRisk === 'high') depts[d].placementRisk.high += 1;
+    });
+    const breakdown = Object.values(depts).map((d) => ({
+      department: d.department,
+      total: d.total,
+      averageSuccessScore: +(d.sumScore / d.total).toFixed(1),
+      academicRisk: d.academicRisk,
+      placementRisk: d.placementRisk,
+    }));
+
+    // The 4 Decoupled Risk Quadrants (strictly dynamic from active roster)
+    const divergent = students.filter((s) => s.placementRisk === 'high' && s.academicRisk !== 'high');
+    const doubleRisk = students.filter((s) => s.academicRisk === 'high' && s.placementRisk === 'high');
+    const achievers = students.filter((s) => s.academicRisk !== 'high' && s.placementRisk !== 'high');
+    const backlogsOnly = students.filter((s) => s.academicRisk === 'high' && s.placementRisk !== 'high');
+
+    const totalPop = students.length;
+    const divPct = totalPop > 0 ? +((divergent.length / totalPop) * 100).toFixed(1) : 0;
+
+    return {
+      totalStudents: totalPop,
+      divCount: divergent.length,
+      doubleRiskCount: doubleRisk.length,
+      achieversCount: achievers.length,
+      backlogsOnlyCount: backlogsOnly.length,
+      departmentBreakdown: breakdown.length > 0 ? breakdown : [
+        { department: 'Computer Science', total: 30, averageSuccessScore: 78.5, academicRisk: { high: 2 }, placementRisk: { high: 3 } },
+        { department: 'Information Technology', total: 30, averageSuccessScore: 79.2, academicRisk: { high: 2 }, placementRisk: { high: 5 } },
+        { department: 'Data Science', total: 30, averageSuccessScore: 81.1, academicRisk: { high: 1 }, placementRisk: { high: 3 } },
+        { department: 'Electronics & Comm.', total: 30, averageSuccessScore: 80.4, academicRisk: { high: 2 }, placementRisk: { high: 4 } },
+        { department: 'Mechanical', total: 30, averageSuccessScore: 80.8, academicRisk: { high: 2 }, placementRisk: { high: 5 } },
+      ],
+      decoupledDivergence: {
+        count: divergent.length,
+        percentage: divPct,
+        explanation: `${divergent.length} students exhibit strong academic standing but high placement risk due to soft-skills/interview gaps.`,
+      },
+    };
   },
 
   /**
@@ -1128,6 +1183,34 @@ export const api = {
     if (params.department && params.department !== 'All Departments') {
       filtered = filtered.filter((st) => st.department === params.department);
     }
+    if (params.risk || params.filter) {
+      const r = params.risk || params.filter;
+      if (r === 'double_risk' || r === 'urgent') {
+        filtered = filtered.filter((s) => s.academicRisk === 'high' && s.placementRisk === 'high');
+      } else if (r === 'divergent') {
+        filtered = filtered.filter((s) => s.placementRisk === 'high' && s.academicRisk !== 'high');
+      } else if (r === 'achievers') {
+        filtered = filtered.filter((s) => s.academicRisk !== 'high' && s.placementRisk !== 'high');
+      } else if (r === 'academic_only') {
+        filtered = filtered.filter((s) => s.academicRisk === 'high' && s.placementRisk !== 'high');
+      } else if (r === 'academic_high') {
+        filtered = filtered.filter((s) => s.academicRisk === 'high');
+      } else if (r === 'placement_high') {
+        filtered = filtered.filter((s) => s.placementRisk === 'high');
+      } else if (r === 'high') {
+        filtered = filtered.filter((s) => s.academicRisk === 'high' || s.placementRisk === 'high');
+      }
+    }
+    if (params.personaChip) {
+      if (params.personaChip === 'mentees') {
+        filtered = filtered.filter((s) => s.department === 'Computer Science' && (s.cgpa == null || s.cgpa <= 8.5));
+      } else if (params.personaChip === 'attendance_warning') {
+        filtered = filtered.filter((s) => (s.attendanceRate < 75 || s.attendancePercentage < 75));
+      } else if (params.personaChip === 'tier1_eligible') {
+        filtered = filtered.filter((s) => s.academicRisk !== 'high' && s.placementRisk !== 'high');
+      }
+    }
+
     const isAll = params.limit === 'all' || params.limit === 'All';
     const limit = isAll ? Math.max(filtered.length, 1) : (Number(params.limit) || 50);
     const page = Number(params.page) || 1;
@@ -1914,8 +1997,8 @@ export const api = {
               cgpa: cg,
               attendanceRate: att,
               successScore: score,
-              academicRisk: cg < 6.5 ? 'high' : cg < 7.5 ? 'medium' : 'low',
-              placementRisk: cg >= 7.5 && Math.random() > 0.6 ? 'high' : (cg < 6.5 ? 'high' : 'low'),
+              academicRisk: (att < 75 || cg < 6.5) ? 'high' : (att < 80 || cg < 7.5 ? 'medium' : 'low'),
+              placementRisk: r.placementRisk || (cg >= 7.5 && (idx % 6 === 3 || idx % 6 === 5) ? 'high' : (cg < 6.5 ? 'high' : 'low')),
               email: r.email || `${fn.toLowerCase()}.${ln.toLowerCase()}@campus.edu`,
               avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
             });

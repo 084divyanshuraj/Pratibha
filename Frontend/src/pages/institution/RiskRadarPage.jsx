@@ -33,15 +33,15 @@ export default function RiskRadarPage() {
     return () => window.removeEventListener('pratibha_data_updated', handleUpdate);
   }, []);
 
-  const totalPop = riskData?.totalStudents || riskData?.departmentBreakdown?.reduce((acc, d) => acc + (d.total || 0), 0) || 121;
-  const divCount = riskData?.decoupledDivergence?.count ?? Math.round(totalPop * 0.104);
-  const divPct = riskData?.decoupledDivergence?.percentage ?? +((divCount / totalPop) * 100).toFixed(1);
-  const doubleRiskCount = riskData?.doubleRiskCount ?? Math.round(totalPop * 0.058);
-  const doubleRiskPct = +((doubleRiskCount / totalPop) * 100).toFixed(1);
-  const achieversCount = riskData?.achieversCount ?? Math.round(totalPop * 0.507);
-  const achieversPct = +((achieversCount / totalPop) * 100).toFixed(1);
-  const backlogsOnlyCount = Math.max(0, totalPop - divCount - doubleRiskCount - achieversCount);
-  const backlogsOnlyPct = +((backlogsOnlyCount / totalPop) * 100).toFixed(1);
+  const totalPop = riskData?.totalStudents ?? riskData?.departmentBreakdown?.reduce((acc, d) => acc + (d.total || 0), 0) ?? 0;
+  const divCount = riskData?.divCount ?? riskData?.decoupledDivergence?.count ?? 0;
+  const divPct = totalPop > 0 ? +((divCount / totalPop) * 100).toFixed(1) : 0;
+  const doubleRiskCount = riskData?.doubleRiskCount ?? 0;
+  const doubleRiskPct = totalPop > 0 ? +((doubleRiskCount / totalPop) * 100).toFixed(1) : 0;
+  const achieversCount = riskData?.achieversCount ?? 0;
+  const achieversPct = totalPop > 0 ? +((achieversCount / totalPop) * 100).toFixed(1) : 0;
+  const backlogsOnlyCount = riskData?.backlogsOnlyCount ?? 0;
+  const backlogsOnlyPct = totalPop > 0 ? +((backlogsOnlyCount / totalPop) * 100).toFixed(1) : 0;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.75rem' }}>
@@ -327,7 +327,7 @@ export default function RiskRadarPage() {
             </div>
 
             <button
-              onClick={() => navigate('/institution/students?filter=urgent')}
+              onClick={() => navigate('/institution/students?risk=double_risk')}
               style={{
                 marginTop: '16px',
                 alignSelf: 'flex-start',
@@ -347,7 +347,7 @@ export default function RiskRadarPage() {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#B91C1C')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#DC2626')}
             >
-              <span>View At-Risk Students</span>
+              <span>View Double Risk Students ({doubleRiskCount})</span>
               <ArrowRight size={13} />
             </button>
           </div>
@@ -385,7 +385,7 @@ export default function RiskRadarPage() {
             </div>
 
             <button
-              onClick={() => navigate('/institution/students?personaChip=tier1_eligible')}
+              onClick={() => navigate('/institution/students?risk=achievers')}
               style={{
                 marginTop: '16px',
                 alignSelf: 'flex-start',
@@ -405,7 +405,7 @@ export default function RiskRadarPage() {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#0F766E')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#0D9488')}
             >
-              <span>View Tier-1 Ready Roster</span>
+              <span>View Achievers Roster ({achieversCount})</span>
               <ArrowRight size={13} />
             </button>
           </div>
@@ -443,7 +443,7 @@ export default function RiskRadarPage() {
             </div>
 
             <button
-              onClick={() => navigate('/institution/students?risk=high')}
+              onClick={() => navigate('/institution/students?risk=academic_only')}
               style={{
                 marginTop: '16px',
                 alignSelf: 'flex-start',
@@ -463,7 +463,7 @@ export default function RiskRadarPage() {
               onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
               onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
             >
-              <span>Inspect Academic Alerts</span>
+              <span>Inspect Academic Alerts ({backlogsOnlyCount})</span>
               <ArrowRight size={13} />
             </button>
           </div>
@@ -488,17 +488,36 @@ export default function RiskRadarPage() {
             </thead>
             <tbody>
               {(riskData?.departmentBreakdown || [
-                { department: 'Computer Science', total: 420, averageSuccessScore: 77.4, academicRisk: { high: 32 }, placementRisk: { high: 88 } },
-                { department: 'Information Technology', total: 380, averageSuccessScore: 73.8, academicRisk: { high: 45 }, placementRisk: { high: 72 } },
-                { department: 'Data Science', total: 290, averageSuccessScore: 76.1, academicRisk: { high: 28 }, placementRisk: { high: 54 } },
-                { department: 'Electronics & Comm.', total: 330, averageSuccessScore: 71.5, academicRisk: { high: 75 }, placementRisk: { high: 76 } },
+                { department: 'Computer Science', total: 6, averageSuccessScore: 78.5, academicRisk: { high: 1 }, placementRisk: { high: 0 } },
+                { department: 'Information Technology', total: 6, averageSuccessScore: 79.2, academicRisk: { high: 2 }, placementRisk: { high: 2 } },
+                { department: 'Data Science', total: 6, averageSuccessScore: 81.1, academicRisk: { high: 2 }, placementRisk: { high: 0 } },
+                { department: 'Electronics & Comm.', total: 6, averageSuccessScore: 80.4, academicRisk: { high: 2 }, placementRisk: { high: 2 } },
+                { department: 'Mechanical Eng', total: 6, averageSuccessScore: 80.8, academicRisk: { high: 1 }, placementRisk: { high: 1 } },
               ]).map((d, i) => (
                 <tr key={i} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                  <td style={{ padding: '12px 18px', fontWeight: 600, color: '#0F172A' }}>{d.department}</td>
+                  <td 
+                    onClick={() => navigate(`/institution/students?dept=${encodeURIComponent(d.department)}`)}
+                    style={{ padding: '12px 18px', fontWeight: 600, color: '#0F172A', cursor: 'pointer' }}
+                    title={`Filter student directory by ${d.department}`}
+                  >
+                    {d.department}
+                  </td>
                   <td style={{ padding: '12px 16px' }}>{d.total}</td>
                   <td style={{ padding: '12px 16px', fontWeight: 600, color: '#1A73E8' }}>{d.averageSuccessScore}</td>
-                  <td style={{ padding: '12px 16px', color: '#DC2626', fontWeight: 600 }}>{d.academicRisk?.high || 0} students</td>
-                  <td style={{ padding: '12px 16px', color: '#D97706', fontWeight: 600 }}>{d.placementRisk?.high || 0} students</td>
+                  <td 
+                    onClick={() => navigate(`/institution/students?dept=${encodeURIComponent(d.department)}&risk=academic_high`)}
+                    style={{ padding: '12px 16px', color: '#DC2626', fontWeight: 600, cursor: 'pointer' }}
+                    title={`View high academic risk students in ${d.department}`}
+                  >
+                    {d.academicRisk?.high || 0} students
+                  </td>
+                  <td 
+                    onClick={() => navigate(`/institution/students?dept=${encodeURIComponent(d.department)}&risk=placement_high`)}
+                    style={{ padding: '12px 16px', color: '#D97706', fontWeight: 600, cursor: 'pointer' }}
+                    title={`View high placement risk students in ${d.department}`}
+                  >
+                    {d.placementRisk?.high || 0} students
+                  </td>
                 </tr>
               ))}
             </tbody>
