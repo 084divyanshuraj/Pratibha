@@ -343,15 +343,31 @@ export function AuthProvider({ children }) {
   };
 
   const updateUserProfile = async (updatedData) => {
+    // If user is a student, protect official academic records from tampering
+    const isStudentUser = currentUser?.role === 'student' || currentUser?.portal === 'student';
+    const sanitizedData = { ...updatedData };
+    if (isStudentUser) {
+      delete sanitizedData.cgpa;
+      delete sanitizedData.attendanceRate;
+      delete sanitizedData.academicRisk;
+      delete sanitizedData.placementRisk;
+      delete sanitizedData.successScore;
+      delete sanitizedData.dataCompleteness;
+      if (currentUser?.studentId) sanitizedData.studentId = currentUser.studentId;
+      if (currentUser?.department) sanitizedData.department = currentUser.department;
+      if (currentUser?.program) sanitizedData.program = currentUser.program;
+      if (currentUser?.semester) sanitizedData.semester = currentUser.semester;
+    }
+
     try {
-      const serverResponse = await api.updateProfile(updatedData);
+      const serverResponse = await api.updateProfile(sanitizedData);
       const serverUser = serverResponse?.data || serverResponse || {};
       const merged = {
         ...currentUser,
         ...serverUser,
-        ...updatedData,
-        name: updatedData.name || updatedData.displayName || currentUser?.name,
-        displayName: updatedData.displayName || updatedData.name || currentUser?.displayName,
+        ...sanitizedData,
+        name: sanitizedData.name || sanitizedData.displayName || currentUser?.name,
+        displayName: sanitizedData.displayName || sanitizedData.name || currentUser?.displayName,
       };
       setCurrentUser(merged);
       try {
@@ -362,9 +378,9 @@ export function AuthProvider({ children }) {
     } catch {
       const merged = {
         ...currentUser,
-        ...updatedData,
-        name: updatedData.name || updatedData.displayName || currentUser?.name,
-        displayName: updatedData.displayName || updatedData.name || currentUser?.displayName,
+        ...sanitizedData,
+        name: sanitizedData.name || sanitizedData.displayName || currentUser?.name,
+        displayName: sanitizedData.displayName || sanitizedData.name || currentUser?.displayName,
       };
       setCurrentUser(merged);
       try {

@@ -24,8 +24,13 @@ import {
   ZoomIn,
   ZoomOut,
   ArrowRight,
+  Lock,
+  ShieldCheck,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { api } from '../../services/api';
 import './ProfilePage.css';
 
 // Preset avatar options for quick selection
@@ -65,6 +70,10 @@ export default function ProfilePage() {
   const [careerGoals, setCareerGoals] = useState('');
   const [skills, setSkills] = useState([]);
   const [newSkillInput, setNewSkillInput] = useState('');
+
+  // Official Institutional Academic Record (Retrieved from Admin DB, Strictly Read-Only)
+  const [officialRecord, setOfficialRecord] = useState(null);
+  const [fetchingOfficial, setFetchingOfficial] = useState(false);
 
   // Avatar state
   const [avatar, setAvatar] = useState('');
@@ -123,6 +132,31 @@ export default function ProfilePage() {
       setCareerGoals(currentUser.careerGoals || (isFreshUser ? '' : 'Software Development Engineer at Tier-1 Tech Firm'));
       setSkills(currentUser.skills && currentUser.skills.length > 0 ? currentUser.skills : (isFreshUser ? [] : ['React', 'Python', 'Algorithms', 'System Design', 'SQL', 'Git']));
       setAvatar(currentUser.avatar || '');
+    }
+
+    // If student persona: dynamically retrieve official institutional records from Admin database
+    if (isStudent && currentUser) {
+      setFetchingOfficial(true);
+      const queryId = currentUser.studentId || (currentUser.email === 'student@example.edu' ? 'STU_0001' : currentUser.email);
+      api.getStudents({ search: queryId })
+        .then((res) => {
+          const match = res?.students?.find(
+            (s) =>
+              (currentUser.studentId && s.studentId === currentUser.studentId) ||
+              (currentUser.email && s.email === currentUser.email) ||
+              (queryId === 'STU_0001' && s.studentId === 'STU_0001')
+          ) || (currentUser.email === 'student@example.edu' ? res?.students?.[0] : null);
+
+          if (match) {
+            setOfficialRecord(match);
+            if (match.studentId) setStudentId(match.studentId);
+            if (match.department) setDepartment(match.department);
+            if (match.program) setProgram(match.program);
+            if (match.semester != null) setSemester(String(match.semester));
+          }
+        })
+        .catch(() => {})
+        .finally(() => setFetchingOfficial(false));
     }
   }, [currentUser, isStudent]);
 
@@ -186,8 +220,6 @@ export default function ProfilePage() {
       name: displayName.trim(),
       phone: phone.trim(),
       bio: bio.trim(),
-      department: department.trim(),
-      designation: designation.trim(),
       officeLocation: officeLocation.trim(),
       specialization: specialization.trim(),
       education: education.trim(),
@@ -196,10 +228,13 @@ export default function ProfilePage() {
       github: github.trim(),
       avatar: avatar || null,
       skills,
-      studentId: studentId.trim(),
-      program: program.trim(),
-      semester,
       careerGoals: careerGoals.trim(),
+      // Strict Tamper-Proofing for Students: Lock official institutional metrics
+      studentId: isStudent ? (officialRecord?.studentId || currentUser?.studentId || studentId) : studentId.trim(),
+      department: isStudent ? (officialRecord?.department || currentUser?.department || department) : department.trim(),
+      program: isStudent ? (officialRecord?.program || currentUser?.program || program) : program.trim(),
+      semester: isStudent ? (officialRecord?.semester || currentUser?.semester || semester) : semester,
+      designation: isStudent ? (officialRecord?.program ? `Student (${officialRecord.program})` : designation) : designation.trim(),
     };
 
     try {
@@ -333,6 +368,71 @@ export default function ProfilePage() {
         </div>
       )}
 
+      {/* 2.5 OFFICIAL INSTITUTIONAL ACADEMIC STANDING (STRICTLY READ-ONLY FOR STUDENTS) */}
+      {isStudent && (
+        <div className="official-academic-card" role="region" aria-label="Official Academic Standing">
+          <div className="official-academic-header">
+            <div className="official-academic-title">
+              <ShieldCheck size={20} color="#0284C7" />
+              <span>Institutional Verified Academic Records</span>
+              <span className="profile-lock-tag">
+                <Lock size={12} />
+                <span>Read-Only • Managed by College Registrar</span>
+              </span>
+            </div>
+            <Link to="/student/portal" className="official-view-portal-link" title="Open complete personal analytics">
+              <span>View Full Analytics Radar</span>
+              <ArrowRight size={13} />
+            </Link>
+          </div>
+
+          <p className="official-academic-desc">
+            Official grades, attendance, and decoupled risk ratings are retrieved directly from the Institutional Examination Database.
+            Students can monitor their real-time performance and standing below, but cannot modify institutional records.
+          </p>
+
+          <div className="official-academic-grid">
+            <div className="official-metric-tile">
+              <span className="official-metric-label">Institutional Roll No</span>
+              <span className="official-metric-val">{officialRecord?.studentId || studentId || (currentUser?.email === 'student@example.edu' ? 'STU_0001' : 'STU_PENDING')}</span>
+              <span className="official-metric-sub">Verified College ID</span>
+            </div>
+
+            <div className="official-metric-tile">
+              <span className="official-metric-label">Cumulative CGPA</span>
+              <span className="official-metric-val" style={{ color: (officialRecord?.cgpa ?? 8.42) >= 7.5 ? '#059669' : '#D97706' }}>
+                {officialRecord?.cgpa != null ? officialRecord.cgpa.toFixed(2) : (currentUser?.email === 'student@example.edu' ? '8.42' : 'Pending')}
+              </span>
+              <span className="official-metric-sub">Examination Cell</span>
+            </div>
+
+            <div className="official-metric-tile">
+              <span className="official-metric-label">Aggregate Attendance</span>
+              <span className="official-metric-val" style={{ color: (officialRecord?.attendanceRate ?? 88.5) >= 75 ? '#059669' : '#DC2626' }}>
+                {officialRecord?.attendanceRate != null ? `${Math.round(officialRecord.attendanceRate)}%` : (currentUser?.email === 'student@example.edu' ? '88.5%' : 'Pending')}
+              </span>
+              <span className="official-metric-sub">75% Minimum Safe Limit</span>
+            </div>
+
+            <div className="official-metric-tile">
+              <span className="official-metric-label">Academic Risk Status</span>
+              <span className="official-metric-val" style={{ textTransform: 'capitalize', color: officialRecord?.academicRisk === 'high' ? '#DC2626' : '#059669', fontSize: '1rem' }}>
+                {officialRecord?.academicRisk || (currentUser?.email === 'student@example.edu' ? 'Low Risk' : 'Pending Ingestion')}
+              </span>
+              <span className="official-metric-sub">Decoupled Academic Engine</span>
+            </div>
+
+            <div className="official-metric-tile">
+              <span className="official-metric-label">Placement Readiness</span>
+              <span className="official-metric-val" style={{ color: '#2563EB', fontSize: '1rem' }}>
+                {(officialRecord?.cgpa ?? 8.42) >= 7.5 ? 'Tier-1 Eligible' : 'Core Ready'}
+              </span>
+              <span className="official-metric-sub">TPO Qualification Benchmark</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 3. NAVIGATION TABS */}
       <div className="profile-tabs-bar" role="tablist">
         <button
@@ -427,17 +527,31 @@ export default function ProfilePage() {
               </div>
 
               <div className="profile-input-group">
-                <label htmlFor="pfDept">
-                  {isStudent ? 'Branch / Engineering Department *' : 'Primary Department / Division *'}
-                </label>
-                <div className="profile-input-box">
-                  <Building2 size={16} className="profile-field-icon" />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label htmlFor="pfDept">
+                    {isStudent ? 'Enrolled Engineering Department' : 'Primary Department / Division *'}
+                  </label>
+                  {isStudent && (
+                    <span className="profile-lock-tag">
+                      <Lock size={11} /> Locked
+                    </span>
+                  )}
+                </div>
+                <div className={`profile-input-box ${isStudent ? 'locked' : ''}`}>
+                  {isStudent ? (
+                    <Lock size={15} className="profile-field-icon" />
+                  ) : (
+                    <Building2 size={16} className="profile-field-icon" />
+                  )}
                   <input
                     type="text"
                     id="pfDept"
                     value={department}
-                    onChange={(e) => setDepartment(e.target.value)}
+                    onChange={(e) => !isStudent && setDepartment(e.target.value)}
+                    disabled={isStudent}
+                    readOnly={isStudent}
                     required
+                    title={isStudent ? 'Managed by College Administration' : undefined}
                     placeholder={
                       isStudent
                         ? 'e.g. Computer Science, Information Technology, ECE'
@@ -449,16 +563,21 @@ export default function ProfilePage() {
 
               {isStudent && (
                 <div className="profile-input-group">
-                  <label htmlFor="pfStudentId">Student Roll No. / Institutional ID *</label>
-                  <div className="profile-input-box">
-                    <Shield size={16} className="profile-field-icon" />
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <label htmlFor="pfStudentId">Student Roll No. / Institutional ID</label>
+                    <span className="profile-lock-tag">
+                      <Lock size={11} /> Locked
+                    </span>
+                  </div>
+                  <div className="profile-input-box locked">
+                    <Lock size={15} className="profile-field-icon" />
                     <input
                       type="text"
                       id="pfStudentId"
                       value={studentId}
-                      onChange={(e) => setStudentId(e.target.value)}
-                      placeholder="e.g. 2024CS104 / STU-0042"
-                      required
+                      disabled
+                      readOnly
+                      title="Assigned by Institutional Examination Office. Cannot be modified."
                     />
                   </div>
                 </div>
@@ -503,23 +622,32 @@ export default function ProfilePage() {
             <div className="profile-fields-grid">
               {/* Common Designation / Program */}
               <div className="profile-input-group">
-                <label htmlFor="pfDesignation">
-                  {isStudent ? 'Enrolled Degree Program' : 'Institutional Designation / Title'}
-                </label>
-                <div className="profile-input-box">
-                  <Briefcase size={16} className="profile-field-icon" />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label htmlFor="pfDesignation">
+                    {isStudent ? 'Enrolled Degree Program' : 'Institutional Designation / Title'}
+                  </label>
+                  {isStudent && (
+                    <span className="profile-lock-tag">
+                      <Lock size={11} /> Locked
+                    </span>
+                  )}
+                </div>
+                <div className={`profile-input-box ${isStudent ? 'locked' : ''}`}>
+                  {isStudent ? (
+                    <Lock size={15} className="profile-field-icon" />
+                  ) : (
+                    <Briefcase size={16} className="profile-field-icon" />
+                  )}
                   <input
                     type="text"
                     id="pfDesignation"
                     value={isStudent ? (program || designation) : designation}
                     onChange={(e) => {
-                      if (isStudent) {
-                        setProgram(e.target.value);
-                        setDesignation(e.target.value);
-                      } else {
-                        setDesignation(e.target.value);
-                      }
+                      if (!isStudent) setDesignation(e.target.value);
                     }}
+                    disabled={isStudent}
+                    readOnly={isStudent}
+                    title={isStudent ? 'Enrolled degree program (Managed by College Administration)' : undefined}
                     placeholder={isStudent ? 'e.g. B.Tech Computer Science / BCA / MCA' : 'Associate Professor & HOD'}
                   />
                 </div>
@@ -604,21 +732,22 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="profile-input-group">
-                    <label htmlFor="pfSemester">Current Semester</label>
-                    <div className="profile-input-box">
-                      <BookOpen size={16} className="profile-field-icon" />
-                      <select
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <label htmlFor="pfSemester">Current Academic Semester</label>
+                      <span className="profile-lock-tag">
+                        <Lock size={11} /> Locked
+                      </span>
+                    </div>
+                    <div className="profile-input-box locked">
+                      <Lock size={15} className="profile-field-icon" />
+                      <input
+                        type="text"
                         id="pfSemester"
-                        value={semester}
-                        onChange={(e) => setSemester(e.target.value)}
-                        className="profile-select"
-                      >
-                        {[1, 2, 3, 4, 5, 6, 7, 8].map((s) => (
-                          <option key={s} value={s}>
-                            Semester {s}
-                          </option>
-                        ))}
-                      </select>
+                        value={String(semester).toLowerCase().includes('sem') ? semester : `Semester ${semester}`}
+                        disabled
+                        readOnly
+                        title="Assigned by Institutional Registrar Office"
+                      />
                     </div>
                   </div>
                 </>

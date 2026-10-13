@@ -209,6 +209,102 @@
   color: #991b1b;
 }
 
+/* 2.5 OFFICIAL ACADEMIC STANDING CARD (READ-ONLY FOR STUDENTS) */
+.official-academic-card {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #0284c7;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+}
+
+.official-academic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.official-academic-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.official-view-portal-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #0284c7;
+  text-decoration: none;
+  background: #ffffff;
+  border: 1px solid #bae6fd;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.official-view-portal-link:hover {
+  background: #f0f9ff;
+  border-color: #7dd3fc;
+  transform: translateX(2px);
+}
+
+.official-academic-desc {
+  font-size: 0.8rem;
+  color: #475569;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.official-academic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+}
+
+.official-metric-tile {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.official-metric-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.official-metric-val {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+}
+
+.official-metric-sub {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: #94a3b8;
+}
+
 /* 3. TABS BAR */
 .profile-tabs-bar {
   display: flex;
@@ -331,9 +427,33 @@
   box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.15);
 }
 
-.profile-input-box.disabled {
+.profile-input-box.disabled,
+.profile-input-box.locked {
   background: #f8fafc;
   border-color: #e2e8f0;
+  cursor: not-allowed;
+}
+
+.profile-input-box.locked input,
+.profile-input-box.disabled input {
+  color: #475569;
+  font-weight: 500;
+  cursor: not-allowed;
+}
+
+.profile-lock-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #475569;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .profile-input-box input {
