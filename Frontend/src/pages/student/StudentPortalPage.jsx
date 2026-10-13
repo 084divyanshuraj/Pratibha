@@ -264,6 +264,15 @@ export default function StudentPortalPage() {
       .finally(() => setLoadingLive(false));
   }, [currentUser, recheckCounter]);
 
+  // Reactive listener: automatically re-sync student records when Admin uploads CSV in Data Integration Studio
+  useEffect(() => {
+    const handleDataUpdate = () => {
+      setRecheckCounter((c) => c + 1);
+    };
+    window.addEventListener('pratibha_data_updated', handleDataUpdate);
+    return () => window.removeEventListener('pratibha_data_updated', handleDataUpdate);
+  }, []);
+
   // Lazy-load sample benchmark analytics when preview mode is toggled
   useEffect(() => {
     if (previewBenchmark && !scoreData) {
@@ -1244,101 +1253,133 @@ export default function StudentPortalPage() {
           ========================================================================= */}
       {activeTab === 'academic' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {!hasCollegeRecords && !previewBenchmark && (
+          {!hasCollegeRecords && !previewBenchmark ? (
             <div
               style={{
-                backgroundColor: '#F8FAFC',
+                backgroundColor: '#FFFFFF',
                 border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '0.85rem 1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
+                borderRadius: '12px',
+                padding: '2rem 1.5rem',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
               }}
             >
-              <Clock size={18} color="#1677D2" style={{ flexShrink: 0 }} />
-              <div style={{ fontSize: '0.84rem', color: '#475569' }}>
-                Official biometric attendance registers for Roll No <strong>{student.studentId}</strong> will sync automatically upon departmental register close. You can explore the live Attendance Simulator and Semester Roadmap below.
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  backgroundColor: '#EFF6FF',
+                  color: '#1677D2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 1rem auto',
+                }}
+              >
+                <BookOpen size={24} />
+              </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', margin: '0 0 6px 0' }}>
+                Course Attendance Telemetry Awaiting Ingestion
+              </h3>
+              <p style={{ fontSize: '0.86rem', color: '#64748B', maxWidth: '580px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
+                Your department ({student.program}) has not yet published semester attendance registers or course enrollment sheets for Roll No <strong>{student.studentId}</strong>.
+              </p>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.8rem',
+                  color: '#475569',
+                  fontWeight: 500,
+                }}
+              >
+                <Clock size={15} color="#D97706" />
+                <span>Statutory 75% AICTE rule applies once departmental CSV is imported</span>
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '1.5rem',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <div>
+                  <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+                    Current Semester Course Attendance Telemetry
+                  </h3>
+                  <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '4px 0 0 0' }}>
+                    Mandatory AICTE statutory compliance threshold is 75.0% aggregate per course.
+                  </p>
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    padding: '4px 10px',
+                    backgroundColor: '#ECFDF5',
+                    color: '#059669',
+                    borderRadius: '6px',
+                  }}
+                >
+                  Overall: {student.attendanceRate != null ? `${student.attendanceRate}%` : '88.5%'}
+                </span>
+              </div>
+
+              <div className="responsive-table-wrapper">
+                <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
+                  <thead>
+                    <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
+                      <th style={{ padding: '12px 14px', color: '#475569' }}>Course Code</th>
+                      <th style={{ padding: '12px 14px', color: '#475569' }}>Course Title</th>
+                      <th style={{ padding: '12px 14px', color: '#475569' }}>Faculty In-Charge</th>
+                      <th style={{ padding: '12px 14px', color: '#475569' }}>Attended / Total</th>
+                      <th style={{ padding: '12px 14px', color: '#475569' }}>Attendance Rate</th>
+                      <th style={{ padding: '12px 14px', color: '#475569' }}>75% Safety Margin</th>
+                      <th style={{ padding: '12px 14px', color: '#475569', textAlign: 'right' }}>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {attendanceCourses.map((c) => (
+                      <tr key={c.code} style={{ borderBottom: '1px solid #F1F5F9' }}>
+                        <td style={{ padding: '12px 14px', fontWeight: 600, color: '#0F172A' }}>{c.code}</td>
+                        <td style={{ padding: '12px 14px', color: '#334155' }}>{c.name}</td>
+                        <td style={{ padding: '12px 14px', color: '#64748B' }}>{c.instructor}</td>
+                        <td style={{ padding: '12px 14px', color: '#475569' }}>{c.attended} / {c.total}</td>
+                        <td style={{ padding: '12px 14px' }}>
+                          <strong style={{ color: c.pct >= 85 ? '#10B981' : c.pct >= 75 ? '#F59E0B' : '#EF4444' }}>
+                            {c.pct}%
+                          </strong>
+                        </td>
+                        <td style={{ padding: '12px 14px', color: '#64748B', fontSize: '0.8rem' }}>{c.margin}</td>
+                        <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                          {c.warning ? (
+                            <span style={{ padding: '3px 8px', borderRadius: '4px', backgroundColor: '#FEF3C7', color: '#D97706', fontSize: '0.74rem', fontWeight: 600 }}>
+                              ⚠ Near 75% Threshold
+                            </span>
+                          ) : (
+                            <span style={{ padding: '3px 8px', borderRadius: '4px', backgroundColor: '#ECFDF5', color: '#059669', fontSize: '0.74rem', fontWeight: 600 }}>
+                              ✓ Optimal Standing
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           )}
-
-          {/* Course Attendance Telemetry */}
-              <div
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  border: '1px solid #E2E8F0',
-                  borderRadius: '10px',
-                  padding: '1.5rem',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-                }}
-              >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-              <div>
-                <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#0F172A', margin: 0 }}>
-                  Current Semester Course Attendance Telemetry
-                </h3>
-                <p style={{ fontSize: '0.82rem', color: '#64748B', margin: '4px 0 0 0' }}>
-                  Mandatory AICTE statutory compliance threshold is 75.0% aggregate per course.
-                </p>
-              </div>
-              <span
-                style={{
-                  fontSize: '0.78rem',
-                  fontWeight: 600,
-                  padding: '4px 10px',
-                  backgroundColor: '#ECFDF5',
-                  color: '#059669',
-                  borderRadius: '6px',
-                }}
-              >
-                Overall: {student.attendanceRate != null ? `${student.attendanceRate}%` : '88.5% (Sample)'}
-              </span>
-            </div>
-
-            <div className="responsive-table-wrapper">
-              <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
-                <thead>
-                  <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
-                    <th style={{ padding: '12px 14px', color: '#475569' }}>Course Code</th>
-                    <th style={{ padding: '12px 14px', color: '#475569' }}>Course Title</th>
-                    <th style={{ padding: '12px 14px', color: '#475569' }}>Faculty In-Charge</th>
-                    <th style={{ padding: '12px 14px', color: '#475569' }}>Attended / Total</th>
-                    <th style={{ padding: '12px 14px', color: '#475569' }}>Attendance Rate</th>
-                    <th style={{ padding: '12px 14px', color: '#475569' }}>75% Safety Margin</th>
-                    <th style={{ padding: '12px 14px', color: '#475569', textAlign: 'right' }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {attendanceCourses.map((c) => (
-                    <tr key={c.code} style={{ borderBottom: '1px solid #F1F5F9' }}>
-                      <td style={{ padding: '12px 14px', fontWeight: 600, color: '#0F172A' }}>{c.code}</td>
-                      <td style={{ padding: '12px 14px', color: '#334155' }}>{c.name}</td>
-                      <td style={{ padding: '12px 14px', color: '#64748B' }}>{c.instructor}</td>
-                      <td style={{ padding: '12px 14px', color: '#475569' }}>{c.attended} / {c.total}</td>
-                      <td style={{ padding: '12px 14px' }}>
-                        <strong style={{ color: c.pct >= 85 ? '#10B981' : c.pct >= 75 ? '#F59E0B' : '#EF4444' }}>
-                          {c.pct}%
-                        </strong>
-                      </td>
-                      <td style={{ padding: '12px 14px', color: '#64748B', fontSize: '0.8rem' }}>{c.margin}</td>
-                      <td style={{ padding: '12px 14px', textAlign: 'right' }}>
-                        {c.warning ? (
-                          <span style={{ padding: '3px 8px', borderRadius: '4px', backgroundColor: '#FEF3C7', color: '#D97706', fontSize: '0.74rem', fontWeight: 600 }}>
-                            ⚠ Near 75% Threshold
-                          </span>
-                        ) : (
-                          <span style={{ padding: '3px 8px', borderRadius: '4px', backgroundColor: '#ECFDF5', color: '#059669', fontSize: '0.74rem', fontWeight: 600 }}>
-                            ✓ Optimal Standing
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
 
           {/* Interactive Attendance Calculator & Simulator */}
           <div
@@ -1403,43 +1444,45 @@ export default function StudentPortalPage() {
           </div>
 
           {/* Academic Semester SGPA Progression */}
-          <div
-            style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid #E2E8F0',
-              borderRadius: '10px',
-              padding: '1.5rem',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-            }}
-          >
-            <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', margin: '0 0 1rem 0' }}>
-              SGPA Historical Progression (Semester 1 to 5)
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem' }}>
-              {[
-                { sem: 'Sem 1', sgpa: 8.10, credits: 24 },
-                { sem: 'Sem 2', sgpa: 8.25, credits: 24 },
-                { sem: 'Sem 3', sgpa: 8.00, credits: 26 },
-                { sem: 'Sem 4', sgpa: 8.55, credits: 26 },
-                { sem: 'Sem 5', sgpa: 8.42, credits: 24 },
-              ].map((s, i) => (
-                <div
-                  key={i}
-                  style={{
-                    backgroundColor: '#F8FAFC',
-                    border: '1px solid #E2E8F0',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    textAlign: 'center',
-                  }}
-                >
-                  <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 600 }}>{s.sem}</div>
-                  <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#0F172A', margin: '4px 0' }}>{s.sgpa}</div>
-                  <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>{s.credits} Credits</div>
-                </div>
-              ))}
+          {(hasCollegeRecords || previewBenchmark) && (
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #E2E8F0',
+                borderRadius: '10px',
+                padding: '1.5rem',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+              }}
+            >
+              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#0F172A', margin: '0 0 1rem 0' }}>
+                SGPA Historical Progression (Semester 1 to 5)
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '1rem' }}>
+                {[
+                  { sem: 'Sem 1', sgpa: 8.10, credits: 24 },
+                  { sem: 'Sem 2', sgpa: 8.25, credits: 24 },
+                  { sem: 'Sem 3', sgpa: 8.00, credits: 26 },
+                  { sem: 'Sem 4', sgpa: 8.55, credits: 26 },
+                  { sem: 'Sem 5', sgpa: 8.42, credits: 24 },
+                ].map((s, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      backgroundColor: '#F8FAFC',
+                      border: '1px solid #E2E8F0',
+                      borderRadius: '8px',
+                      padding: '12px',
+                      textAlign: 'center',
+                    }}
+                  >
+                    <div style={{ fontSize: '0.74rem', color: '#64748B', fontWeight: 600 }}>{s.sem}</div>
+                    <div style={{ fontSize: '1.3rem', fontWeight: 700, color: '#0F172A', margin: '4px 0' }}>{s.sgpa}</div>
+                    <div style={{ fontSize: '0.7rem', color: '#94A3B8' }}>{s.credits} Credits</div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
     </div>
   )}
 
@@ -1448,51 +1491,84 @@ export default function StudentPortalPage() {
           ========================================================================= */}
       {activeTab === 'placement' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {!hasCollegeRecords && !previewBenchmark && (
+          {!hasCollegeRecords && !previewBenchmark ? (
             <div
               style={{
-                backgroundColor: '#F8FAFC',
+                backgroundColor: '#FFFFFF',
                 border: '1px solid #E2E8F0',
-                borderRadius: '8px',
-                padding: '0.85rem 1.25rem',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
+                borderRadius: '12px',
+                padding: '2rem 1.5rem',
+                textAlign: 'center',
+                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
               }}
             >
-              <Award size={18} color="#1677D2" style={{ flexShrink: 0 }} />
-              <div style={{ fontSize: '0.84rem', color: '#475569' }}>
-                Official diagnostic assessment benchmarks for Roll No <strong>{student.studentId}</strong> will sync upon release by Training & Placement Cell. Your Verified Skill Matrix and Placement Action Checklist are active below.
+              <div
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  backgroundColor: '#EFF6FF',
+                  color: '#1677D2',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  margin: '0 auto 1rem auto',
+                }}
+              >
+                <Award size={24} />
+              </div>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#0F172A', margin: '0 0 6px 0' }}>
+                Placement Mock Assessment Telemetry Pending
+              </h3>
+              <p style={{ fontSize: '0.86rem', color: '#64748B', maxWidth: '580px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
+                The Training & Placement Cell (TPO) has not yet recorded mock interview or aptitude test scores for Roll No <strong>{student.studentId}</strong>.
+              </p>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  borderRadius: '6px',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '0.8rem',
+                  color: '#475569',
+                  fontWeight: 500,
+                }}
+              >
+                <Sparkles size={15} color="#2563EB" />
+                <span>You can track your self-declared technical skills and interview milestones below</span>
+              </div>
+            </div>
+          ) : (
+            /* Assessment Metrics Row */
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
+                <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Cognitive Aptitude & Reasoning
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0F172A', margin: '6px 0' }}>82 / 100</div>
+                <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 600 }}>✓ Qualified for Tier-1 Product Companies</div>
+              </div>
+
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
+                <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Technical Mock Interview (DSA)
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0F172A', margin: '6px 0' }}>74 / 100</div>
+                <div style={{ fontSize: '0.78rem', color: '#F59E0B', fontWeight: 600 }}>Target: Strengthen timed recursion problems</div>
+              </div>
+
+              <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
+                <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
+                  Resume ATS Readiness Index
+                </div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0284C7', margin: '6px 0' }}>88 / 100</div>
+                <div style={{ fontSize: '0.78rem', color: '#0284C7', fontWeight: 600 }}>High Parser Match for Software Roles</div>
               </div>
             </div>
           )}
-
-          {/* Assessment Metrics Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
-                Cognitive Aptitude & Reasoning
-              </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0F172A', margin: '6px 0' }}>82 / 100</div>
-              <div style={{ fontSize: '0.78rem', color: '#10B981', fontWeight: 600 }}>✓ Qualified for Tier-1 Product Companies</div>
-            </div>
-
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
-                Technical Mock Interview (DSA)
-              </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0F172A', margin: '6px 0' }}>74 / 100</div>
-              <div style={{ fontSize: '0.78rem', color: '#F59E0B', fontWeight: 600 }}>Target: Strengthen timed recursion problems</div>
-            </div>
-
-            <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
-              <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
-                Resume ATS Readiness Index
-              </div>
-              <div style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0284C7', margin: '6px 0' }}>88 / 100</div>
-              <div style={{ fontSize: '0.78rem', color: '#0284C7', fontWeight: 600 }}>High Parser Match for Software Roles</div>
-            </div>
-          </div>
 
           {/* Verified Skills Badges */}
           <div
