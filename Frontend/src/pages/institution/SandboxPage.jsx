@@ -3,20 +3,12 @@ import {
   FlaskConical,
   Play,
   CheckCircle2,
-  AlertCircle,
   Sliders,
-  DollarSign,
-  Users,
-  Building,
-  Sparkles,
-  ArrowRight,
   ShieldCheck,
-  Info,
   GraduationCap,
   Briefcase,
   Shield,
   Download,
-  Code2,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';

@@ -7,9 +7,6 @@ import {
   MapPin,
   Clock,
   X,
-  ShieldCheck,
-  FileText,
-  ExternalLink,
 } from 'lucide-react';
 
 export default function PublicFooter() {

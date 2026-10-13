@@ -5,7 +5,6 @@ import {
   Send,
   ShieldCheck,
   Database,
-  ArrowRight,
   Mic,
   MicOff,
   Volume2,

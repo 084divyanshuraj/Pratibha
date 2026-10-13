@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   UploadCloud,
-  FileSpreadsheet,
   Download,
   CheckCircle,
   AlertTriangle,
@@ -13,9 +12,7 @@ import {
   ArrowRight,
   RefreshCw,
   Sliders,
-  ExternalLink,
   Trash2,
-  Lock,
 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import * as XLSX from 'xlsx';

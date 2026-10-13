@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Layers,
   RefreshCw,
-  Users,
-  AlertTriangle,
-  Award,
-  BookOpen,
-  Laptop,
-  CheckCircle2,
   ArrowRight,
 } from 'lucide-react';
 import { api } from '../../services/api';

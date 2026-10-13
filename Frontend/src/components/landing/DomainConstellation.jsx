@@ -7,7 +7,6 @@ import {
   Lightbulb,
   MessageSquare,
   Briefcase,
-  CheckCircle,
 } from 'lucide-react';
 
 export default function DomainConstellation() {

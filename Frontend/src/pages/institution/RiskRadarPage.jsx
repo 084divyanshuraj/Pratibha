@@ -2,22 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Target,
-  AlertTriangle,
-  Award,
-  TrendingDown,
   ArrowRight,
-  ShieldCheck,
-  CheckCircle,
   CheckCircle2,
-  HelpCircle,
   GraduationCap,
   Briefcase,
   Shield,
-  Clock,
-  Sparkles,
   Cpu,
   Play,
-  Zap,
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { useAuth } from '../../context/AuthContext';

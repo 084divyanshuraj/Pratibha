@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   X,
-  Award,
   BookOpen,
   Calendar,
   Laptop,
@@ -11,15 +10,9 @@ import {
   MessageSquare,
   ShieldAlert,
   CheckCircle2,
-  AlertTriangle,
-  ArrowUpRight,
   Plus,
-  ShieldCheck,
-  Check,
   Clock,
   Sparkles,
-  TrendingDown,
-  TrendingUp,
   Activity,
   ArrowRight,
 } from 'lucide-react';

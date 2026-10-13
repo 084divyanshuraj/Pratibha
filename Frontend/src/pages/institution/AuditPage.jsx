@@ -3,16 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import {
   ShieldCheck,
   Search,
-  Filter,
   Download,
   Lock,
-  FileText,
   Clock,
   User,
-  AlertTriangle,
-  CheckCircle,
   Eye,
-  Key,
   Database,
 } from 'lucide-react';
 import { api } from '../../services/api';

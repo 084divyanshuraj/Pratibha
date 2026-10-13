@@ -5,7 +5,6 @@ import {
   Shield,
   Send,
   CheckCircle2,
-  TrendingUp,
   AlertCircle,
   Sparkles,
   Filter,
@@ -14,8 +13,6 @@ import {
   Check,
   AlertTriangle,
   ThumbsUp,
-  ThumbsDown,
-  Layers,
   ArrowUpRight,
 } from 'lucide-react';
 import { api } from '../../services/api';

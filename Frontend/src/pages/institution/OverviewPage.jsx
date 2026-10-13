@@ -5,14 +5,9 @@ import {
   Award,
   AlertTriangle,
   Database,
-  ArrowUpRight,
-  TrendingUp,
   RefreshCw,
-  CheckCircle,
   FlaskConical,
-  Target,
   UploadCloud,
-  HelpCircle,
 } from 'lucide-react';
 import {
   BarChart,
@@ -31,8 +26,6 @@ import {
   Briefcase,
   GraduationCap,
   Shield,
-  Sparkles,
-  FileText,
 } from 'lucide-react';
 
 export default function OverviewPage() {

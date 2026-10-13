@@ -23,7 +23,6 @@ import {
   Plus,
   ZoomIn,
   ZoomOut,
-  Sliders,
   ArrowRight,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';

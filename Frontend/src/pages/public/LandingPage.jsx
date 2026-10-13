@@ -5,14 +5,7 @@ import {
   ShieldCheck,
   Cpu,
   Database,
-  Target,
-  Users2,
-  GraduationCap,
-  Briefcase,
   CheckCircle2,
-  Sparkles,
-  Layers,
-  Award,
 } from 'lucide-react';
 import PublicNavbar from '../../components/layout/PublicNavbar';
 import PublicFooter from '../../components/layout/PublicFooter';
