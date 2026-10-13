@@ -69,28 +69,6 @@ export default function LandingPage() {
         >
           {/* Left Column: Hero Copy & Actions */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-            {/* Context Badge */}
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '5px 14px',
-                borderRadius: '999px',
-                backgroundColor: 'rgba(217, 119, 6, 0.18)',
-                border: '1px solid rgba(245, 158, 11, 0.45)',
-                color: '#FDE68A',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                letterSpacing: '0.04em',
-                marginBottom: '1.25rem',
-                textTransform: 'uppercase',
-              }}
-            >
-              <Sparkles size={14} color="#F59E0B" />
-              <span>Student Success Intelligence · KPMG Challenge 4</span>
-            </div>
-
             {/* Headline */}
             <h1
               style={{
@@ -483,26 +461,6 @@ export default function LandingPage() {
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
           {/* Section Header */}
           <div style={{ textAlign: 'center', maxWidth: '820px', margin: '0 auto 2.75rem' }}>
-            <div
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '6px 14px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(245, 158, 11, 0.12)',
-                border: '1px solid rgba(245, 158, 11, 0.35)',
-                color: '#F59E0B',
-                fontSize: '0.76rem',
-                fontWeight: 700,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                marginBottom: '1rem',
-              }}
-            >
-              <Sparkles size={13} />
-              <span>KPMG Challenge 4 · Student Success Intelligence</span>
-            </div>
             <h2
               style={{
                 fontSize: 'clamp(2.1rem, 3.4vw, 2.85rem)',
