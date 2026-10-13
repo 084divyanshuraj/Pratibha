@@ -260,12 +260,6 @@
   transform: translateX(2px);
 }
 
-.official-academic-desc {
-  font-size: 0.8rem;
-  color: #475569;
-  margin: 0;
-  line-height: 1.45;
-}
 
 .official-academic-grid {
   display: grid;

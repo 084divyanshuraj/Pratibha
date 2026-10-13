@@ -386,11 +386,7 @@ export default function ProfilePage() {
             </Link>
           </div>
 
-          <p className="official-academic-desc">
-            Official grades, attendance, and decoupled risk ratings are retrieved directly from the Institutional Examination Database.
-            Students can monitor their real-time performance and standing below, but cannot modify institutional records.
-          </p>
-
+          
           <div className="official-academic-grid">
             <div className="official-metric-tile">
               <span className="official-metric-label">Institutional Roll No</span>

@@ -192,7 +192,6 @@ export default function AppLayout({ children }) {
           items: [
             { path: '/student/portal?tab=interventions', label: 'My Support Programs', icon: Sparkles, badge: 'Active', tab: 'interventions' },
             { path: '/student/portal?tab=feedback', label: 'Feedback & Suggestions', icon: MessageSquareHeart, badge: null, tab: 'feedback' },
-            { path: '/student/profile', label: 'My Profile & Details', icon: User, badge: null },
           ],
         },
       ];
@@ -215,7 +214,6 @@ export default function AppLayout({ children }) {
             { path: '/institution/segments', label: 'Student Support Archetypes', icon: Layers, badge: null },
             { path: '/institution/sandbox', label: 'Support & Tutoring Planner', icon: FlaskConical, badge: 'Tutoring' },
             { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: 'New' },
-            { path: '/institution/profile', label: 'My Faculty Profile', icon: User, badge: null },
           ],
         },
       ];
@@ -238,7 +236,6 @@ export default function AppLayout({ children }) {
             { path: '/institution/risk-radar', label: 'Placement Risk Radar', icon: Target, badge: 'Mock Prep' },
             { path: '/institution/sandbox', label: 'Interview & Training Planner', icon: FlaskConical, badge: 'Bootcamp' },
             { path: '/institution/feedback', label: 'Corporate Feedback', icon: MessageSquareHeart, badge: null },
-            { path: '/institution/profile', label: 'My TPO Profile', icon: User, badge: null },
           ],
         },
       ];
@@ -271,7 +268,6 @@ export default function AppLayout({ children }) {
         items: [
           { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
           { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
-          { path: '/institution/profile', label: 'My Profile & Details', icon: User, badge: null },
         ],
       },
     ];
@@ -845,55 +841,6 @@ export default function AppLayout({ children }) {
                 : (currentUser?.roleLabel || 'Admin')}
             </span>
 
-            {/* Quick Profile Nav Pill */}
-            <Link
-              to={isStudent ? '/student/profile' : '/institution/profile'}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '3px 8px',
-                borderRadius: '8px',
-                backgroundColor: '#0F2B48',
-                color: '#FFFFFF',
-                textDecoration: 'none',
-                fontWeight: 600,
-                fontSize: '0.74rem',
-                border: '1px solid rgba(56, 189, 248, 0.4)',
-                boxShadow: '0 1px 4px rgba(8, 43, 86, 0.15)',
-                transition: 'all 0.15s ease',
-              }}
-              title="Go to My Profile & Account Details"
-              onMouseEnter={(e) => {
-                e.currentTarget.style.backgroundColor = '#1677D2';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.backgroundColor = '#0F2B48';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <div
-                style={{
-                  width: '20px',
-                  height: '20px',
-                  borderRadius: '50%',
-                  backgroundColor: '#38BDF8',
-                  color: '#082B56',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontWeight: 800,
-                  fontSize: '0.66rem',
-                  flexShrink: 0,
-                }}
-              >
-                {userInitials}
-              </div>
-              <span className="hide-on-mobile" style={{ maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                Profile
-              </span>
-            </Link>
           </div>
         </header>
 
