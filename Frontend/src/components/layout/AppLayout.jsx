@@ -296,7 +296,8 @@ export default function AppLayout({ children }) {
       style={{
         display: 'flex',
         height: '100vh',
-        width: '100vw',
+        width: '100%',
+        maxWidth: '100%',
         overflow: 'hidden',
         backgroundColor: '#F8FAFC',
         color: '#0F172A',
@@ -704,6 +705,8 @@ export default function AppLayout({ children }) {
           height: '100vh',
           overflow: 'hidden',
           backgroundColor: '#F8FAFC',
+          minWidth: 0,
+          maxWidth: '100%',
           position: 'relative',
         }}
       >

@@ -41,6 +41,7 @@ export default function PublicNavbar() {
 
   return (
     <header
+      className="public-nav-header"
       style={{
         position: 'sticky',
         top: 0,
@@ -253,6 +254,9 @@ export default function PublicNavbar() {
           }
           .mobile-nav-toggle {
             display: block !important;
+          }
+          header.public-nav-header {
+            padding: 0.75rem 1rem !important;
           }
         }
       `}</style>

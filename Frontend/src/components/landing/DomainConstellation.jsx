@@ -103,6 +103,8 @@ export default function DomainConstellation() {
         height: '100%',
         minHeight: '360px',
         maxHeight: '440px',
+        overflow: 'hidden',
+        maxWidth: '100%',
       }}
     >
       {/* SVG Connecting Arc Network */}

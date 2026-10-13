@@ -62,7 +62,7 @@ export default function PublicFooter() {
         backgroundColor: '#051329',
         color: 'rgba(255, 255, 255, 0.75)',
         borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-        padding: '3.5rem 2rem 2rem',
+        padding: '3rem 1.25rem 2rem',
         marginTop: 'auto',
       }}
     >
@@ -71,7 +71,7 @@ export default function PublicFooter() {
           maxWidth: '1200px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
           gap: '3rem',
           paddingBottom: '3rem',
         }}
@@ -367,7 +367,7 @@ export default function PublicFooter() {
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 9999,
-            padding: '1.5rem',
+            padding: '1rem',
           }}
           onClick={() => setActiveModal(null)}
         >
@@ -376,7 +376,7 @@ export default function PublicFooter() {
               backgroundColor: '#0A172E',
               border: '1px solid rgba(56, 189, 248, 0.3)',
               borderRadius: '14px',
-              padding: '2rem',
+              padding: '1.5rem',
               maxWidth: '520px',
               width: '100%',
               boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.12)',

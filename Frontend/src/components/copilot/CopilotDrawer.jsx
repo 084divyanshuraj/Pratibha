@@ -404,8 +404,8 @@ export default function CopilotDrawer({ isOpen, onClose }) {
           position: 'fixed',
           top: 0,
           right: 0,
-          width: '490px',
-          maxWidth: '100vw',
+          width: 'min(490px, 100%)',
+          maxWidth: '100%',
           height: '100vh',
           backgroundColor: '#FFFFFF',
           boxShadow: '-10px 0 35px rgba(0,0,0,0.15)',
@@ -761,7 +761,7 @@ export default function CopilotDrawer({ isOpen, onClose }) {
             </button>
           </form>
 
-          <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: '6px', textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+          <div style={{ fontSize: '0.68rem', color: '#94A3B8', marginTop: '6px', textAlign: 'center', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'center', gap: '4px 8px' }}>
             <span>Zero LLM hallucination</span>
             <span>•</span>
             <span>Real-time Speech Recognition & Spoken Audio</span>

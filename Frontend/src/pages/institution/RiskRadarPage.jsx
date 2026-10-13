@@ -586,7 +586,7 @@ export default function RiskRadarPage() {
         </div>
 
         {/* The 4 ML Models + 2 Risk Engines + sss-v1 Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))', gap: '14px' }}>
           {/* Model 1 */}
           <div style={{ border: '1px solid #FECACA', backgroundColor: '#FEF2F2', borderRadius: '10px', padding: '14px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

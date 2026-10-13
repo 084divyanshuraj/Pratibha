@@ -801,3 +801,100 @@
   transform: translateY(-1px);
 }
 
+/* =========================================================================
+   RESPONSIVE MOBILE BREAKPOINTS (max-width: 768px & max-width: 480px)
+   ========================================================================= */
+@media (max-width: 768px) {
+  .pratibha-profile-page {
+    gap: 1rem;
+    padding: 0;
+  }
+
+  .profile-hero-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 1rem 1.25rem;
+    margin-top: -45px;
+    gap: 1rem;
+  }
+
+  .profile-hero-info {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .profile-hero-actions {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .profile-tabs-nav {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 4px;
+  }
+
+  .profile-tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .profile-fields-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .profile-section-card {
+    padding: 1.25rem 1rem;
+  }
+
+  .profile-form-footer {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .profile-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .profile-onboarding-banner {
+    flex-direction: column;
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .profile-dashboard-action-bar {
+    justify-content: center;
+  }
+
+  .profile-goto-dashboard-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-hero-backdrop {
+    height: 80px;
+  }
+
+  .profile-avatar-wrapper {
+    width: 88px;
+    height: 88px;
+  }
+
+  .profile-avatar-edit-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .profile-badge-row {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+

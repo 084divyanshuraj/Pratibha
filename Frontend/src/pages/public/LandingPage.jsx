@@ -220,6 +220,14 @@ export default function LandingPage() {
               gap: 2.5rem !important;
             }
           }
+          @media (max-width: 640px) {
+            .landing-about-cards {
+              gap: 1.25rem !important;
+            }
+            .landing-about-cards > div {
+              padding: 1.5rem !important;
+            }
+          }
         `}</style>
       </section>
 
@@ -269,9 +277,10 @@ export default function LandingPage() {
 
           {/* Core Mission Cards */}
           <div
+            className="landing-about-cards"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
               gap: '2rem',
               marginBottom: 0,
             }}

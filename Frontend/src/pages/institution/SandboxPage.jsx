@@ -652,7 +652,8 @@ export default function SandboxPage() {
                 >
                   Allocated Students ({simulationResult.allocationResults?.length || 0})
                 </div>
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                <div className="responsive-table-wrapper">
+                  <table style={{ width: '100%', minWidth: '580px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                   <thead>
                     <tr
                       style={{
@@ -686,6 +687,7 @@ export default function SandboxPage() {
                   </tbody>
                 </table>
               </div>
+              </div>
 
               {/* Excluded Students Table */}
               {simulationResult.excludedResults && simulationResult.excludedResults.length > 0 && (
@@ -709,7 +711,8 @@ export default function SandboxPage() {
                   >
                     Excluded Students ({simulationResult.excludedResults.length})
                   </div>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
+                  <div className="responsive-table-wrapper">
+                    <table style={{ width: '100%', minWidth: '480px', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
                     <thead>
                       <tr
                         style={{
@@ -738,6 +741,7 @@ export default function SandboxPage() {
                       ))}
                     </tbody>
                   </table>
+                </div>
                 </div>
               )}
             </>

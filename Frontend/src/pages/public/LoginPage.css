@@ -718,7 +718,7 @@
   .cyber-card-container {
     width: 100%;
     height: auto;
-    min-height: 580px;
+    min-height: 520px;
   }
 
   .cyber-diagonal-panel,
@@ -749,5 +749,60 @@
     transform: none !important;
     opacity: 1 !important;
     transition: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .pratibha-cyber-page {
+    padding: 12px 10px 24px;
+    justify-content: flex-start;
+    min-height: 100vh;
+  }
+
+  .pratibha-cyber-header {
+    position: static;
+    width: 100%;
+    padding: 4px 2px 12px;
+    margin-bottom: 4px;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .cyber-card-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 0 16px 0;
+    min-height: auto;
+    border-radius: 12px;
+  }
+
+  .cyber-form-box {
+    padding: 18px 14px !important;
+  }
+
+  .cyber-form-title {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+
+  .cyber-portal-tab {
+    padding: 5px 8px;
+    font-size: 0.74rem;
+  }
+
+  .cyber-role-selector-wrap {
+    padding: 6px 8px;
+  }
+
+  .cyber-role-selector-grid {
+    gap: 4px;
+  }
+
+  .cyber-role-card {
+    padding: 6px 3px;
+  }
+
+  .cyber-role-card-text {
+    font-size: 0.64rem;
   }
 }

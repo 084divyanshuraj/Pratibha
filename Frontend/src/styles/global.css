@@ -24,6 +24,9 @@ html {
   -moz-osx-font-smoothing: grayscale;
   scroll-behavior: smooth;
   height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -31,12 +34,18 @@ body {
   color: var(--color-text-main);
   background-color: var(--color-bg-page);
   min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
 }
 
 #root {
   min-height: 100%;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -940,8 +949,10 @@ input:-webkit-autofill:active {
 .main-workspace-canvas {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   width: 100%;
   max-width: 1440px;
+  min-width: 0;
   margin: 0 auto;
   color: #0F172A;
   padding: 1.75rem 2rem 5.5rem;
@@ -1198,7 +1209,9 @@ input:-webkit-autofill:active {
    ========================================================================== */
 @media (max-width: 640px) {
   .main-workspace-canvas {
-    padding: 1rem 1rem 5rem;
+    padding: 0.875rem 0.75rem 5rem;
+    overflow-x: hidden;
+    min-width: 0;
   }
 
   .hide-on-mobile {
@@ -1222,6 +1235,13 @@ input:-webkit-autofill:active {
   .responsive-charts-grid {
     grid-template-columns: 1fr;
     gap: 16px;
+  }
+
+  .responsive-stat-grid > *,
+  .responsive-charts-grid > *,
+  .responsive-quadrant-grid > * {
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 
   .responsive-pillar-grid {
@@ -1260,6 +1280,20 @@ input:-webkit-autofill:active {
     gap: 10px;
   }
 
+  .student-header-metrics {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    text-align: center;
+    border-top: 1px solid #E2E8F0;
+    padding-top: 12px;
+  }
+
+  .student-metric-cell {
+    text-align: center !important;
+  }
+
   /* Increase touch target sizes for mobile */
   button, select, input[type="text"], input[type="search"], input[type="email"] {
     min-height: 38px;
@@ -1269,6 +1303,37 @@ input:-webkit-autofill:active {
   .card, [class*="card"] {
     max-width: 100%;
     overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  /* Recharts responsiveness */
+  .recharts-responsive-container {
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+}
+
+/* ==========================================================================
+   EXTRA-SMALL MOBILE BREAKPOINT (max-width: 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .main-workspace-canvas {
+    padding: 0.75rem 0.625rem 5rem;
+  }
+
+  .responsive-toolbar-actions {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .directory-header-actions {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .student-header-metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 }
 

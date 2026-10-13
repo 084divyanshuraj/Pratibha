@@ -559,7 +559,7 @@ export default function StudentPortalPage() {
 
         {/* Quick Metrics & Print Action */}
         <div className="student-header-metrics">
-          <div style={{ textAlign: 'right' }}>
+          <div className="student-metric-cell">
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Cumulative CGPA
             </div>
@@ -574,7 +574,7 @@ export default function StudentPortalPage() {
             </div>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
+          <div className="student-metric-cell">
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Aggregate Attendance
             </div>
@@ -587,7 +587,7 @@ export default function StudentPortalPage() {
             </div>
           </div>
 
-          <div style={{ textAlign: 'right' }}>
+          <div className="student-metric-cell">
             <div style={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
               Data Completeness
             </div>
@@ -1109,7 +1109,7 @@ export default function StudentPortalPage() {
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
               gap: '1.5rem',
             }}
           >
@@ -1237,7 +1237,7 @@ export default function StudentPortalPage() {
           </div>
 
           {/* Model 1 & Model 2 Predictive Intelligence Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
             {/* Model 1: Dropout & Debarment Survival Engine (Cox-PH-v1.2) */}
             <div
               style={{
@@ -1562,8 +1562,8 @@ export default function StudentPortalPage() {
               </span>
             </div>
 
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
+            <div className="responsive-table-wrapper">
+              <table style={{ width: '100%', minWidth: '650px', borderCollapse: 'collapse', textAlign: 'left', fontSize: '0.86rem' }}>
                 <thead>
                   <tr style={{ backgroundColor: '#F8FAFC', borderBottom: '1px solid #E2E8F0' }}>
                     <th style={{ padding: '12px 14px', color: '#475569' }}>Course Code</th>
@@ -1801,7 +1801,7 @@ export default function StudentPortalPage() {
           {(hasCollegeRecords || previewBenchmark) && (
             <>
               {/* Assessment Metrics Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
             <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
               <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
                 Cognitive Aptitude & Reasoning
