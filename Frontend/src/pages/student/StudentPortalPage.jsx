@@ -1180,179 +1180,60 @@ export default function StudentPortalPage() {
             </div>
           </div>
 
-          {/* Model 1 & Model 2 Predictive Intelligence Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))', gap: '1.25rem' }}>
-            {/* Model 1: Dropout & Debarment Survival Engine (Cox-PH-v1.2) */}
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #FECACA',
-                borderRadius: '12px',
-                padding: '1.25rem',
-                boxShadow: '0 1px 3px rgba(220, 38, 38, 0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <ShieldAlert size={18} color="#DC2626" />
-                    <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#991B1B' }}>
-                      Debarment & Attendance Forecast
-                    </span>
-                  </div>
-                </div>
-                <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '12px' }}>
-                  Time-to-event survival modeling evaluates semester credit loss & attendance debarment horizon.
-                </div>
-
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-                  <div style={{ backgroundColor: '#FEF2F2', padding: '8px 10px', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '0.66rem', color: '#6B7280' }}>Hazard Multiplier</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#991B1B', marginTop: '2px' }}>
-                      {predictionsData?.targets?.dropout_forecast?.hazardMultiplier || '1.0x'}
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#F0FDF4', padding: '8px 10px', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '0.66rem', color: '#6B7280' }}>Survival Rate</div>
-                    <div style={{ fontSize: '1.1rem', fontWeight: 800, color: '#059669', marginTop: '2px' }}>
-                      {predictionsData?.targets?.dropout_forecast?.survivalRatePct || 94}%
-                    </div>
-                  </div>
-                  <div style={{ backgroundColor: '#FFFBEB', padding: '8px 10px', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '0.66rem', color: '#6B7280' }}>Debarment Risk</div>
-                    <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#B45309', marginTop: '4px' }}>
-                      {predictionsData?.targets?.dropout_forecast?.projectedDebarmentWeek || 'Safe / None'}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div style={{ marginTop: '12px', fontSize: '0.72rem', color: '#4B5563', borderTop: '1px solid #F3F4F6', paddingTop: '8px' }}>
-                • <strong>Status:</strong> {student.attendanceRate < 75 ? '⚠️ Attendance shortfall alert (< 75%). Biometric regularity required.' : '✓ Regular attendance maintains full exam eligibility.'}
-              </div>
-            </div>
-
-            {/* Model 2: Causal Uplift Recommender (CausalForest-v2.1) */}
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #BBF7D0',
-                borderRadius: '12px',
-                padding: '1.25rem',
-                boxShadow: '0 1px 3px rgba(22, 163, 74, 0.05)',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Sparkles size={18} color="#16A34A" />
-                    <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#166534' }}>
-                      Personalized Growth & Recommendations
-                    </span>
-                  </div>
-                </div>
-                <div style={{ fontSize: '0.78rem', color: '#6B7280', marginBottom: '8px' }}>
-                  Optimal counterfactual treatment effect identified for maximum metric boost.
-                </div>
-
-                <div style={{ backgroundColor: '#F0FDF4', padding: '10px', borderRadius: '8px', border: '1px solid #BBF7D0' }}>
-                  <div style={{ fontSize: '0.68rem', fontWeight: 600, color: '#166534', textTransform: 'uppercase' }}>
-                    Recommended Action:
-                  </div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>
-                    {predictionsData?.targets?.causal_uplift?.optimalIntervention || 'Technical Mock Interview & Behavioral Bootcamp'}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px', fontSize: '0.76rem' }}>
-                    <span style={{ color: '#16A34A', fontWeight: 700 }}>
-                      Predicted Uplift: +{predictionsData?.targets?.causal_uplift?.predictedUpliftPct || 18.2}%
-                    </span>
-                    <span style={{ color: '#64748B' }}>
-                      Horizon: {predictionsData?.targets?.causal_uplift?.estimatedRecoveryWeeks || 3} Wks
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <button
-                onClick={() => handleTabChange('interventions')}
-                style={{
-                  marginTop: '12px',
-                  backgroundColor: '#16A34A',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '6px',
-                  padding: '7px 12px',
-                  fontSize: '0.76rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                }}
-              >
-                Enroll in Recommended Program ➔
-              </button>
-            </div>
-          </div>
-
-          {/* Model 3: Student Voice & Sentiment / Burnout NLP Radar */}
+          {/* Quick Navigation to Detailed Student Tabs */}
           <div
             style={{
               backgroundColor: '#FFFFFF',
-              border: '1px solid #BFDBFE',
+              border: '1px solid #E2E8F0',
               borderRadius: '12px',
-              padding: '1.25rem',
-              boxShadow: '0 1px 3px rgba(37, 99, 235, 0.05)',
+              padding: '1.25rem 1.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: '1rem',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <MessageSquare size={18} color="#2563EB" />
-                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: '#1E40AF' }}>
-                  Student Voice & Well-Being Feedback
-                </span>
+            <div>
+              <div style={{ fontSize: '0.94rem', fontWeight: 700, color: '#0F172A' }}>
+                Next Steps for Academic & Career Growth
               </div>
-              <span
+              <div style={{ fontSize: '0.80rem', color: '#64748B', marginTop: '3px' }}>
+                Explore your detailed course attendance safety margins or verify technical placement benchmarks.
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => handleTabChange('academic')}
                 style={{
-                  fontSize: '0.72rem',
-                  fontWeight: 700,
-                  padding: '2px 8px',
-                  borderRadius: '4px',
-                  backgroundColor: (predictionsData?.targets?.sentiment_nlp?.burnoutRiskPct || 20) > 50 ? '#FEE2E2' : '#DCFCE7',
-                  color: (predictionsData?.targets?.sentiment_nlp?.burnoutRiskPct || 20) > 50 ? '#991B1B' : '#15803D',
+                  padding: '7px 14px',
+                  backgroundColor: '#F8FAFC',
+                  color: '#1E293B',
+                  border: '1px solid #CBD5E1',
+                  borderRadius: '6px',
+                  fontSize: '0.80rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
                 }}
               >
-                Burnout Risk: {predictionsData?.targets?.sentiment_nlp?.burnoutRiskPct || 18}%
-              </span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '10px' }}>
-              <div style={{ backgroundColor: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-                <div style={{ fontSize: '0.66rem', color: '#64748B' }}>Sentiment State</div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>
-                  {predictionsData?.targets?.sentiment_nlp?.sentimentLabel || 'Engaged / Resilient Scholar'}
-                </div>
-              </div>
-              <div style={{ backgroundColor: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-                <div style={{ fontSize: '0.66rem', color: '#64748B' }}>Fatigue & Pacing</div>
-                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: '#059669', marginTop: '2px' }}>
-                  {predictionsData?.targets?.sentiment_nlp?.aspects?.burnoutFatigue || 'Low'} Fatigue • {predictionsData?.targets?.sentiment_nlp?.aspects?.academicRigorPace || 'Balanced'}
-                </div>
-              </div>
-              <div style={{ backgroundColor: '#F8FAFC', padding: '8px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-                <div style={{ fontSize: '0.66rem', color: '#64748B' }}>Thematic Tags</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px', marginTop: '2px' }}>
-                  {(predictionsData?.targets?.sentiment_nlp?.detectedThemes || ['#PlacementConfidence', '#ProactiveLearner']).map((t, idx) => (
-                    <span key={idx} style={{ fontSize: '0.66rem', fontWeight: 600, color: '#1D4ED8', backgroundColor: '#EFF6FF', padding: '1px 5px', borderRadius: '3px' }}>
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
+                Inspect Courses & Attendance ➔
+              </button>
+              <button
+                onClick={() => handleTabChange('placement')}
+                style={{
+                  padding: '7px 14px',
+                  backgroundColor: '#1677D2',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '0.80rem',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Placement Readiness ➔
+              </button>
             </div>
           </div>
         </div>

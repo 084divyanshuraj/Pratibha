@@ -58,7 +58,7 @@ const DEMO_PERSONAS = [
     email: 'admin@example.edu',
     password: 'DemoUser123!',
     tag: 'Dean & Provost Office',
-    desc: 'Campus-wide intelligence, simulations, and 30 student cohort analytics.',
+    desc: 'Campus-wide intelligence, departmental oversight, and student cohort analytics.',
     badge: '30 Students Loaded',
   },
   {
@@ -71,7 +71,7 @@ const DEMO_PERSONAS = [
     email: 'faculty@example.edu',
     password: 'DemoUser123!',
     tag: 'CSE Department',
-    desc: 'Assigned mentoring, attendance alerts (<75%), and intervention tasks.',
+    desc: 'Assigned mentoring, attendance alerts (<75%), and student guidance.',
     badge: 'Cohort Mentoring',
   },
   {
@@ -84,7 +84,7 @@ const DEMO_PERSONAS = [
     email: 'placement@example.edu',
     password: 'DemoUser123!',
     tag: 'Corporate & Career Cell',
-    desc: '2x2 placement readiness matrix, corporate drives, and mock bootcamp.',
+    desc: '2x2 placement readiness matrix, corporate drives, and interview prep.',
     badge: 'Placement Radar',
   },
   {
@@ -97,8 +97,8 @@ const DEMO_PERSONAS = [
     email: 'student@example.edu',
     password: 'DemoUser123!',
     tag: 'Enrolled B.Tech CSE',
-    desc: 'Personalized 360° portal with tamper-proof official academic telemetry.',
-    badge: 'Read-Only Telemetry',
+    desc: 'Personalized 360° academic dashboard, success score, and verified skills.',
+    badge: 'Student 360°',
   },
 ];
 
@@ -514,10 +514,10 @@ export default function LoginPage() {
             <div className="cyber-mode-banner demo anim-slide">
               <div className="cyber-mode-badge">
                 <Sparkles size={12} />
-                <span>Evaluation Sandbox • 30 Students Preloaded</span>
+                <span>Interactive Demo • 30 Students Preloaded</span>
               </div>
               <p className="cyber-mode-desc">
-                Instant review across 4 personas. Preloaded with 30 synthetic student records (STU_0001–STU_0030) across 8 pillars & decoupled risk models.
+                Instant access across 4 personas. Preloaded with 30 student records across core academic pillars and decoupled risk assessments.
               </p>
             </div>
           ) : (
@@ -527,7 +527,7 @@ export default function LoginPage() {
                 <span>Verified Campus Production Authentication</span>
               </div>
               <p className="cyber-mode-desc">
-                Strict credential verification. Arbitrary unauthorized logins are disabled. Student telemetry is linked and tamper-proof.
+                Institutional account authentication. Access is role-governed across student, faculty, and administration.
               </p>
             </div>
           )}

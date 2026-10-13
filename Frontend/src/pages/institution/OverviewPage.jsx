@@ -205,22 +205,7 @@ export default function OverviewPage() {
                 }}
               >
                 <UploadCloud size={14} />
-                <span>Batch Data Studio</span>
-              </button>
-              <button
-                onClick={() => navigate('/institution/audit')}
-                style={{
-                  padding: '7px 14px',
-                  backgroundColor: '#FFFFFF',
-                  color: '#0F172A',
-                  borderRadius: '6px',
-                  border: '1px solid #CBD5E1',
-                  fontSize: '0.8rem',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                }}
-              >
-                <span>Audit Trail</span>
+                <span>Data Integration Studio</span>
               </button>
             </>
           )}
@@ -273,7 +258,7 @@ export default function OverviewPage() {
           </button>
 
           <button
-            onClick={() => navigate('/institution/sandbox')}
+            onClick={() => navigate('/institution/students')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -294,8 +279,8 @@ export default function OverviewPage() {
             onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1262AF')}
             onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#1677D2')}
           >
-            <FlaskConical size={15} />
-            <span>Open Sandbox Simulator</span>
+            <Users size={15} />
+            <span>View Student Directory</span>
           </button>
         </div>
       </div>

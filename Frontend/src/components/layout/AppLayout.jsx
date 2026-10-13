@@ -209,10 +209,9 @@ export default function AppLayout({ children }) {
           ],
         },
         {
-          title: 'Tutoring & Support',
+          title: 'Support & Guidance',
           items: [
-            { path: '/institution/segments', label: 'Student Support Archetypes', icon: Layers, badge: null },
-            { path: '/institution/sandbox', label: 'Support & Tutoring Planner', icon: FlaskConical, badge: 'Tutoring' },
+            { path: '/institution/segments', label: 'Student Support Matrix', icon: Layers, badge: null },
             { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: 'New' },
           ],
         },
@@ -234,7 +233,6 @@ export default function AppLayout({ children }) {
           title: 'Recruitment & Prep',
           items: [
             { path: '/institution/risk-radar', label: 'Placement Risk Radar', icon: Target, badge: 'Mock Prep' },
-            { path: '/institution/sandbox', label: 'Interview & Training Planner', icon: FlaskConical, badge: 'Bootcamp' },
             { path: '/institution/feedback', label: 'Corporate Feedback', icon: MessageSquareHeart, badge: null },
           ],
         },
@@ -243,7 +241,7 @@ export default function AppLayout({ children }) {
 
     return [
       {
-        title: 'Intelligence Modules',
+        title: 'Campus Intelligence',
         items: [
           { path: '/institution/overview', label: 'Executive Overview', icon: BarChart3, badge: null },
           {
@@ -252,22 +250,15 @@ export default function AppLayout({ children }) {
             icon: Users,
             badge: totalStudents != null && totalStudents > 0 ? totalStudents.toLocaleString() : null,
           },
-          { path: '/institution/risk-radar', label: 'Decoupled Risk Radar', icon: Target, badge: 'ML' },
+          { path: '/institution/risk-radar', label: 'Decoupled Risk Radar', icon: Target, badge: null },
+          { path: '/institution/segments', label: '2x2 Segmentation Matrix', icon: Layers, badge: null },
         ],
       },
       {
-        title: 'Simulations & Tools',
+        title: 'Data & Feedback',
         items: [
-          { path: '/institution/sandbox', label: 'Intervention Sandbox', icon: FlaskConical, badge: 'Simulator' },
-          { path: '/institution/segments', label: 'Student Archetypes', icon: Layers, badge: '5' },
-          { path: '/institution/ingestion', label: 'Data Integration Studio', icon: UploadCloud, badge: '8 Pillars' },
-        ],
-      },
-      {
-        title: 'Governance & Audits',
-        items: [
+          { path: '/institution/ingestion', label: 'Data Integration Studio', icon: UploadCloud, badge: '7 Domains' },
           { path: '/institution/feedback', label: 'Campus Feedback', icon: MessageSquareHeart, badge: null },
-          { path: '/institution/audit', label: 'Security & Audit Trail', icon: ShieldCheck, badge: 'Admin' },
         ],
       },
     ];
