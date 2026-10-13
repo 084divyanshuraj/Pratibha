@@ -7,13 +7,13 @@ import {
   CheckCircle2,
   AlertCircle,
   Sparkles,
-  Filter,
   Tag,
   Search,
   Check,
   AlertTriangle,
   ThumbsUp,
   ArrowUpRight,
+  X,
 } from 'lucide-react';
 import { api } from '../../services/api';
 
@@ -23,7 +23,7 @@ import { api } from '../../services/api';
 const POSITIVE_LEXICON = [
   'great', 'excellent', 'helpful', 'loved', 'improved', 'awesome', 'good',
   'clear', 'engaging', 'supportive', 'best', 'inspiring', 'smooth', 'practical',
-  'appreciate', 'thank', 'valuable', 'boost'
+  'appreciate', 'thank', 'valuable', 'boost', 'fantastic', 'hands-on'
 ];
 
 const CRITICAL_LEXICON = [
@@ -43,7 +43,7 @@ export function analyzeSentimentNLP(text) {
       score: 0,
       label: 'NEUTRAL',
       confidence: 75,
-      topic: '#GeneralCampus',
+      topic: '#CampusWelfare',
       isUrgent: false,
       piiCleanedText: text || '',
     };
@@ -70,11 +70,11 @@ export function analyzeSentimentNLP(text) {
     topic = '#HostelWiFi';
   } else if (lower.includes('placement') || lower.includes('interview') || lower.includes('mock') || lower.includes('tpo') || lower.includes('aptitude') || lower.includes('resume')) {
     topic = '#PlacementMocks';
-  } else if (lower.includes('faculty') || lower.includes('prof') || lower.includes('sir') || lower.includes('teacher') || lower.includes('mentor')) {
+  } else if (lower.includes('faculty') || lower.includes('prof') || lower.includes('sir') || lower.includes('teacher') || lower.includes('mentor') || lower.includes('lecture')) {
     topic = '#FacultyGuidance';
-  } else if (lower.includes('exam') || lower.includes('syllabus') || lower.includes('marks') || lower.includes('grading') || lower.includes('math') || lower.includes('speed') || lower.includes('pace')) {
+  } else if (lower.includes('exam') || lower.includes('syllabus') || lower.includes('marks') || lower.includes('grading') || lower.includes('math') || lower.includes('speed') || lower.includes('pace') || lower.includes('curriculum')) {
     topic = '#CurriculumPacing';
-  } else if (lower.includes('library') || lower.includes('book') || lower.includes('hours') || lower.includes('reading')) {
+  } else if (lower.includes('library') || lower.includes('book') || lower.includes('hours') || lower.includes('reading') || lower.includes('ieee')) {
     topic = '#LibraryAccess';
   }
 
@@ -116,7 +116,7 @@ export function analyzeSentimentNLP(text) {
   };
 }
 
-// Initial high-fidelity anonymized student voice entries
+// Initial high-fidelity anonymized student voice entries (fully synced across all metrics)
 const INITIAL_STUDENT_VOICES = [
   {
     id: 'sv-1',
@@ -187,11 +187,11 @@ const INITIAL_STUDENT_VOICES = [
     id: 'sv-6',
     cohort: '4th Year · Information Technology',
     department: 'Information Technology',
-    text: 'Corporate soft-skills and HR interview bootcamps were practical. Good guidance on behavioral questions.',
+    text: 'Corporate soft-skills and HR interview bootcamps were practical. Good guidance on behavioral questions and aptitude speed tests.',
     topic: '#PlacementMocks',
     sentiment: 'POSITIVE',
     confidence: 88,
-    rating: 4,
+    rating: 5,
     isUrgent: false,
     timestamp: '3 days ago',
     acknowledged: true,
@@ -222,12 +222,35 @@ const INITIAL_STUDENT_VOICES = [
     timestamp: '5 days ago',
     acknowledged: true,
   },
+  {
+    id: 'sv-9',
+    cohort: '4th Year · Data Science',
+    department: 'Data Science',
+    text: 'Machine Learning lab workstations and GPU access enabled our team to complete capstone deep learning benchmarking on schedule. Great mentor support!',
+    topic: '#FacultyGuidance',
+    sentiment: 'POSITIVE',
+    confidence: 95,
+    rating: 5,
+    isUrgent: false,
+    timestamp: '6 days ago',
+    acknowledged: true,
+  },
+  {
+    id: 'sv-10',
+    cohort: '1st Year · Computer Science',
+    department: 'Computer Science',
+    text: 'First-year industry immersion session gave high clarity on coding competitions and internships roadmaps.',
+    topic: '#PlacementMocks',
+    sentiment: 'POSITIVE',
+    confidence: 90,
+    rating: 5,
+    isUrgent: false,
+    timestamp: '1 week ago',
+    acknowledged: true,
+  },
 ];
 
 export default function FeedbackPage() {
-  const [loading, setLoading] = useState(true);
-  const [feedbackSummary, setFeedbackSummary] = useState(null);
-  const [activeTypeFilter, setActiveTypeFilter] = useState('ALL');
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
@@ -242,6 +265,8 @@ export default function FeedbackPage() {
     'sv-5': true,
     'sv-6': true,
     'sv-8': true,
+    'sv-9': true,
+    'sv-10': true,
   });
 
   // Submit Feedback Form State
@@ -251,23 +276,7 @@ export default function FeedbackPage() {
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    loadSummary();
-  }, []);
-
-  const loadSummary = async () => {
-    setLoading(true);
-    try {
-      const data = await api.getFeedbackSummary();
-      setFeedbackSummary(data);
-    } catch {
-      // fallback handled in api.js
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Real-time NLP preview for the comment being typed
+  // Real-time NLP preview for the comment being typed in modal
   const liveNlpAnalysis = useMemo(() => {
     return analyzeSentimentNLP(comment);
   }, [comment]);
@@ -307,12 +316,6 @@ export default function FeedbackPage() {
         setSubmitSuccess(false);
         setShowSubmitModal(false);
         setComment('');
-        if (feedbackSummary) {
-          setFeedbackSummary({
-            ...feedbackSummary,
-            totalResponses: feedbackSummary.totalResponses + 1,
-          });
-        }
       }, 1200);
     } catch (err) {
       alert('Feedback submission failed: ' + err.message);
@@ -328,7 +331,7 @@ export default function FeedbackPage() {
     }));
   };
 
-  // Filter student voices
+  // Filter student voices dynamically
   const filteredVoices = useMemo(() => {
     return studentVoices.filter((v) => {
       // Sentiment filter
@@ -347,20 +350,20 @@ export default function FeedbackPage() {
     });
   }, [studentVoices, sentimentFilter, activeTopicFilter, searchQuery]);
 
-  // Aggregate NLP Stats
+  // Aggregate NLP Stats directly from live studentVoices
   const nlpStats = useMemo(() => {
     const total = studentVoices.length;
     const positive = studentVoices.filter((v) => v.sentiment === 'POSITIVE').length;
     const neutral = studentVoices.filter((v) => v.sentiment === 'NEUTRAL').length;
     const critical = studentVoices.filter((v) => v.sentiment === 'CRITICAL').length;
     const urgentCount = studentVoices.filter((v) => v.isUrgent && !acknowledgedMap[v.id]).length;
-    const nss = Math.round(((positive - critical) / total) * 100);
+    const nss = total > 0 ? Math.round(((positive - critical) / total) * 100) : 0;
 
     return {
       total,
-      positivePct: Math.round((positive / total) * 100),
-      neutralPct: Math.round((neutral / total) * 100),
-      criticalPct: Math.round((critical / total) * 100),
+      positivePct: total > 0 ? Math.round((positive / total) * 100) : 0,
+      neutralPct: total > 0 ? Math.round((neutral / total) * 100) : 0,
+      criticalPct: total > 0 ? Math.round((critical / total) * 100) : 0,
       positiveCount: positive,
       neutralCount: neutral,
       criticalCount: critical,
@@ -369,27 +372,38 @@ export default function FeedbackPage() {
     };
   }, [studentVoices, acknowledgedMap]);
 
-  const ratingDist = feedbackSummary?.ratingDistribution || { 5: 60, 4: 80, 3: 28, 2: 12, 1: 4 };
-  const totalRatings = Object.values(ratingDist).reduce((a, b) => a + b, 0);
+  // Dynamic Average Campus Rating calculated from live studentVoices
+  const avgRating = useMemo(() => {
+    if (studentVoices.length === 0) return '0.00';
+    const total = studentVoices.reduce((sum, v) => sum + (v.rating || 0), 0);
+    return (total / studentVoices.length).toFixed(2);
+  }, [studentVoices]);
 
-  const byType = feedbackSummary?.byType || [
-    { feedbackType: 'course_feedback', count: 90, averageRating: 4.4 },
-    { feedbackType: 'faculty_feedback', count: 64, averageRating: 4.5 },
-    { feedbackType: 'student_satisfaction', count: 30, averageRating: 4.1 },
-  ];
+  // Dynamic Topic Clusters computed directly from active studentVoices
+  const dynamicTopics = useMemo(() => {
+    const counts = {};
+    studentVoices.forEach((v) => {
+      counts[v.topic] = (counts[v.topic] || 0) + 1;
+    });
 
-  const filteredTypes = activeTypeFilter === 'ALL'
-    ? byType
-    : byType.filter((t) => t.feedbackType === activeTypeFilter);
+    return Object.entries(counts)
+      .map(([tag, count]) => {
+        const matching = studentVoices.filter((v) => v.topic === tag);
+        const pos = matching.filter((m) => m.sentiment === 'POSITIVE').length;
+        const crit = matching.filter((m) => m.sentiment === 'CRITICAL').length;
+        const sentiment = pos > crit ? 'POSITIVE' : crit > pos ? 'CRITICAL' : 'NEUTRAL';
+        return { tag, count, sentiment };
+      })
+      .sort((a, b) => b.count - a.count);
+  }, [studentVoices]);
 
-  const TOPICS_LIST = [
-    { tag: '#PlacementMocks', count: 28, sentiment: 'POSITIVE' },
-    { tag: '#LabInfrastructure', count: 14, sentiment: 'CRITICAL' },
-    { tag: '#HostelWiFi', count: 11, sentiment: 'CRITICAL' },
-    { tag: '#FacultyGuidance', count: 22, sentiment: 'POSITIVE' },
-    { tag: '#CurriculumPacing', count: 18, sentiment: 'NEUTRAL' },
-    { tag: '#LibraryAccess', count: 9, sentiment: 'NEUTRAL' },
-  ];
+  const activeFiltersCount = (sentimentFilter !== 'ALL' ? 1 : 0) + (activeTopicFilter !== 'ALL' ? 1 : 0) + (searchQuery.trim() ? 1 : 0);
+
+  const handleResetFilters = () => {
+    setSentimentFilter('ALL');
+    setActiveTopicFilter('ALL');
+    setSearchQuery('');
+  };
 
   return (
     <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem', paddingBottom: '3rem' }}>
@@ -471,7 +485,7 @@ export default function FeedbackPage() {
         </div>
       </div>
 
-      {/* 2. DEAN'S AI SENTIMENT SYNTHESIS BANNER */}
+      {/* 2. PROVOST & DEAN'S AI SENTIMENT SYNTHESIS BANNER */}
       <div
         style={{
           background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #4338CA 100%)',
@@ -501,7 +515,7 @@ export default function FeedbackPage() {
                 Provost & Dean AI Sentiment Synthesis
               </div>
               <div style={{ fontSize: '0.78rem', color: '#C7D2FE' }}>
-                Automated natural language synthesis derived from 184 recent anonymous student evaluations
+                Automated natural language synthesis derived from {studentVoices.length} recent anonymous student evaluations
               </div>
             </div>
           </div>
@@ -511,8 +525,8 @@ export default function FeedbackPage() {
               <div style={{ fontSize: '0.7rem', color: '#A5B4FC', textTransform: 'uppercase', fontWeight: 600 }}>
                 Campus Net Sentiment
               </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#4ADE80' }}>
-                +{nlpStats.nss} NSS (Healthy)
+              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: nlpStats.nss >= 0 ? '#4ADE80' : '#F87171' }}>
+                {nlpStats.nss >= 0 ? `+${nlpStats.nss}` : nlpStats.nss} NSS ({nlpStats.nss >= 20 ? 'Healthy' : nlpStats.nss >= 0 ? 'Moderate' : 'Action Required'})
               </div>
             </div>
           </div>
@@ -531,19 +545,19 @@ export default function FeedbackPage() {
         >
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#86EFAC', fontWeight: 600, fontSize: '0.82rem', marginBottom: '4px' }}>
-              <ThumbsUp size={14} /> 🌟 Key Celebrations (High Praise)
+              <ThumbsUp size={14} /> 🌟 Key Celebrations ({nlpStats.positivePct}% Positive)
             </div>
             <div style={{ fontSize: '0.8rem', color: '#E0E7FF', lineHeight: 1.45 }}>
-              Students praise TPO placement mock sessions (91% satisfaction) and interactive programming mentoring in CSE.
+              High praise for TPO placement mock drives, hands-on programming labs, and structured faculty guidance across tech cohorts.
             </div>
           </div>
 
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#FCA5A5', fontWeight: 600, fontSize: '0.82rem', marginBottom: '4px' }}>
-              <AlertTriangle size={14} /> ⚠️ Critical Operational Friction
+              <AlertTriangle size={14} /> ⚠️ Operational Friction ({nlpStats.criticalPct}% Critical)
             </div>
             <div style={{ fontSize: '0.8rem', color: '#E0E7FF', lineHeight: 1.45 }}>
-              Repeated compiler crashes in <strong>Lab 3</strong> (14 reports) and evening Wi-Fi latency in <strong>Hostel Block</strong> during LMS submissions.
+              Urgent attention needed for Lab Ubuntu compiler crashes and evening hostel Wi-Fi latency affecting LMS assignment submissions.
             </div>
           </div>
 
@@ -552,13 +566,13 @@ export default function FeedbackPage() {
               <ArrowUpRight size={14} /> 💡 Recommended Administrative Action
             </div>
             <div style={{ fontSize: '0.8rem', color: '#E0E7FF', lineHeight: 1.45 }}>
-              Issue IT ticket for Lab 3 compiler upgrades and schedule Saturday tutorial support for 2nd-year Advanced Calculus.
+              Prioritize IT ticket for Lab 3 compiler upgrades, acknowledge hostel network escalations, and schedule tutorial doubt sessions.
             </div>
           </div>
         </div>
       </div>
 
-      {/* 3. NLP SENTIMENT BAROMETER & KPIS */}
+      {/* 3. NLP SENTIMENT BAROMETER & KPIS (100% Dynamically Synchronized) */}
       <div
         style={{
           display: 'grid',
@@ -581,29 +595,29 @@ export default function FeedbackPage() {
               NLP Sentiment Breakdown
             </span>
             <span style={{ fontSize: '0.72rem', backgroundColor: '#F1F5F9', padding: '2px 6px', borderRadius: '4px', color: '#475569', fontWeight: 600 }}>
-              184 Evaluated
+              {studentVoices.length} Submissions
             </span>
           </div>
 
           {/* Stacked bar */}
-          <div style={{ height: '10px', display: 'flex', borderRadius: '5px', overflow: 'hidden', marginTop: '12px' }}>
-            <div style={{ width: `${nlpStats.positivePct}%`, backgroundColor: '#10B981' }} title={`Positive: ${nlpStats.positivePct}%`} />
-            <div style={{ width: `${nlpStats.neutralPct}%`, backgroundColor: '#F59E0B' }} title={`Neutral: ${nlpStats.neutralPct}%`} />
-            <div style={{ width: `${nlpStats.criticalPct}%`, backgroundColor: '#EF4444' }} title={`Critical: ${nlpStats.criticalPct}%`} />
+          <div style={{ height: '10px', display: 'flex', borderRadius: '5px', overflow: 'hidden', marginTop: '12px', backgroundColor: '#F1F5F9' }}>
+            <div style={{ width: `${nlpStats.positivePct}%`, backgroundColor: '#10B981' }} title={`Positive: ${nlpStats.positivePct}% (${nlpStats.positiveCount})`} />
+            <div style={{ width: `${nlpStats.neutralPct}%`, backgroundColor: '#F59E0B' }} title={`Neutral: ${nlpStats.neutralPct}% (${nlpStats.neutralCount})`} />
+            <div style={{ width: `${nlpStats.criticalPct}%`, backgroundColor: '#EF4444' }} title={`Critical: ${nlpStats.criticalPct}% (${nlpStats.criticalCount})`} />
           </div>
 
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '12px', fontSize: '0.78rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#059669', fontWeight: 600 }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#10B981', display: 'inline-block' }} />
-              Positive: {nlpStats.positivePct}%
+              Positive: {nlpStats.positiveCount} ({nlpStats.positivePct}%)
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#D97706', fontWeight: 600 }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#F59E0B', display: 'inline-block' }} />
-              Neutral: {nlpStats.neutralPct}%
+              Neutral: {nlpStats.neutralCount} ({nlpStats.neutralPct}%)
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#DC2626', fontWeight: 600 }}>
               <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#EF4444', display: 'inline-block' }} />
-              Critical: {nlpStats.criticalPct}%
+              Critical: {nlpStats.criticalCount} ({nlpStats.criticalPct}%)
             </div>
           </div>
         </div>
@@ -629,8 +643,16 @@ export default function FeedbackPage() {
               unresolved high-priority issues
             </span>
           </div>
-          <div style={{ fontSize: '0.78rem', color: '#DC2626', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <AlertCircle size={14} /> Includes Lab compiler crashes & Hostel network outages
+          <div style={{ fontSize: '0.78rem', color: nlpStats.urgentCount > 0 ? '#DC2626' : '#059669', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            {nlpStats.urgentCount > 0 ? (
+              <>
+                <AlertCircle size={14} /> Requires Dean acknowledgement below
+              </>
+            ) : (
+              <>
+                <CheckCircle2 size={14} /> All urgent student escalations resolved
+              </>
+            )}
           </div>
         </div>
 
@@ -649,16 +671,21 @@ export default function FeedbackPage() {
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '8px', marginTop: '6px' }}>
             <span style={{ fontSize: '1.8rem', fontWeight: 700, color: '#0F172A' }}>
-              {feedbackSummary?.averageRating ? feedbackSummary.averageRating.toFixed(2) : '4.35'}
+              {avgRating}
             </span>
             <span style={{ fontSize: '1rem', color: '#64748B' }}>/ 5.0</span>
           </div>
           <div style={{ display: 'flex', gap: '3px', marginTop: '6px' }}>
             {[1, 2, 3, 4, 5].map((s) => (
-              <Star key={s} size={15} fill="#F59E0B" color="#F59E0B" />
+              <Star
+                key={s}
+                size={15}
+                fill={s <= Math.round(Number(avgRating)) ? '#F59E0B' : 'none'}
+                color={s <= Math.round(Number(avgRating)) ? '#F59E0B' : '#CBD5E1'}
+              />
             ))}
             <span style={{ fontSize: '0.78rem', color: '#10B981', marginLeft: '6px', fontWeight: 600 }}>
-              +0.21 YoY
+              Live Average ({studentVoices.length} reviews)
             </span>
           </div>
         </div>
@@ -689,7 +716,7 @@ export default function FeedbackPage() {
         </div>
       </div>
 
-      {/* 4. EMERGING TOPIC CLUSTER CLOUD */}
+      {/* 4. EMERGING TOPIC CLUSTER CLOUD (100% Dynamic & Interactive) */}
       <div
         style={{
           backgroundColor: '#FFFFFF',
@@ -720,15 +747,18 @@ export default function FeedbackPage() {
                 border: 'none',
                 cursor: 'pointer',
                 fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
               }}
             >
-              Clear Topic Filter ✕
+              <X size={13} /> Clear Topic Filter ({activeTopicFilter})
             </button>
           )}
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {TOPICS_LIST.map((t) => {
+          {dynamicTopics.map((t) => {
             const isActive = activeTopicFilter === t.tag;
             const isPos = t.sentiment === 'POSITIVE';
             const isCrit = t.sentiment === 'CRITICAL';
@@ -774,6 +804,7 @@ export default function FeedbackPage() {
                   fontWeight: 600,
                   cursor: 'pointer',
                   transition: 'all 0.15s ease',
+                  boxShadow: isActive ? '0 2px 4px rgba(30, 27, 75, 0.2)' : 'none',
                 }}
               >
                 <span>{t.tag}</span>
@@ -793,7 +824,7 @@ export default function FeedbackPage() {
         </div>
       </div>
 
-      {/* 5. ANONYMIZED STUDENT VOICE FEED */}
+      {/* 5. ANONYMIZED STUDENT VOICE FEED (Dynamic Reactive Filters & Live Telemetry) */}
       <div
         style={{
           backgroundColor: '#FFFFFF',
@@ -818,7 +849,7 @@ export default function FeedbackPage() {
               Anonymized Student Feedback Telemetry
             </h2>
             <div style={{ fontSize: '0.78rem', color: '#64748B', marginTop: '2px' }}>
-              Showing {filteredVoices.length} authentic submissions with NLP sentiment scores & topic tags
+              Showing {filteredVoices.length} of {studentVoices.length} authentic submissions with NLP sentiment scores & topic tags
             </div>
           </div>
 
@@ -840,289 +871,284 @@ export default function FeedbackPage() {
                   width: '210px',
                 }}
               />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    position: 'absolute',
+                    right: '8px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#94A3B8',
+                    padding: 0,
+                    display: 'flex',
+                  }}
+                >
+                  <X size={13} />
+                </button>
+              )}
             </div>
 
             <div style={{ display: 'flex', gap: '4px', backgroundColor: '#F1F5F9', padding: '3px', borderRadius: '6px' }}>
-              {['ALL', 'POSITIVE', 'NEUTRAL', 'CRITICAL'].map((s) => (
+              {[
+                { key: 'ALL', label: `All (${studentVoices.length})` },
+                { key: 'POSITIVE', label: `Positive (${nlpStats.positiveCount})` },
+                { key: 'NEUTRAL', label: `Neutral (${nlpStats.neutralCount})` },
+                { key: 'CRITICAL', label: `Critical (${nlpStats.criticalCount})` },
+              ].map((s) => (
                 <button
-                  key={s}
-                  onClick={() => setSentimentFilter(s)}
+                  key={s.key}
+                  onClick={() => setSentimentFilter(s.key)}
                   style={{
                     padding: '4px 10px',
                     fontSize: '0.75rem',
                     fontWeight: 600,
                     borderRadius: '4px',
                     border: 'none',
-                    backgroundColor: sentimentFilter === s ? '#FFFFFF' : 'transparent',
-                    color: sentimentFilter === s ? '#0F172A' : '#64748B',
-                    boxShadow: sentimentFilter === s ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+                    backgroundColor: sentimentFilter === s.key ? '#FFFFFF' : 'transparent',
+                    color: sentimentFilter === s.key ? '#0F172A' : '#64748B',
+                    boxShadow: sentimentFilter === s.key ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
                     cursor: 'pointer',
+                    transition: 'all 0.15s',
                   }}
                 >
-                  {s === 'ALL' ? 'All' : s.charAt(0) + s.slice(1).toLowerCase()}
+                  {s.label}
                 </button>
               ))}
             </div>
+
+            {activeFiltersCount > 0 && (
+              <button
+                onClick={handleResetFilters}
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#64748B',
+                  backgroundColor: '#F8FAFC',
+                  border: '1px solid #E2E8F0',
+                  borderRadius: '5px',
+                  padding: '5px 10px',
+                  cursor: 'pointer',
+                  fontWeight: 600,
+                }}
+              >
+                Reset All Filters
+              </button>
+            )}
           </div>
         </div>
 
+        {/* Urgent Action Banner if unacknowledged urgent items exist */}
+        {nlpStats.urgentCount > 0 && (
+          <div
+            style={{
+              marginBottom: '1rem',
+              padding: '0.75rem 1rem',
+              borderRadius: '8px',
+              backgroundColor: '#FEF2F2',
+              border: '1px solid #FECACA',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              flexWrap: 'wrap',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#991B1B', fontSize: '0.82rem', fontWeight: 600 }}>
+              <AlertTriangle size={16} color="#DC2626" />
+              <span>
+                {nlpStats.urgentCount} unresolved feedback {nlpStats.urgentCount === 1 ? 'item requires' : 'items require'} Dean acknowledgement
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                const updated = { ...acknowledgedMap };
+                studentVoices.forEach((v) => {
+                  if (v.isUrgent) updated[v.id] = true;
+                });
+                setAcknowledgedMap(updated);
+              }}
+              style={{
+                fontSize: '0.75rem',
+                padding: '4px 10px',
+                backgroundColor: '#DC2626',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '5px',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Acknowledge All Urgent
+            </button>
+          </div>
+        )}
+
         {/* Voices Grid */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {filteredVoices.map((voice) => {
-            const isAck = !!acknowledgedMap[voice.id];
-            const isPos = voice.sentiment === 'POSITIVE';
-            const isCrit = voice.sentiment === 'CRITICAL';
+        {filteredVoices.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#64748B' }}>
+            <MessageSquareHeart size={36} color="#CBD5E1" style={{ margin: '0 auto 8px auto' }} />
+            <h3 style={{ margin: '0 0 4px 0', fontSize: '1rem', color: '#0F172A' }}>No student feedback matched your filters</h3>
+            <p style={{ margin: '0 0 12px 0', fontSize: '0.82rem' }}>Try clearing the search query or topic filter.</p>
+            <button
+              onClick={handleResetFilters}
+              style={{
+                padding: '6px 14px',
+                backgroundColor: '#1A73E8',
+                color: '#FFFFFF',
+                border: 'none',
+                borderRadius: '6px',
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Reset Filters
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {filteredVoices.map((voice) => {
+              const isAck = !!acknowledgedMap[voice.id];
+              const isPos = voice.sentiment === 'POSITIVE';
+              const isCrit = voice.sentiment === 'CRITICAL';
 
-            const borderLeftColor = isPos ? '#10B981' : isCrit ? '#EF4444' : '#F59E0B';
-            const badgeBg = isPos ? '#ECFDF5' : isCrit ? '#FEF2F2' : '#FFFBEB';
-            const badgeText = isPos ? '#065F46' : isCrit ? '#991B1B' : '#92400E';
+              const borderLeftColor = isPos ? '#10B981' : isCrit ? '#EF4444' : '#F59E0B';
+              const badgeBg = isPos ? '#ECFDF5' : isCrit ? '#FEF2F2' : '#FFFBEB';
+              const badgeText = isPos ? '#065F46' : isCrit ? '#991B1B' : '#92400E';
 
-            return (
-              <div
-                key={voice.id}
-                style={{
-                  border: '1px solid #E2E8F0',
-                  borderLeft: `4px solid ${borderLeftColor}`,
-                  borderRadius: '8px',
-                  padding: '1.25rem',
-                  backgroundColor: '#FFFFFF',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.01)',
-                  transition: 'transform 0.15s ease',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                    <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A' }}>
-                      {voice.cohort}
-                    </span>
-                    <span
-                      style={{
-                        backgroundColor: '#F1F5F9',
-                        color: '#475569',
-                        fontSize: '0.72rem',
-                        fontWeight: 600,
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                      }}
-                    >
-                      {voice.topic}
-                    </span>
-                    <span
-                      style={{
-                        backgroundColor: badgeBg,
-                        color: badgeText,
-                        fontSize: '0.72rem',
-                        fontWeight: 700,
-                        padding: '2px 8px',
-                        borderRadius: '4px',
-                      }}
-                    >
-                      {voice.sentiment} · {voice.confidence}% confidence
-                    </span>
-
-                    {voice.isUrgent && (
+              return (
+                <div
+                  key={voice.id}
+                  style={{
+                    border: '1px solid #E2E8F0',
+                    borderLeft: `4px solid ${borderLeftColor}`,
+                    borderRadius: '8px',
+                    padding: '1.25rem',
+                    backgroundColor: '#FFFFFF',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.01)',
+                    transition: 'transform 0.15s ease',
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#0F172A' }}>
+                        {voice.cohort}
+                      </span>
+                      <button
+                        onClick={() => setActiveTopicFilter(voice.topic)}
+                        style={{
+                          backgroundColor: activeTopicFilter === voice.topic ? '#1E1B4B' : '#F1F5F9',
+                          color: activeTopicFilter === voice.topic ? '#FFFFFF' : '#475569',
+                          fontSize: '0.72rem',
+                          fontWeight: 600,
+                          padding: '2px 8px',
+                          borderRadius: '4px',
+                          border: 'none',
+                          cursor: 'pointer',
+                        }}
+                        title={`Filter by ${voice.topic}`}
+                      >
+                        {voice.topic}
+                      </button>
                       <span
                         style={{
-                          backgroundColor: '#FEE2E2',
-                          color: '#DC2626',
+                          backgroundColor: badgeBg,
+                          color: badgeText,
                           fontSize: '0.72rem',
                           fontWeight: 700,
                           padding: '2px 8px',
                           borderRadius: '4px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
                         }}
                       >
-                        <AlertTriangle size={12} /> Dean Escalation
+                        {voice.sentiment} · {voice.confidence}% confidence
                       </span>
-                    )}
-                  </div>
 
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <div style={{ display: 'flex', gap: '2px' }}>
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          size={13}
-                          fill={i < voice.rating ? '#F59E0B' : 'none'}
-                          color={i < voice.rating ? '#F59E0B' : '#CBD5E1'}
-                        />
-                      ))}
+                      {voice.isUrgent && (
+                        <span
+                          style={{
+                            backgroundColor: isAck ? '#ECFDF5' : '#FEE2E2',
+                            color: isAck ? '#059669' : '#DC2626',
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                          }}
+                        >
+                          {isAck ? <Check size={12} /> : <AlertTriangle size={12} />}
+                          {isAck ? 'Escalation Resolved' : 'Dean Escalation Required'}
+                        </span>
+                      )}
                     </div>
-                    <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
-                      {voice.timestamp}
-                    </span>
-                  </div>
-                </div>
 
-                {/* Comment Text */}
-                <p style={{ margin: '6px 0 12px 0', fontSize: '0.88rem', color: '#334155', lineHeight: 1.5 }}>
-                  "{voice.text}"
-                </p>
-
-                {/* Card Footer */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #F8FAFC' }}>
-                  <div style={{ fontSize: '0.72rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                    <Shield size={12} color="#10B981" /> Identity protected via Automated PII Redaction
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <div style={{ display: 'flex', gap: '2px' }}>
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            size={13}
+                            fill={i < voice.rating ? '#F59E0B' : 'none'}
+                            color={i < voice.rating ? '#F59E0B' : '#CBD5E1'}
+                          />
+                        ))}
+                      </div>
+                      <span style={{ fontSize: '0.72rem', color: '#94A3B8' }}>
+                        {voice.timestamp}
+                      </span>
+                    </div>
                   </div>
 
-                  <button
-                    onClick={() => handleToggleAcknowledge(voice.id)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '4px 10px',
-                      borderRadius: '5px',
-                      border: '1px solid',
-                      borderColor: isAck ? '#86EFAC' : '#CBD5E1',
-                      backgroundColor: isAck ? '#F0FDF4' : '#FFFFFF',
-                      color: isAck ? '#15803D' : '#475569',
-                      fontSize: '0.72rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {isAck ? (
-                      <>
-                        <Check size={12} /> Acknowledged by Dean
-                      </>
-                    ) : (
-                      'Mark Acknowledged'
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                  {/* Comment Text */}
+                  <p style={{ margin: '6px 0 12px 0', fontSize: '0.88rem', color: '#334155', lineHeight: 1.5 }}>
+                    "{voice.text}"
+                  </p>
 
-      {/* 6. LEGACY QUANTITATIVE BREAKDOWN (Preserved) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
-          gap: '1.5rem',
-        }}
-      >
-        {/* Rating Distribution */}
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: '10px',
-            padding: '1.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          }}
-        >
-          <h2 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#0F172A', margin: '0 0 1rem 0' }}>
-            Star Rating Distribution
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            {[5, 4, 3, 2, 1].map((star) => {
-              const count = ratingDist[star] || 0;
-              const pct = totalRatings > 0 ? Math.round((count / totalRatings) * 100) : 0;
-              return (
-                <div key={star} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <div style={{ width: '55px', display: 'flex', alignItems: 'center', gap: '4px', fontSize: '0.82rem', color: '#475569', fontWeight: 500 }}>
-                    <span>{star}</span>
-                    <Star size={13} fill="#F59E0B" color="#F59E0B" />
-                  </div>
-                  <div style={{ flex: 1, height: '8px', backgroundColor: '#F1F5F9', borderRadius: '4px', overflow: 'hidden' }}>
-                    <div style={{ height: '100%', width: `${pct}%`, backgroundColor: '#F59E0B', borderRadius: '4px', transition: 'width 0.4s ease' }} />
-                  </div>
-                  <div style={{ width: '70px', textAlign: 'right', fontSize: '0.82rem', color: '#64748B' }}>
-                    {count} ({pct}%)
+                  {/* Card Footer */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '8px', borderTop: '1px solid #F8FAFC' }}>
+                    <div style={{ fontSize: '0.72rem', color: '#64748B', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                      <Shield size={12} color="#10B981" /> Identity protected via Automated PII Redaction
+                    </div>
+
+                    <button
+                      onClick={() => handleToggleAcknowledge(voice.id)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        padding: '4px 10px',
+                        borderRadius: '5px',
+                        border: '1px solid',
+                        borderColor: isAck ? '#86EFAC' : '#CBD5E1',
+                        backgroundColor: isAck ? '#F0FDF4' : '#FFFFFF',
+                        color: isAck ? '#15803D' : '#475569',
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease',
+                      }}
+                    >
+                      {isAck ? (
+                        <>
+                          <Check size={12} /> Acknowledged by Dean
+                        </>
+                      ) : (
+                        'Mark Acknowledged'
+                      )}
+                    </button>
                   </div>
                 </div>
               );
             })}
           </div>
-        </div>
-
-        {/* Ratings by Category */}
-        <div
-          style={{
-            backgroundColor: '#FFFFFF',
-            border: '1px solid #E2E8F0',
-            borderRadius: '10px',
-            padding: '1.5rem',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h2 style={{ fontSize: '1.05rem', fontWeight: 600, color: '#0F172A', margin: 0 }}>
-              Ratings by Category
-            </h2>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              {['ALL', 'course_feedback', 'faculty_feedback', 'student_satisfaction'].map((f) => (
-                <button
-                  key={f}
-                  onClick={() => setActiveTypeFilter(f)}
-                  style={{
-                    padding: '3px 8px',
-                    fontSize: '0.72rem',
-                    borderRadius: '4px',
-                    border: '1px solid',
-                    borderColor: activeTypeFilter === f ? '#1A73E8' : '#E2E8F0',
-                    backgroundColor: activeTypeFilter === f ? '#EFF6FF' : '#FFFFFF',
-                    color: activeTypeFilter === f ? '#1A73E8' : '#64748B',
-                    cursor: 'pointer',
-                    fontWeight: activeTypeFilter === f ? 600 : 400,
-                  }}
-                >
-                  {f === 'ALL' ? 'All' : f.replace('_', ' ')}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-            {filteredTypes.map((item) => (
-              <div
-                key={item.feedbackType}
-                style={{
-                  border: '1px solid #F1F5F9',
-                  borderRadius: '6px',
-                  padding: '0.85rem',
-                  backgroundColor: '#F8FAFC',
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0F172A', textTransform: 'capitalize' }}>
-                    {item.feedbackType.replace(/_/g, ' ')}
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '4px', color: '#F59E0B', fontWeight: 600, fontSize: '0.82rem' }}>
-                    <Star size={13} fill="#F59E0B" color="#F59E0B" />
-                    <span>{item.averageRating} / 5.0</span>
-                  </div>
-                </div>
-                <div
-                  style={{
-                    height: '6px',
-                    backgroundColor: '#E2E8F0',
-                    borderRadius: '3px',
-                    marginTop: '8px',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    style={{
-                      height: '100%',
-                      width: `${(item.averageRating / 5) * 100}%`,
-                      backgroundColor: '#1A73E8',
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        )}
       </div>
 
-      {/* 7. SUBMIT FEEDBACK MODAL WITH REAL-TIME NLP PREVIEW */}
+      {/* 6. SUBMIT FEEDBACK MODAL WITH REAL-TIME NLP PREVIEW */}
       {showSubmitModal && (
         <div
           style={{
