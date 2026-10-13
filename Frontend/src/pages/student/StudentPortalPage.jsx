@@ -1448,88 +1448,23 @@ export default function StudentPortalPage() {
           {!hasCollegeRecords && !previewBenchmark && (
             <div
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#F8FAFC',
                 border: '1px solid #E2E8F0',
-                borderRadius: '12px',
-                padding: '2rem 1.5rem',
-                textAlign: 'center',
-                boxShadow: '0 1px 3px rgba(15, 23, 42, 0.02)',
+                borderRadius: '8px',
+                padding: '0.85rem 1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
               }}
             >
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '50%',
-                  backgroundColor: '#EFF6FF',
-                  color: '#1677D2',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 0.75rem auto',
-                }}
-              >
-                <BookOpen size={22} />
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#082B56', margin: '0 0 4px 0' }}>
-                Course & Attendance Telemetry Syncing
-              </h3>
-              <p style={{ fontSize: '0.84rem', color: '#64748B', maxWidth: '520px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
-                Rosters and biometric attendance logs for Roll No <strong>{student.studentId}</strong> will activate once department records are uploaded.
-              </p>
-              <div style={{ display: 'inline-flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <button
-                  type="button"
-                  onClick={handleRecheckRecords}
-                  disabled={recheckLoading}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    border: '1px solid #CBD5E1',
-                    backgroundColor: '#FFFFFF',
-                    color: '#334155',
-                    fontWeight: 600,
-                    fontSize: '0.82rem',
-                    cursor: recheckLoading ? 'not-allowed' : 'pointer',
-                    height: '38px',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <RefreshCw size={14} className={recheckLoading ? 'spin' : ''} />
-                  <span>{recheckLoading ? 'Checking...' : 'Check Status'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPreviewBenchmark(true)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    border: '1px solid #1677D2',
-                    backgroundColor: '#1677D2',
-                    color: '#FFFFFF',
-                    fontWeight: 600,
-                    fontSize: '0.82rem',
-                    cursor: 'pointer',
-                    height: '38px',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <Sparkles size={14} />
-                  <span>Preview Sample Courses</span>
-                </button>
+              <Clock size={18} color="#1677D2" style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: '0.84rem', color: '#475569' }}>
+                Official biometric attendance registers for Roll No <strong>{student.studentId}</strong> will sync automatically upon departmental register close. You can explore the live Attendance Simulator and Semester Roadmap below.
               </div>
             </div>
           )}
 
-          {(hasCollegeRecords || previewBenchmark) && (
-            <>
-              {/* Course Attendance Telemetry */}
+          {/* Course Attendance Telemetry */}
               <div
                 style={{
                   backgroundColor: '#FFFFFF',
@@ -1558,7 +1493,7 @@ export default function StudentPortalPage() {
                   borderRadius: '6px',
                 }}
               >
-                Overall: {student.attendanceRate}%
+                Overall: {student.attendanceRate != null ? `${student.attendanceRate}%` : '88.5% (Sample)'}
               </span>
             </div>
 
@@ -1706,8 +1641,6 @@ export default function StudentPortalPage() {
               ))}
             </div>
           </div>
-        </>
-      )}
     </div>
   )}
 
@@ -1719,88 +1652,23 @@ export default function StudentPortalPage() {
           {!hasCollegeRecords && !previewBenchmark && (
             <div
               style={{
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#F8FAFC',
                 border: '1px solid #E2E8F0',
-                borderRadius: '12px',
-                padding: '2rem 1.5rem',
-                textAlign: 'center',
-                boxShadow: '0 1px 3px rgba(0,0,0,0.02)',
+                borderRadius: '8px',
+                padding: '0.85rem 1.25rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
               }}
             >
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '50%',
-                  backgroundColor: '#EFF6FF',
-                  color: '#1677D2',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 0.75rem auto',
-                }}
-              >
-                <Award size={22} />
-              </div>
-              <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#082B56', margin: '0 0 4px 0' }}>
-                Placement Readiness Assessment Syncing
-              </h3>
-              <p style={{ fontSize: '0.84rem', color: '#64748B', maxWidth: '520px', margin: '0 auto 1.25rem auto', lineHeight: 1.5 }}>
-                Aptitude and coding diagnostic assessments for Roll No <strong>{student.studentId}</strong> will populate once released by the Training & Placement Cell.
-              </p>
-              <div style={{ display: 'inline-flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                <button
-                  type="button"
-                  onClick={handleRecheckRecords}
-                  disabled={recheckLoading}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    border: '1px solid #CBD5E1',
-                    backgroundColor: '#FFFFFF',
-                    color: '#334155',
-                    fontWeight: 600,
-                    fontSize: '0.82rem',
-                    cursor: recheckLoading ? 'not-allowed' : 'pointer',
-                    height: '38px',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <RefreshCw size={14} className={recheckLoading ? 'spin' : ''} />
-                  <span>{recheckLoading ? 'Checking...' : 'Check Status'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPreviewBenchmark(true)}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '8px 16px',
-                    borderRadius: '8px',
-                    border: '1px solid #1677D2',
-                    backgroundColor: '#1677D2',
-                    color: '#FFFFFF',
-                    fontWeight: 600,
-                    fontSize: '0.82rem',
-                    cursor: 'pointer',
-                    height: '38px',
-                    boxSizing: 'border-box',
-                  }}
-                >
-                  <Sparkles size={14} />
-                  <span>Preview Sample Placement Data</span>
-                </button>
+              <Award size={18} color="#1677D2" style={{ flexShrink: 0 }} />
+              <div style={{ fontSize: '0.84rem', color: '#475569' }}>
+                Official diagnostic assessment benchmarks for Roll No <strong>{student.studentId}</strong> will sync upon release by Training & Placement Cell. Your Verified Skill Matrix and Placement Action Checklist are active below.
               </div>
             </div>
           )}
 
-          {(hasCollegeRecords || previewBenchmark) && (
-            <>
-              {/* Assessment Metrics Row */}
+          {/* Assessment Metrics Row */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 260px), 1fr))', gap: '1.25rem' }}>
             <div style={{ border: '1px solid #E2E8F0', borderRadius: '10px', padding: '1.25rem', backgroundColor: '#FFFFFF' }}>
               <div style={{ fontSize: '0.78rem', color: '#64748B', fontWeight: 600, textTransform: 'uppercase' }}>
@@ -1937,8 +1805,6 @@ export default function StudentPortalPage() {
               ))}
             </div>
           </div>
-        </>
-      )}
     </div>
   )}
 
