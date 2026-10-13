@@ -1337,4 +1337,16 @@ input:-webkit-autofill:active {
   }
 }
 
+/* ==========================================================================
+   SIDEBAR NAVIGATION CLEAN SCROLLBAR UTILITIES
+   ========================================================================== */
+.sidebar-scrollable-nav {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.sidebar-scrollable-nav::-webkit-scrollbar {
+  display: none;
+}
+
 

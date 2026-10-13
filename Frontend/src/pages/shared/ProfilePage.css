@@ -218,6 +218,12 @@
   padding: 5px;
   gap: 6px;
   overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.profile-tabs-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .profile-tab-btn {
@@ -830,11 +836,19 @@
     flex-wrap: wrap;
   }
 
+  .profile-tabs-bar,
   .profile-tabs-nav {
     overflow-x: auto;
     flex-wrap: nowrap;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 4px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .profile-tabs-bar::-webkit-scrollbar,
+  .profile-tabs-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .profile-tab-btn {
@@ -892,7 +906,8 @@
     height: 28px;
   }
 
-  .profile-badge-row {
+  .profile-badge-row,
+  .profile-hero-badge-row {
     justify-content: center;
     flex-wrap: wrap;
   }

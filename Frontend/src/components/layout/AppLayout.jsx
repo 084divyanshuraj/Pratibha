@@ -329,7 +329,8 @@ export default function AppLayout({ children }) {
           minWidth: isSidebarCollapsed ? '0px' : isMobile ? '280px' : '260px',
           maxWidth: isMobile ? '85vw' : '260px',
           transition: 'width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.25s ease',
-          height: '100vh',
+          height: isMobile ? '100dvh' : '100vh',
+          maxHeight: isMobile ? '100dvh' : '100vh',
           backgroundColor: '#082B56',
           borderRight: isSidebarCollapsed ? 'none' : '1px solid #061F3E',
           display: 'flex',
@@ -338,16 +339,17 @@ export default function AppLayout({ children }) {
           overflow: 'hidden',
           zIndex: isMobile ? 100 : 40,
           position: isMobile ? 'fixed' : 'relative',
-          top: isMobile ? 0 : 'auto',
-          left: isMobile ? 0 : 'auto',
+          top: 0,
+          bottom: 0,
+          left: 0,
           boxShadow: isMobile && !isSidebarCollapsed
             ? '6px 0 32px rgba(0, 0, 0, 0.45)'
             : '2px 0 12px rgba(8, 43, 86, 0.12)',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 76px)', overflow: 'hidden' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0, overflow: 'hidden' }}>
           {/* TOP SIDEBAR HEADER */}
-          <div style={{ padding: '14px 14px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ padding: '14px 14px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
             <Link
               to={isStudent ? '/student/portal' : '/institution/overview'}
               style={{
@@ -406,9 +408,13 @@ export default function AppLayout({ children }) {
 
           {/* SCROLLABLE NAVIGATION SECTIONS */}
           <div
+            className="sidebar-scrollable-nav"
             style={{
               flex: 1,
+              minHeight: 0,
               overflowY: 'auto',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
               padding: '8px 10px',
               display: 'flex',
               flexDirection: 'column',
@@ -506,9 +512,13 @@ export default function AppLayout({ children }) {
         <div
           ref={profileMenuRef}
           style={{
+            flexShrink: 0,
             padding: '10px 12px',
             borderTop: '1px solid rgba(255, 255, 255, 0.10)',
             position: 'relative',
+            backgroundColor: '#082B56',
+            width: '100%',
+            boxSizing: 'border-box',
           }}
         >
           {/* Profile Dropdown Popover (Clean White Container) */}
@@ -516,7 +526,7 @@ export default function AppLayout({ children }) {
             <div
               style={{
                 position: 'absolute',
-                bottom: '68px',
+                bottom: 'calc(100% + 8px)',
                 left: '10px',
                 right: '10px',
                 backgroundColor: '#FFFFFF',
@@ -562,6 +572,7 @@ export default function AppLayout({ children }) {
                 type="button"
                 onClick={() => {
                   setIsProfileMenuOpen(false);
+                  if (isMobile) setIsSidebarCollapsed(true);
                   navigate(isStudent ? '/student/profile' : '/institution/profile');
                 }}
                 style={{
@@ -833,6 +844,56 @@ export default function AppLayout({ children }) {
                 ? (currentUser?.role === 'institution_admin' ? 'Admin' : currentUser?.role === 'faculty_mentor' ? 'Faculty' : currentUser?.role === 'placement_officer' ? 'TPO' : (isStudent ? 'Student' : 'Staff'))
                 : (currentUser?.roleLabel || 'Admin')}
             </span>
+
+            {/* Quick Profile Nav Pill */}
+            <Link
+              to={isStudent ? '/student/profile' : '/institution/profile'}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '3px 8px',
+                borderRadius: '8px',
+                backgroundColor: '#0F2B48',
+                color: '#FFFFFF',
+                textDecoration: 'none',
+                fontWeight: 600,
+                fontSize: '0.74rem',
+                border: '1px solid rgba(56, 189, 248, 0.4)',
+                boxShadow: '0 1px 4px rgba(8, 43, 86, 0.15)',
+                transition: 'all 0.15s ease',
+              }}
+              title="Go to My Profile & Account Details"
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = '#1677D2';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = '#0F2B48';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
+            >
+              <div
+                style={{
+                  width: '20px',
+                  height: '20px',
+                  borderRadius: '50%',
+                  backgroundColor: '#38BDF8',
+                  color: '#082B56',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 800,
+                  fontSize: '0.66rem',
+                  flexShrink: 0,
+                }}
+              >
+                {userInitials}
+              </div>
+              <span className="hide-on-mobile" style={{ maxWidth: '90px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                Profile
+              </span>
+            </Link>
           </div>
         </header>
 
