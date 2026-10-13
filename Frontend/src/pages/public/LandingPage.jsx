@@ -472,41 +472,159 @@ export default function LandingPage() {
       <section
         id="about"
         style={{
-          padding: '5.5rem 1.5rem',
+          padding: '6rem 1.5rem',
           backgroundColor: '#1A0912',
+          backgroundImage: 'radial-gradient(ellipse at 50% 12%, rgba(225, 29, 72, 0.12) 0%, rgba(26, 9, 18, 0) 70%)',
           color: '#FFFFFF',
           borderBottom: '1px solid rgba(217, 119, 6, 0.20)',
+          position: 'relative',
         }}
       >
         <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-          {/* Header */}
-          <div style={{ textAlign: 'center', maxWidth: '780px', margin: '0 auto 3.5rem' }}>
-            <span
+          {/* Section Header */}
+          <div style={{ textAlign: 'center', maxWidth: '820px', margin: '0 auto 2.75rem' }}>
+            <div
               style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.14em',
-                textTransform: 'uppercase',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '6px 14px',
+                borderRadius: '9999px',
+                backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                border: '1px solid rgba(245, 158, 11, 0.35)',
                 color: '#F59E0B',
+                fontSize: '0.76rem',
                 fontWeight: 700,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                marginBottom: '1rem',
               }}
             >
-              KPMG CHALLENGE 4 · STUDENT SUCCESS INTELLIGENCE
-            </span>
+              <Sparkles size={13} />
+              <span>KPMG Challenge 4 · Student Success Intelligence</span>
+            </div>
             <h2
               style={{
-                fontSize: 'clamp(2rem, 3.2vw, 2.75rem)',
+                fontSize: 'clamp(2.1rem, 3.4vw, 2.85rem)',
                 fontWeight: 800,
-                marginTop: '0.6rem',
-                marginBottom: '1rem',
+                margin: '0 0 1rem 0',
                 color: '#FFFFFF',
                 letterSpacing: '-0.02em',
+                lineHeight: 1.15,
               }}
             >
-              About PRATIBHA
+              About <span style={{ color: '#F59E0B' }}>PRATIBHA</span>
             </h2>
-            <p style={{ color: 'rgba(255, 255, 255, 0.82)', fontSize: '1.05rem', lineHeight: 1.65 }}>
-              PRATIBHA is an intelligent student success platform that brings together academic performance, attendance, skills, and placement preparation to provide clear, actionable guidance for students, faculty, and college leadership.
+            <p style={{ color: 'rgba(255, 255, 255, 0.82)', fontSize: '1.06rem', lineHeight: 1.68, margin: 0 }}>
+              PRATIBHA is an intelligent student success platform that brings together academic performance, attendance, skills, and placement preparation to provide clear, actionable guidance for students, faculty mentors, and college leadership.
             </p>
+          </div>
+
+          {/* Institutional Architecture Highlights Bar */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 240px), 1fr))',
+              gap: '1.25rem',
+              marginBottom: '3.5rem',
+              padding: '1.25rem',
+              borderRadius: '16px',
+              backgroundColor: 'rgba(38, 14, 25, 0.65)',
+              border: '1px solid rgba(245, 158, 11, 0.22)',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.5rem 0.75rem' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                  border: '1px solid rgba(245, 158, 11, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#F59E0B',
+                  flexShrink: 0,
+                }}
+              >
+                <Database size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>7 Data Domains</div>
+                <div style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>ERP, LMS, Biometrics, Coding, TPO</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.5rem 0.75rem' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                  border: '1px solid rgba(16, 185, 129, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#10B981',
+                  flexShrink: 0,
+                }}
+              >
+                <Cpu size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>2 Decoupled Engines</div>
+                <div style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>Independent Academic vs Placement</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.5rem 0.75rem' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(244, 63, 94, 0.15)',
+                  border: '1px solid rgba(244, 63, 94, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FDA4AF',
+                  flexShrink: 0,
+                }}
+              >
+                <ShieldCheck size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>100% Explainable</div>
+                <div style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>Human-in-the-loop audit factor trees</div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0.5rem 0.75rem' }}>
+              <div
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '10px',
+                  backgroundColor: 'rgba(251, 191, 36, 0.15)',
+                  border: '1px solid rgba(251, 191, 36, 0.35)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FDE68A',
+                  flexShrink: 0,
+                }}
+              >
+                <Award size={18} />
+              </div>
+              <div>
+                <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#FFFFFF' }}>0% Default Penalties</div>
+                <div style={{ fontSize: '0.78rem', color: 'rgba(255, 255, 255, 0.65)' }}>Missing data is flagged, never zeroed</div>
+              </div>
+            </div>
           </div>
 
           {/* Core Mission Cards */}
@@ -514,52 +632,129 @@ export default function LandingPage() {
             className="landing-about-cards"
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 340px), 1fr))',
               gap: '2rem',
               marginBottom: 0,
             }}
           >
-            {/* Card 1: 7-Domain Unification */}
+            {/* Card 1: 7-Domain Holistic Diagnostic */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.85)',
-                border: '1px solid rgba(245, 158, 11, 0.22)',
-                borderRadius: '14px',
+                backgroundColor: 'rgba(38, 14, 25, 0.92)',
+                border: '1px solid rgba(245, 158, 11, 0.30)',
+                borderRadius: '18px',
                 padding: '2.25rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem',
+                boxShadow: '0 16px 36px rgba(0, 0, 0, 0.45)',
+                transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-6px)';
+                e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.65)';
+                e.currentTarget.style.boxShadow = '0 24px 48px rgba(0, 0, 0, 0.6), 0 0 25px rgba(245, 158, 11, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(245, 158, 11, 0.30)';
+                e.currentTarget.style.boxShadow = '0 16px 36px rgba(0, 0, 0, 0.45)';
               }}
             >
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(245, 158, 11, 0.18)',
-                  border: '1px solid rgba(245, 158, 11, 0.35)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#F59E0B',
-                }}
-              >
-                <Database size={22} />
+              {/* Card Header & Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(245, 158, 11, 0.18)',
+                    border: '1px solid rgba(245, 158, 11, 0.40)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#F59E0B',
+                  }}
+                >
+                  <Database size={24} />
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: '#FDE68A',
+                    backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                    border: '1px solid rgba(245, 158, 11, 0.30)',
+                    borderRadius: '6px',
+                    padding: '4px 10px',
+                  }}
+                >
+                  01 · Data Fusion
+                </span>
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
                 7-Domain Holistic Diagnostic
               </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.74)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.76)', fontSize: '0.93rem', lineHeight: 1.62, marginBottom: '1.5rem' }}>
                 Eliminates information silos between ERP grades, biometric attendance, LMS activity, coding platform benchmarks, and placement cells. Every student is evaluated with full context.
               </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.88)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#F59E0B' }} />
-                  <span>Academics, Attendance & LMS engagement</span>
+
+              {/* Interactive Telemetry Box */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(26, 9, 18, 0.85)',
+                  border: '1px solid rgba(245, 158, 11, 0.20)',
+                  borderRadius: '12px',
+                  padding: '1.1rem',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                <div style={{ fontSize: '0.70rem', fontWeight: 700, color: '#F59E0B', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Unified Intelligence Stack
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                  {[
+                    'Academics (CGPA)',
+                    'Biometric Attendance',
+                    'LMS Coursework',
+                    'DSA / LeetCode',
+                    'Placement Tests',
+                    'Soft Skills',
+                    'Faculty Mentorship',
+                  ].map((dom, i) => (
+                    <span
+                      key={i}
+                      style={{
+                        fontSize: '0.72rem',
+                        fontWeight: 600,
+                        padding: '3px 8px',
+                        borderRadius: '6px',
+                        backgroundColor: 'rgba(245, 158, 11, 0.10)',
+                        border: '1px solid rgba(245, 158, 11, 0.22)',
+                        color: 'rgba(255, 255, 255, 0.90)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '5px',
+                      }}
+                    >
+                      <span style={{ width: '5px', height: '5px', borderRadius: '50%', backgroundColor: '#F59E0B' }} />
+                      {dom}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bullet Features */}
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.86rem', color: 'rgba(255,255,255,0.90)' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <CheckCircle2 size={16} style={{ color: '#F59E0B', flexShrink: 0 }} />
+                  <span>Academics, Attendance & LMS engagement sync</span>
                 </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#F59E0B' }} />
-                  <span>Placement tests, Technical skills & Feedback</span>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <CheckCircle2 size={16} style={{ color: '#F59E0B', flexShrink: 0 }} />
+                  <span>Placement tests, Technical skills & Peer feedback</span>
                 </li>
               </ul>
             </div>
@@ -567,88 +762,202 @@ export default function LandingPage() {
             {/* Card 2: Decoupled Risk Engines */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.85)',
-                border: '1px solid rgba(16, 185, 129, 0.22)',
-                borderRadius: '14px',
+                backgroundColor: 'rgba(38, 14, 25, 0.92)',
+                border: '1px solid rgba(16, 185, 129, 0.30)',
+                borderRadius: '18px',
                 padding: '2.25rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem',
+                boxShadow: '0 16px 36px rgba(0, 0, 0, 0.45)',
+                transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-6px)';
+                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.65)';
+                e.currentTarget.style.boxShadow = '0 24px 48px rgba(0, 0, 0, 0.6), 0 0 25px rgba(16, 185, 129, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(16, 185, 129, 0.30)';
+                e.currentTarget.style.boxShadow = '0 16px 36px rgba(0, 0, 0, 0.45)';
               }}
             >
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.18)',
-                  border: '1px solid rgba(16, 185, 129, 0.35)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#10B981',
-                }}
-              >
-                <Cpu size={22} />
+              {/* Card Header & Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(16, 185, 129, 0.18)',
+                    border: '1px solid rgba(16, 185, 129, 0.40)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#10B981',
+                  }}
+                >
+                  <Cpu size={24} />
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: '#6EE7B7',
+                    backgroundColor: 'rgba(16, 185, 129, 0.12)',
+                    border: '1px solid rgba(16, 185, 129, 0.30)',
+                    borderRadius: '6px',
+                    padding: '4px 10px',
+                  }}
+                >
+                  02 · Dual Engine
+                </span>
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
                 Decoupled Risk Engines
               </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.74)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.76)', fontSize: '0.93rem', lineHeight: 1.62, marginBottom: '1.5rem' }}>
                 Academic Risk and Placement Risk require distinct institutional actions. PRATIBHA analyzes them independently to ensure accurate, targeted faculty mentorship and placement bootcamps.
               </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.88)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#10B981' }} />
+
+              {/* Interactive Telemetry Box */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(26, 9, 18, 0.85)',
+                  border: '1px solid rgba(16, 185, 129, 0.20)',
+                  borderRadius: '12px',
+                  padding: '1.1rem',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                <div style={{ fontSize: '0.70rem', fontWeight: 700, color: '#10B981', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Independent Diagnostic Pipelines
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                  <div style={{ backgroundColor: 'rgba(16, 185, 129, 0.10)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(16, 185, 129, 0.25)' }}>
+                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#34D399' }}>Academic Risk</div>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.70)', marginTop: '2px' }}>CGPA, attendance, labs → Faculty Advising</div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(245, 158, 11, 0.10)', padding: '8px', borderRadius: '8px', border: '1px solid rgba(245, 158, 11, 0.25)' }}>
+                    <div style={{ fontSize: '0.74rem', fontWeight: 700, color: '#F59E0B' }}>Placement Risk</div>
+                    <div style={{ fontSize: '0.68rem', color: 'rgba(255, 255, 255, 0.70)', marginTop: '2px' }}>DSA, interviews, ATS → TPO Bootcamps</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bullet Features */}
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.86rem', color: 'rgba(255,255,255,0.90)' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <CheckCircle2 size={16} style={{ color: '#10B981', flexShrink: 0 }} />
                   <span>Curriculum & attendance early warnings</span>
                 </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#10B981' }} />
+                <li style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <CheckCircle2 size={16} style={{ color: '#10B981', flexShrink: 0 }} />
                   <span>Aptitude, DSA & interview readiness benchmarks</span>
                 </li>
               </ul>
             </div>
 
-            {/* Card 3: Explainable & Ethical AI */}
+            {/* Card 3: Ethical & Explainable AI */}
             <div
               style={{
-                backgroundColor: 'rgba(38, 14, 25, 0.85)',
-                border: '1px solid rgba(244, 63, 94, 0.22)',
-                borderRadius: '14px',
+                backgroundColor: 'rgba(38, 14, 25, 0.92)',
+                border: '1px solid rgba(244, 63, 94, 0.30)',
+                borderRadius: '18px',
                 padding: '2.25rem',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '1rem',
+                boxShadow: '0 16px 36px rgba(0, 0, 0, 0.45)',
+                transition: 'transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-6px)';
+                e.currentTarget.style.borderColor = 'rgba(244, 63, 94, 0.65)';
+                e.currentTarget.style.boxShadow = '0 24px 48px rgba(0, 0, 0, 0.6), 0 0 25px rgba(244, 63, 94, 0.15)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.borderColor = 'rgba(244, 63, 94, 0.30)';
+                e.currentTarget.style.boxShadow = '0 16px 36px rgba(0, 0, 0, 0.45)';
               }}
             >
-              <div
-                style={{
-                  width: '46px',
-                  height: '46px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(244, 63, 94, 0.18)',
-                  border: '1px solid rgba(244, 63, 94, 0.35)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#FDA4AF',
-                }}
-              >
-                <ShieldCheck size={22} />
+              {/* Card Header & Badge */}
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    backgroundColor: 'rgba(244, 63, 94, 0.18)',
+                    border: '1px solid rgba(244, 63, 94, 0.40)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#FDA4AF',
+                  }}
+                >
+                  <ShieldCheck size={24} />
+                </div>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: '#FDA4AF',
+                    backgroundColor: 'rgba(244, 63, 94, 0.12)',
+                    border: '1px solid rgba(244, 63, 94, 0.30)',
+                    borderRadius: '6px',
+                    padding: '4px 10px',
+                  }}
+                >
+                  03 · Ethical Trust
+                </span>
               </div>
-              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#FFFFFF' }}>
+
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 700, color: '#FFFFFF', marginBottom: '0.75rem' }}>
                 Ethical & Explainable Metrics
               </h3>
-              <p style={{ color: 'rgba(255, 255, 255, 0.74)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+              <p style={{ color: 'rgba(255, 255, 255, 0.76)', fontSize: '0.93rem', lineHeight: 1.62, marginBottom: '1.5rem' }}>
                 Missing records are never counted as zero or failure. The platform highlights what data is missing, explains contributing factors clearly, and gives an honest picture of student readiness.
               </p>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '0.84rem', color: 'rgba(255,255,255,0.88)' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#FDA4AF' }} />
+
+              {/* Interactive Telemetry Box */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(26, 9, 18, 0.85)',
+                  border: '1px solid rgba(244, 63, 94, 0.20)',
+                  borderRadius: '12px',
+                  padding: '1.1rem',
+                  marginBottom: '1.5rem',
+                }}
+              >
+                <div style={{ fontSize: '0.70rem', fontWeight: 700, color: '#FDA4AF', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '8px' }}>
+                  Auditable Factor Attribution
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.74rem', color: 'rgba(255,255,255,0.85)' }}>
+                    <span>Non-Zero Missing Invariant</span>
+                    <span style={{ color: '#34D399', fontWeight: 700 }}>Strict Guarantee</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '0.74rem', color: 'rgba(255,255,255,0.85)' }}>
+                    <span>Plain English Explanations</span>
+                    <span style={{ color: '#FDE68A', fontWeight: 700 }}>Human-in-Loop</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bullet Features */}
+              <ul style={{ listStyle: 'none', padding: 0, margin: 'auto 0 0', display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '0.86rem', color: 'rgba(255,255,255,0.90)' }}>
+                <li style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <CheckCircle2 size={16} style={{ color: '#FDA4AF', flexShrink: 0 }} />
                   <span>Non-zero missing data invariant</span>
                 </li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <CheckCircle2 size={15} style={{ color: '#FDA4AF' }} />
+                <li style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+                  <CheckCircle2 size={16} style={{ color: '#FDA4AF', flexShrink: 0 }} />
                   <span>Human-in-the-loop intervention logging</span>
                 </li>
               </ul>

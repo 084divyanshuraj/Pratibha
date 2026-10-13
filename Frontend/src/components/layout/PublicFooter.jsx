@@ -7,6 +7,8 @@ import {
   MapPin,
   Clock,
   X,
+  Shield,
+  FileText,
 } from 'lucide-react';
 
 export default function PublicFooter() {
@@ -39,6 +41,7 @@ export default function PublicFooter() {
     privacy: {
       title: 'Privacy Policy',
       subtitle: 'Student Data Protection & Compliance',
+      icon: Shield,
       content: [
         'All student records, performance metrics, and cohort evaluations displayed within PRATIBHA adhere to institutional privacy standards and synthetic data governance.',
         'Qualitative student feedback is anonymized and aggregated to preserve student privacy and ensure honest communication.',
@@ -48,6 +51,7 @@ export default function PublicFooter() {
     terms: {
       title: 'Terms of Service',
       subtitle: 'Platform Usage & Advisory Framework',
+      icon: FileText,
       content: [
         'PRATIBHA provides explainable readiness ratings and early alert indicators designed to assist academic mentors, counselors, and administrative leaders.',
         'System alerts serve as decision-support guidance; all student interventions and advisory actions require human-in-the-loop review and approval.',
@@ -61,23 +65,24 @@ export default function PublicFooter() {
       style={{
         backgroundColor: '#1A0912',
         color: 'rgba(255, 255, 255, 0.75)',
-        borderTop: '1px solid rgba(217, 119, 6, 0.18)',
-        padding: '3rem 1.25rem 2rem',
+        borderTop: '1px solid rgba(217, 119, 6, 0.22)',
+        padding: '3.5rem 1.5rem 2rem',
         marginTop: 'auto',
+        position: 'relative',
       }}
     >
       <div
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1280px',
           margin: '0 auto',
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
           gap: '3rem',
           paddingBottom: '3rem',
         }}
       >
         {/* Column 1: Brand & Purpose */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
             <BrandLogo variant="dark" />
           </div>
@@ -85,9 +90,9 @@ export default function PublicFooter() {
             style={{
               fontSize: '0.88rem',
               lineHeight: 1.65,
-              color: 'rgba(255, 255, 255, 0.65)',
+              color: 'rgba(255, 255, 255, 0.72)',
               margin: 0,
-              maxWidth: '360px',
+              maxWidth: '380px',
             }}
           >
             Empowering higher education institutions with real-time student analytics,
@@ -97,27 +102,27 @@ export default function PublicFooter() {
             style={{
               display: 'inline-flex',
               alignItems: 'center',
-              gap: '8px',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              backgroundColor: 'rgba(16, 185, 129, 0.1)',
-              border: '1px solid rgba(16, 185, 129, 0.25)',
-              fontSize: '0.75rem',
+              gap: '9px',
+              padding: '7px 14px',
+              borderRadius: '9999px',
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid rgba(16, 185, 129, 0.32)',
+              fontSize: '0.78rem',
               color: '#34D399',
-              fontWeight: 500,
+              fontWeight: 600,
               width: 'fit-content',
             }}
           >
             <span
               style={{
-                width: '6px',
-                height: '6px',
+                width: '7px',
+                height: '7px',
                 borderRadius: '50%',
                 backgroundColor: '#10B981',
-                boxShadow: '0 0 6px #10B981',
+                boxShadow: '0 0 8px #10B981',
               }}
             />
-            <span>Systems Operational</span>
+            <span>All Diagnostic Services Operational</span>
           </div>
         </div>
 
@@ -126,13 +131,17 @@ export default function PublicFooter() {
           <h4
             style={{
               color: '#FFFFFF',
-              fontSize: '0.9rem',
+              fontSize: '0.90rem',
               fontWeight: 700,
               marginBottom: '1.25rem',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
             }}
           >
+            <span style={{ width: '4px', height: '14px', borderRadius: '2px', backgroundColor: '#F59E0B' }} />
             Quick Links
           </h4>
           <ul
@@ -142,8 +151,8 @@ export default function PublicFooter() {
               margin: 0,
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.75rem',
-              fontSize: '0.88rem',
+              gap: '0.85rem',
+              fontSize: '0.90rem',
             }}
           >
             <li>
@@ -151,15 +160,21 @@ export default function PublicFooter() {
                 href="/"
                 onClick={(e) => handleNavClick('home', e)}
                 style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: 'rgba(255, 255, 255, 0.75)',
                   textDecoration: 'none',
-                  transition: 'color 0.2s',
+                  transition: 'color 0.2s, transform 0.2s',
                   display: 'inline-block',
                 }}
-                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#F59E0B';
+                  e.target.style.transform = 'translateX(4px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = 'rgba(255, 255, 255, 0.75)';
+                  e.target.style.transform = 'translateX(0)';
+                }}
               >
-                Home
+                Home Overview
               </a>
             </li>
             <li>
@@ -167,45 +182,63 @@ export default function PublicFooter() {
                 href="#about"
                 onClick={(e) => handleNavClick('about', e)}
                 style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: 'rgba(255, 255, 255, 0.75)',
                   textDecoration: 'none',
-                  transition: 'color 0.2s',
+                  transition: 'color 0.2s, transform 0.2s',
                   display: 'inline-block',
                 }}
-                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#F59E0B';
+                  e.target.style.transform = 'translateX(4px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = 'rgba(255, 255, 255, 0.75)';
+                  e.target.style.transform = 'translateX(0)';
+                }}
               >
-                About Platform
+                About Platform & Architecture
               </a>
             </li>
             <li>
               <Link
                 to="/student/portal"
                 style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: 'rgba(255, 255, 255, 0.75)',
                   textDecoration: 'none',
-                  transition: 'color 0.2s',
+                  transition: 'color 0.2s, transform 0.2s',
                   display: 'inline-block',
                 }}
-                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#F59E0B';
+                  e.target.style.transform = 'translateX(4px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = 'rgba(255, 255, 255, 0.75)';
+                  e.target.style.transform = 'translateX(0)';
+                }}
               >
-                Student Portal
+                Student Success Portal
               </Link>
             </li>
             <li>
               <Link
                 to="/login"
                 style={{
-                  color: 'rgba(255, 255, 255, 0.7)',
+                  color: 'rgba(255, 255, 255, 0.75)',
                   textDecoration: 'none',
-                  transition: 'color 0.2s',
+                  transition: 'color 0.2s, transform 0.2s',
                   display: 'inline-block',
                 }}
-                onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-                onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.7)')}
+                onMouseEnter={(e) => {
+                  e.target.style.color = '#F59E0B';
+                  e.target.style.transform = 'translateX(4px)';
+                }}
+                onMouseLeave={(e) => {
+                  e.target.style.color = 'rgba(255, 255, 255, 0.75)';
+                  e.target.style.transform = 'translateX(0)';
+                }}
               >
-                Institutional Login
+                Institutional Console (Admin / Faculty / TPO)
               </Link>
             </li>
           </ul>
@@ -216,78 +249,154 @@ export default function PublicFooter() {
           <h4
             style={{
               color: '#FFFFFF',
-              fontSize: '0.9rem',
+              fontSize: '0.90rem',
               fontWeight: 700,
               marginBottom: '1.25rem',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.06em',
               textTransform: 'uppercase',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
             }}
           >
+            <span style={{ width: '4px', height: '14px', borderRadius: '2px', backgroundColor: '#F59E0B' }} />
             Contact & Support
           </h4>
           <div
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '1rem',
+              gap: '1.15rem',
               fontSize: '0.88rem',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <Mail size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+            {/* Email */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.28)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  color: '#F59E0B',
+                }}
+              >
+                <Mail size={15} />
+              </div>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Email Support</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.50)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Email Support
+                </div>
                 <a
                   href="mailto:support@pratibha.edu"
                   style={{
-                    color: 'rgba(255, 255, 255, 0.85)',
+                    color: 'rgba(255, 255, 255, 0.90)',
                     textDecoration: 'none',
                     fontWeight: 500,
                     transition: 'color 0.2s',
                   }}
-                  onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-                  onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.85)')}
+                  onMouseEnter={(e) => (e.target.style.color = '#F59E0B')}
+                  onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.90)')}
                 >
                   support@pratibha.edu
                 </a>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <Phone size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+            {/* Helpline */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.28)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  color: '#F59E0B',
+                }}
+              >
+                <Phone size={15} />
+              </div>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Helpline / Toll-free</div>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.50)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Helpline / Toll-free
+                </div>
                 <a
                   href="tel:+9118002004567"
                   style={{
-                    color: 'rgba(255, 255, 255, 0.85)',
+                    color: 'rgba(255, 255, 255, 0.90)',
                     textDecoration: 'none',
                     fontWeight: 500,
                     transition: 'color 0.2s',
                   }}
-                  onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-                  onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.85)')}
+                  onMouseEnter={(e) => (e.target.style.color = '#F59E0B')}
+                  onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.90)')}
                 >
                   +91 1800 200 4567
                 </a>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <MapPin size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+            {/* Campus Office */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.28)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  color: '#F59E0B',
+                }}
+              >
+                <MapPin size={15} />
+              </div>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Campus Office</div>
-                <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.50)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Campus Center
+                </div>
+                <span style={{ color: 'rgba(255, 255, 255, 0.85)', lineHeight: 1.5 }}>
                   Academic Innovation Center, Block 4, Institutional Area
                 </span>
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <Clock size={16} color="#38BDF8" style={{ marginTop: '3px', flexShrink: 0 }} />
+            {/* Working Hours */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '8px',
+                  backgroundColor: 'rgba(245, 158, 11, 0.12)',
+                  border: '1px solid rgba(245, 158, 11, 0.28)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  color: '#F59E0B',
+                }}
+              >
+                <Clock size={15} />
+              </div>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'rgba(255, 255, 255, 0.45)', marginBottom: '2px' }}>Working Hours</div>
-                <span style={{ color: 'rgba(255, 255, 255, 0.8)' }}>
+                <div style={{ fontSize: '0.74rem', color: 'rgba(255, 255, 255, 0.50)', marginBottom: '2px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                  Working Hours
+                </div>
+                <span style={{ color: 'rgba(255, 255, 255, 0.85)' }}>
                   Monday – Friday, 9:00 AM – 6:00 PM IST
                 </span>
               </div>
@@ -299,21 +408,21 @@ export default function PublicFooter() {
       {/* Bottom Bar: Copyright & Legal */}
       <div
         style={{
-          maxWidth: '1200px',
+          maxWidth: '1280px',
           margin: '0 auto',
-          paddingTop: '1.5rem',
-          borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+          paddingTop: '1.75rem',
+          borderTop: '1px solid rgba(245, 158, 11, 0.15)',
           display: 'flex',
           flexWrap: 'wrap',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '1rem',
-          fontSize: '0.8rem',
-          color: 'rgba(255, 255, 255, 0.55)',
+          fontSize: '0.82rem',
+          color: 'rgba(255, 255, 255, 0.60)',
         }}
       >
         <div>
-          © {new Date().getFullYear()} PRATIBHA. All rights reserved.
+          © {new Date().getFullYear()} PRATIBHA · Student Success Intelligence Platform. All rights reserved.
         </div>
 
         <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
@@ -324,17 +433,17 @@ export default function PublicFooter() {
               background: 'none',
               border: 'none',
               padding: 0,
-              color: 'rgba(255, 255, 255, 0.6)',
-              fontSize: '0.8rem',
+              color: 'rgba(255, 255, 255, 0.70)',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               transition: 'color 0.2s',
             }}
-            onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-            onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.6)')}
+            onMouseEnter={(e) => (e.target.style.color = '#F59E0B')}
+            onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.70)')}
           >
             Privacy Policy
           </button>
-          <span style={{ color: 'rgba(255, 255, 255, 0.2)' }}>•</span>
+          <span style={{ color: 'rgba(245, 158, 11, 0.35)' }}>•</span>
           <button
             type="button"
             onClick={() => setActiveModal('terms')}
@@ -342,13 +451,13 @@ export default function PublicFooter() {
               background: 'none',
               border: 'none',
               padding: 0,
-              color: 'rgba(255, 255, 255, 0.6)',
-              fontSize: '0.8rem',
+              color: 'rgba(255, 255, 255, 0.70)',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               transition: 'color 0.2s',
             }}
-            onMouseEnter={(e) => (e.target.style.color = '#38BDF8')}
-            onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.6)')}
+            onMouseEnter={(e) => (e.target.style.color = '#F59E0B')}
+            onMouseLeave={(e) => (e.target.style.color = 'rgba(255, 255, 255, 0.70)')}
           >
             Terms of Service
           </button>
@@ -361,25 +470,25 @@ export default function PublicFooter() {
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(2, 6, 15, 0.8)',
+            backgroundColor: 'rgba(15, 4, 10, 0.85)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 9999,
-            padding: '1rem',
+            padding: '1.25rem',
           }}
           onClick={() => setActiveModal(null)}
         >
           <div
             style={{
-              backgroundColor: '#0A172E',
-              border: '1px solid rgba(56, 189, 248, 0.3)',
-              borderRadius: '14px',
-              padding: '1.5rem',
-              maxWidth: '520px',
+              backgroundColor: '#240D18',
+              border: '1px solid rgba(245, 158, 11, 0.35)',
+              borderRadius: '16px',
+              padding: '1.75rem',
+              maxWidth: '540px',
               width: '100%',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 30px rgba(56, 189, 248, 0.12)',
+              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.85), 0 0 35px rgba(225, 29, 72, 0.20)',
               color: '#FFFFFF',
             }}
             onClick={(e) => e.stopPropagation()}
@@ -389,22 +498,22 @@ export default function PublicFooter() {
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
-                marginBottom: '1.25rem',
+                marginBottom: '1.5rem',
               }}
             >
               <div>
                 <span
                   style={{
                     fontSize: '0.72rem',
-                    fontWeight: 600,
+                    fontWeight: 700,
                     textTransform: 'uppercase',
-                    color: '#38BDF8',
-                    letterSpacing: '0.06em',
+                    color: '#F59E0B',
+                    letterSpacing: '0.08em',
                   }}
                 >
                   {modalContent[activeModal].subtitle}
                 </span>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: 700, margin: '4px 0 0', color: '#FFFFFF' }}>
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, margin: '4px 0 0', color: '#FFFFFF' }}>
                   {modalContent[activeModal].title}
                 </h3>
               </div>
@@ -413,14 +522,23 @@ export default function PublicFooter() {
                 onClick={() => setActiveModal(null)}
                 style={{
                   background: 'rgba(255, 255, 255, 0.08)',
-                  border: '1px solid rgba(255, 255, 255, 0.15)',
-                  color: '#94A3B8',
-                  borderRadius: '6px',
+                  border: '1px solid rgba(245, 158, 11, 0.25)',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  borderRadius: '8px',
                   padding: '6px',
                   cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  transition: 'background-color 0.2s, color 0.2s',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(245, 158, 11, 0.2)';
+                  e.currentTarget.style.color = '#F59E0B';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+                  e.currentTarget.style.color = 'rgba(255, 255, 255, 0.7)';
                 }}
               >
                 <X size={16} />
@@ -432,13 +550,13 @@ export default function PublicFooter() {
                 <div
                   key={idx}
                   style={{
-                    backgroundColor: 'rgba(15, 23, 42, 0.6)',
-                    border: '1px solid rgba(255, 255, 255, 0.08)',
-                    borderRadius: '8px',
-                    padding: '0.85rem 1rem',
-                    fontSize: '0.85rem',
-                    color: '#CBD5E1',
-                    lineHeight: 1.55,
+                    backgroundColor: 'rgba(38, 14, 25, 0.85)',
+                    border: '1px solid rgba(245, 158, 11, 0.16)',
+                    borderRadius: '10px',
+                    padding: '0.9rem 1.1rem',
+                    fontSize: '0.88rem',
+                    color: 'rgba(255, 255, 255, 0.88)',
+                    lineHeight: 1.6,
                   }}
                 >
                   {paragraph}
@@ -451,18 +569,25 @@ export default function PublicFooter() {
               onClick={() => setActiveModal(null)}
               style={{
                 width: '100%',
-                padding: '0.75rem',
-                backgroundColor: 'var(--color-blue-primary)',
+                padding: '0.85rem',
+                background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
                 color: '#FFFFFF',
-                border: 'none',
-                borderRadius: '8px',
-                fontSize: '0.88rem',
-                fontWeight: 600,
+                border: '1px solid rgba(245, 158, 11, 0.4)',
+                borderRadius: '10px',
+                fontSize: '0.92rem',
+                fontWeight: 700,
                 cursor: 'pointer',
-                transition: 'background-color 0.2s',
+                transition: 'filter 0.2s, transform 0.2s',
+                boxShadow: '0 4px 14px rgba(217, 119, 6, 0.35)',
               }}
-              onMouseEnter={(e) => (e.target.style.backgroundColor = 'var(--color-blue-bright)')}
-              onMouseLeave={(e) => (e.target.style.backgroundColor = 'var(--color-blue-primary)')}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.filter = 'brightness(1.15)';
+                e.currentTarget.style.transform = 'translateY(-1px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.filter = 'brightness(1.0)';
+                e.currentTarget.style.transform = 'translateY(0)';
+              }}
             >
               Close
             </button>
