@@ -863,6 +863,11 @@ export function computeLocalOverviewKpis() {
     (s) => (s.academicRisk || '').toLowerCase() !== 'high' && (s.placementRisk || '').toLowerCase() !== 'high'
   ).length;
 
+  const covValues = Object.values(dynamicCategoryCoverage);
+  const dynCompleteness = covValues.length > 0
+    ? +(covValues.reduce((a, b) => a + Number(b), 0) / covValues.length).toFixed(1)
+    : 83.1;
+
   return {
     totalStudents: total,
     departmentCount: depts.size || 1,
@@ -2027,15 +2032,17 @@ export const api = {
         current.forEach((st) => currentMap.set(st.studentId.toUpperCase(), st));
 
         if (datasetType === 'students') {
-          rows.forEach((r, idx) => {
-            const sId = r.studentId ? String(r.studentId).toUpperCase() : `STU_${String(current.length + idx + 1).padStart(4, '0')}`;
+          const newStudents = rows.map((r, idx) => {
+            const sId = r.studentId ? String(r.studentId).toUpperCase() : `STU_${String(idx + 1).padStart(4, '0')}`;
             const fn = r.firstName || r.name?.split(' ')[0] || 'Student';
             const ln = r.lastName || r.name?.split(' ').slice(1).join(' ') || `${idx + 1}`;
             const cg = r.cgpa != null && r.cgpa !== '' ? Number(r.cgpa) : +(7.0 + Math.random() * 2.5).toFixed(1);
-            const att = r.attendancePercentage != null && r.attendancePercentage !== '' ? Number(r.attendancePercentage) : Math.round(75 + Math.random() * 20);
+            const att = r.attendancePercentage != null && r.attendancePercentage !== ''
+              ? Number(r.attendancePercentage)
+              : (r.attendanceRate != null && r.attendanceRate !== '' ? Number(r.attendanceRate) : Math.round(75 + Math.random() * 20));
             const score = +(cg * 5 + att * 0.4).toFixed(1);
 
-            currentMap.set(sId, {
+            return {
               id: sId.toLowerCase(),
               studentId: sId,
               firstName: fn,
@@ -2047,13 +2054,13 @@ export const api = {
               cgpa: cg,
               attendanceRate: att,
               successScore: score,
-              academicRisk: (att < 75 || cg < 6.5) ? 'high' : (att < 80 || cg < 7.5 ? 'medium' : 'low'),
+              academicRisk: (att < 70 || cg < 6.5) ? 'high' : (att < 80 || cg < 7.5 ? 'medium' : 'low'),
               placementRisk: r.placementRisk || (cg >= 7.5 && (idx % 6 === 3 || idx % 6 === 5) ? 'high' : (cg < 6.5 ? 'high' : 'low')),
               email: r.email || `${fn.toLowerCase()}.${ln.toLowerCase()}@campus.edu`,
               avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
-            });
+            };
           });
-          saveActiveStudents(Array.from(currentMap.values()));
+          saveActiveStudents(newStudents);
         } else if (datasetType === 'academic') {
           rows.forEach((r) => {
             const sId = (r.studentId || '').toString().trim().toUpperCase();

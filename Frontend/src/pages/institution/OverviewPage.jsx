@@ -42,8 +42,11 @@ export default function OverviewPage() {
     setLoading(true);
     Promise.all([api.getOverviewKpis(), api.getTrends()])
       .then(([kpiData, trendData]) => {
-        setKpis(kpiData);
-        setTrends(trendData?.trend || []);
+        if (kpiData) setKpis(kpiData);
+        if (trendData?.trend) setTrends(trendData.trend);
+      })
+      .catch((err) => {
+        console.error('Overview data load error:', err);
       })
       .finally(() => setLoading(false));
   };
