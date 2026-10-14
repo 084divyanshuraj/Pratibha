@@ -1,0 +1,101 @@
+studentId,firstName,lastName,department,program,semester,enrollmentYear,cohort,email,cgpa,attendancePercentage
+STU_101,Aarav,Sharma,Computer Science,B.Tech,4,2023,Cohort-2023,aarav.sharma101@campus.edu,8.30,75
+STU_102,Vivaan,Sharma,Information Technology,B.Tech,5,2022,Cohort-2022,vivaan.sharma102@campus.edu,8.40,76
+STU_103,Aditya,Verma,Data Science,B.Tech,6,2022,Cohort-2022,aditya.verma103@campus.edu,8.90,91
+STU_104,Vihaan,Verma,Electronics & Comm,B.Tech,7,2021,Cohort-2021,vihaan.verma104@campus.edu,9.00,92
+STU_105,Arjun,Gupta,Mechanical Eng,B.Tech,8,2021,Cohort-2021,arjun.gupta105@campus.edu,9.10,93
+STU_106,Sai,Gupta,Computer Science,B.Tech,3,2023,Cohort-2023,sai.gupta106@campus.edu,8.10,86
+STU_107,Reyansh,Mehta,Information Technology,B.Tech,4,2023,Cohort-2023,reyansh.mehta107@campus.edu,8.20,87
+STU_108,Ayaan,Mehta,Data Science,B.Tech,5,2022,Cohort-2022,ayaan.mehta108@campus.edu,6.60,80
+STU_109,Krishna,Patel,Electronics & Comm,B.Tech,6,2022,Cohort-2022,krishna.patel109@campus.edu,6.70,81
+STU_110,Ishaan,Patel,Mechanical Eng,B.Tech,7,2021,Cohort-2021,ishaan.patel110@campus.edu,5.50,72
+STU_111,Shaurya,Reddy,Computer Science,B.Tech,8,2021,Cohort-2021,shaurya.reddy111@campus.edu,9.30,77
+STU_112,Atharv,Reddy,Information Technology,B.Tech,3,2023,Cohort-2023,atharv.reddy112@campus.edu,8.20,78
+STU_113,Advik,Nair,Data Science,B.Tech,4,2023,Cohort-2023,advik.nair113@campus.edu,8.60,90
+STU_114,Pranav,Nair,Electronics & Comm,B.Tech,5,2022,Cohort-2022,pranav.nair114@campus.edu,8.70,91
+STU_115,Advaith,Iyer,Mechanical Eng,B.Tech,6,2022,Cohort-2022,advaith.iyer115@campus.edu,8.80,92
+STU_116,Kabir,Iyer,Computer Science,B.Tech,7,2021,Cohort-2021,kabir.iyer116@campus.edu,8.20,86
+STU_117,Dhruv,Chatterjee,Information Technology,B.Tech,8,2021,Cohort-2021,dhruv.chatterjee117@campus.edu,8.30,87
+STU_118,Darsh,Chatterjee,Data Science,B.Tech,3,2023,Cohort-2023,darsh.chatterjee118@campus.edu,6.80,79
+STU_119,Utkarsh,Banerjee,Electronics & Comm,B.Tech,4,2023,Cohort-2023,utkarsh.banerjee119@campus.edu,6.90,80
+STU_120,Rishi,Banerjee,Mechanical Eng,B.Tech,5,2022,Cohort-2022,rishi.banerjee120@campus.edu,5.60,71
+STU_121,Ananya,Mishra,Computer Science,B.Tech,6,2022,Cohort-2022,ananya.mishra121@campus.edu,9.10,79
+STU_122,Diya,Mishra,Information Technology,B.Tech,7,2021,Cohort-2021,diya.mishra122@campus.edu,9.20,80
+STU_123,Isha,Singh,Data Science,B.Tech,8,2021,Cohort-2021,isha.singh123@campus.edu,9.60,89
+STU_124,Aadhya,Singh,Electronics & Comm,B.Tech,3,2023,Cohort-2023,aadhya.singh124@campus.edu,9.70,90
+STU_125,Saanvi,Kumar,Mechanical Eng,B.Tech,4,2023,Cohort-2023,saanvi.kumar125@campus.edu,9.80,91
+STU_126,Ananya,Kumar,Computer Science,B.Tech,5,2022,Cohort-2022,ananya.kumar126@campus.edu,8.30,86
+STU_127,Pari,Joshi,Information Technology,B.Tech,6,2022,Cohort-2022,pari.joshi127@campus.edu,7.50,87
+STU_128,Anika,Joshi,Data Science,B.Tech,7,2021,Cohort-2021,anika.joshi128@campus.edu,7.00,78
+STU_129,Navya,Chopra,Electronics & Comm,B.Tech,8,2021,Cohort-2021,navya.chopra129@campus.edu,7.10,79
+STU_130,Myra,Chopra,Mechanical Eng,B.Tech,3,2023,Cohort-2023,myra.chopra130@campus.edu,5.70,70
+STU_131,Riya,Bose,Computer Science,B.Tech,4,2023,Cohort-2023,riya.bose131@campus.edu,8.90,81
+STU_132,Aarohi,Bose,Information Technology,B.Tech,5,2022,Cohort-2022,aarohi.bose132@campus.edu,9.00,74
+STU_133,Tanvi,Deshmukh,Data Science,B.Tech,6,2022,Cohort-2022,tanvi.deshmukh133@campus.edu,9.30,88
+STU_134,Sara,Deshmukh,Electronics & Comm,B.Tech,7,2021,Cohort-2021,sara.deshmukh134@campus.edu,9.40,89
+STU_135,Kavya,Yadav,Mechanical Eng,B.Tech,8,2021,Cohort-2021,kavya.yadav135@campus.edu,9.50,90
+STU_136,Avani,Yadav,Computer Science,B.Tech,3,2023,Cohort-2023,avani.yadav136@campus.edu,7.50,86
+STU_137,Sneha,Malhotra,Information Technology,B.Tech,4,2023,Cohort-2023,sneha.malhotra137@campus.edu,7.60,87
+STU_138,Pooja,Malhotra,Data Science,B.Tech,5,2022,Cohort-2022,pooja.malhotra138@campus.edu,7.20,77
+STU_139,Shreya,Pandey,Electronics & Comm,B.Tech,6,2022,Cohort-2022,shreya.pandey139@campus.edu,7.30,78
+STU_140,Meera,Pandey,Mechanical Eng,B.Tech,7,2021,Cohort-2021,meera.pandey140@campus.edu,5.80,69
+STU_141,Rohan,Saxena,Computer Science,B.Tech,8,2021,Cohort-2021,rohan.saxena141@campus.edu,8.70,75
+STU_142,Karan,Saxena,Information Technology,B.Tech,3,2023,Cohort-2023,karan.saxena142@campus.edu,8.80,76
+STU_143,Siddharth,Agrawal,Data Science,B.Tech,4,2023,Cohort-2023,siddharth.agrawal143@campus.edu,9.00,98
+STU_144,Gaurav,Agrawal,Electronics & Comm,B.Tech,5,2022,Cohort-2022,gaurav.agrawal144@campus.edu,9.10,88
+STU_145,Nikhil,Bhat,Mechanical Eng,B.Tech,6,2022,Cohort-2022,nikhil.bhat145@campus.edu,9.20,89
+STU_146,Dev,Bhat,Computer Science,B.Tech,7,2021,Cohort-2021,dev.bhat146@campus.edu,7.60,86
+STU_147,Manish,Rao,Information Technology,B.Tech,8,2021,Cohort-2021,manish.rao147@campus.edu,7.70,87
+STU_148,Harsh,Rao,Data Science,B.Tech,3,2023,Cohort-2023,harsh.rao148@campus.edu,6.60,76
+STU_149,Vikram,Nambiar,Electronics & Comm,B.Tech,4,2023,Cohort-2023,vikram.nambiar149@campus.edu,6.70,77
+STU_150,Varun,Nambiar,Mechanical Eng,B.Tech,5,2022,Cohort-2022,varun.nambiar150@campus.edu,5.90,68
+STU_151,Neha,Kulkarni,Computer Science,B.Tech,6,2022,Cohort-2022,neha.kulkarni151@campus.edu,8.50,77
+STU_152,Kavita,Kulkarni,Information Technology,B.Tech,7,2021,Cohort-2021,kavita.kulkarni152@campus.edu,8.60,78
+STU_153,Sunita,Dubey,Data Science,B.Tech,8,2021,Cohort-2021,sunita.dubey153@campus.edu,8.70,97
+STU_154,Divya,Dubey,Electronics & Comm,B.Tech,3,2023,Cohort-2023,divya.dubey154@campus.edu,8.80,98
+STU_155,Priyanka,Tripathi,Mechanical Eng,B.Tech,4,2023,Cohort-2023,priyanka.tripathi155@campus.edu,8.90,88
+STU_156,Simran,Tripathi,Computer Science,B.Tech,5,2022,Cohort-2022,simran.tripathi156@campus.edu,7.70,86
+STU_157,Kritika,Thakur,Information Technology,B.Tech,6,2022,Cohort-2022,kritika.thakur157@campus.edu,7.80,87
+STU_158,Swati,Thakur,Data Science,B.Tech,7,2021,Cohort-2021,swati.thakur158@campus.edu,6.80,75
+STU_159,Rashmi,Gowda,Electronics & Comm,B.Tech,8,2021,Cohort-2021,rashmi.gowda159@campus.edu,6.90,76
+STU_160,Pallavi,Gowda,Mechanical Eng,B.Tech,3,2023,Cohort-2023,pallavi.gowda160@campus.edu,6.00,67
+STU_161,Aarav,Sharma,Computer Science,B.Tech,4,2023,Cohort-2023,aarav.sharma161@campus.edu,8.30,79
+STU_162,Vivaan,Sharma,Information Technology,B.Tech,5,2022,Cohort-2022,vivaan.sharma162@campus.edu,8.40,80
+STU_163,Aditya,Verma,Data Science,B.Tech,6,2022,Cohort-2022,aditya.verma163@campus.edu,9.70,96
+STU_164,Vihaan,Verma,Electronics & Comm,B.Tech,7,2021,Cohort-2021,vihaan.verma164@campus.edu,9.80,97
+STU_165,Arjun,Gupta,Mechanical Eng,B.Tech,8,2021,Cohort-2021,arjun.gupta165@campus.edu,8.60,98
+STU_166,Sai,Gupta,Computer Science,B.Tech,3,2023,Cohort-2023,sai.gupta166@campus.edu,7.80,86
+STU_167,Reyansh,Mehta,Information Technology,B.Tech,4,2023,Cohort-2023,reyansh.mehta167@campus.edu,7.90,87
+STU_168,Ayaan,Mehta,Data Science,B.Tech,5,2022,Cohort-2022,ayaan.mehta168@campus.edu,7.00,74
+STU_169,Krishna,Patel,Electronics & Comm,B.Tech,6,2022,Cohort-2022,krishna.patel169@campus.edu,7.10,75
+STU_170,Ishaan,Patel,Mechanical Eng,B.Tech,7,2021,Cohort-2021,ishaan.patel170@campus.edu,6.10,66
+STU_171,Shaurya,Reddy,Computer Science,B.Tech,8,2021,Cohort-2021,shaurya.reddy171@campus.edu,9.30,81
+STU_172,Atharv,Reddy,Information Technology,B.Tech,3,2023,Cohort-2023,atharv.reddy172@campus.edu,8.20,74
+STU_173,Advik,Nair,Data Science,B.Tech,4,2023,Cohort-2023,advik.nair173@campus.edu,9.40,95
+STU_174,Pranav,Nair,Electronics & Comm,B.Tech,5,2022,Cohort-2022,pranav.nair174@campus.edu,9.50,96
+STU_175,Advaith,Iyer,Mechanical Eng,B.Tech,6,2022,Cohort-2022,advaith.iyer175@campus.edu,9.60,97
+STU_176,Kabir,Iyer,Computer Science,B.Tech,7,2021,Cohort-2021,kabir.iyer176@campus.edu,7.90,86
+STU_177,Dhruv,Chatterjee,Information Technology,B.Tech,8,2021,Cohort-2021,dhruv.chatterjee177@campus.edu,8.00,87
+STU_178,Darsh,Chatterjee,Data Science,B.Tech,3,2023,Cohort-2023,darsh.chatterjee178@campus.edu,7.20,73
+STU_179,Utkarsh,Banerjee,Electronics & Comm,B.Tech,4,2023,Cohort-2023,utkarsh.banerjee179@campus.edu,7.30,74
+STU_180,Rishi,Banerjee,Mechanical Eng,B.Tech,5,2022,Cohort-2022,rishi.banerjee180@campus.edu,6.20,65
+STU_181,Ananya,Mishra,Computer Science,B.Tech,6,2022,Cohort-2022,ananya.mishra181@campus.edu,9.10,75
+STU_182,Diya,Mishra,Information Technology,B.Tech,7,2021,Cohort-2021,diya.mishra182@campus.edu,9.20,76
+STU_183,Isha,Singh,Data Science,B.Tech,8,2021,Cohort-2021,isha.singh183@campus.edu,9.10,94
+STU_184,Aadhya,Singh,Electronics & Comm,B.Tech,3,2023,Cohort-2023,aadhya.singh184@campus.edu,9.20,95
+STU_185,Saanvi,Kumar,Mechanical Eng,B.Tech,4,2023,Cohort-2023,saanvi.kumar185@campus.edu,9.30,96
+STU_186,Ananya,Kumar,Computer Science,B.Tech,5,2022,Cohort-2022,ananya.kumar186@campus.edu,8.00,86
+STU_187,Pari,Joshi,Information Technology,B.Tech,6,2022,Cohort-2022,pari.joshi187@campus.edu,8.10,87
+STU_188,Anika,Joshi,Data Science,B.Tech,7,2021,Cohort-2021,anika.joshi188@campus.edu,6.60,72
+STU_189,Navya,Chopra,Electronics & Comm,B.Tech,8,2021,Cohort-2021,navya.chopra189@campus.edu,6.70,73
+STU_190,Myra,Chopra,Mechanical Eng,B.Tech,3,2023,Cohort-2023,myra.chopra190@campus.edu,5.40,64
+STU_191,Riya,Bose,Computer Science,B.Tech,4,2023,Cohort-2023,riya.bose191@campus.edu,8.90,77
+STU_192,Aarohi,Bose,Information Technology,B.Tech,5,2022,Cohort-2022,aarohi.bose192@campus.edu,9.00,78
+STU_193,Tanvi,Deshmukh,Data Science,B.Tech,6,2022,Cohort-2022,tanvi.deshmukh193@campus.edu,8.80,93
+STU_194,Sara,Deshmukh,Electronics & Comm,B.Tech,7,2021,Cohort-2021,sara.deshmukh194@campus.edu,8.90,94
+STU_195,Kavya,Yadav,Mechanical Eng,B.Tech,8,2021,Cohort-2021,kavya.yadav195@campus.edu,9.00,95
+STU_196,Avani,Yadav,Computer Science,B.Tech,3,2023,Cohort-2023,avani.yadav196@campus.edu,8.10,86
+STU_197,Sneha,Malhotra,Information Technology,B.Tech,4,2023,Cohort-2023,sneha.malhotra197@campus.edu,8.20,87
+STU_198,Pooja,Malhotra,Data Science,B.Tech,5,2022,Cohort-2022,pooja.malhotra198@campus.edu,6.80,82
+STU_199,Shreya,Pandey,Electronics & Comm,B.Tech,6,2022,Cohort-2022,shreya.pandey199@campus.edu,6.90,72
+STU_200,Meera,Pandey,Mechanical Eng,B.Tech,7,2021,Cohort-2021,meera.pandey200@campus.edu,5.50,63
