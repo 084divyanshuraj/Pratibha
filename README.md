@@ -247,4 +247,3 @@ npm start
 - **Project Name:** PRATIBHA (Student Success Intelligence Platform)
 - **Repository:** [https://github.com/084divyanshuraj/Pratibha](https://github.com/084divyanshuraj/Pratibha)
 - **Live Prototype:** [https://pratibha-five.vercel.app/](https://pratibha-five.vercel.app/)
-- **License:** ISC
